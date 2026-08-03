@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { @apply border-neutral-200; }
+  body { @apply min-h-screen bg-neutral-50 font-sans text-neutral-900 antialiased; }
+  button, input, select, textarea { font: inherit; }
+}
+
+@layer utilities {
+  .safe-bottom { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
+}
