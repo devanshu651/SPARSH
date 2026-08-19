@@ -6,6 +6,8 @@ import HomeScreen from './screens/HomeScreen'
 import RegistrationScreen from './screens/RegistrationScreen'
 import ScreeningScreen from './screens/ScreeningScreen'
 import AVAssessmentScreen from './screens/AVAssessmentScreen'
+import ChildrenScreen from './screens/ChildrenScreen'
+import AlertsScreen from './screens/AlertsScreen'
 
 export default function App() {
   const [screen, setScreen] = useState('splash')
@@ -19,6 +21,10 @@ export default function App() {
       {screen === 'av-assessment' && (
   <AVAssessmentScreen onNavigate={setScreen} />
 )}
+{screen === 'children' && (
+  <ChildrenScreen onNavigate={setScreen} />
+)}
+{screen === 'alerts' && <AlertsScreen onNavigate={setScreen} />}
     </AppProvider>
   )
 }
