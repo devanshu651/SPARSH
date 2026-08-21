@@ -88,11 +88,12 @@ export default function HomeScreen({ onNavigate }) {
               </button>
 
               <button
-                className="hidden h-10 w-10 place-items-center rounded-full
-                bg-white/10 text-sm ring-1 ring-white/20
-                hover:bg-white/20 sm:grid"
-              >
-                ⚙
+               type="button"
+               onClick={() => onNavigate?.('settings')}
+               className="..."
+               aria-label="Settings"
+>
+               ⚙️
               </button>
             </div>
 
