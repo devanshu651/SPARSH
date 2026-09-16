@@ -1,5 +1,1 @@
-{
-  "appName": "SPARSH",
-  "appExpansion": "Smart Platform for Assessment of Response, Screening & Holistic Development",
-  "welcome": "Namaste, Health Worker"
-}
+{"appName":"SPARSH","welcome":"Namaste, Health Worker","login":{"welcome":"Welcome back"}}

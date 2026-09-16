@@ -1,0 +1,1185 @@
+{
+  "version": "draft-1",
+  "source": "WHO/CDC/IAP starting dataset from milestone.pdf",
+  "milestones": [
+    {
+      "id": "gr_2_01",
+      "age_months": 2,
+      "domain": "gross_motor",
+      "description": "Holds head up briefly when on tummy",
+      "weight": 1
+    },
+    {
+      "id": "gr_2_02",
+      "age_months": 2,
+      "domain": "gross_motor",
+      "description": "Moves both arms and legs, pushes up slightly during tummy time",
+      "weight": 1
+    },
+    {
+      "id": "fi_2_01",
+      "age_months": 2,
+      "domain": "fine_motor",
+      "description": "Opens hands briefly",
+      "weight": 1
+    },
+    {
+      "id": "fi_2_02",
+      "age_months": 2,
+      "domain": "fine_motor",
+      "description": "Reflexively grasps a finger placed in palm",
+      "weight": 1
+    },
+    {
+      "id": "la_2_01",
+      "age_months": 2,
+      "domain": "language",
+      "description": "Makes sounds other than crying (coos)",
+      "weight": 1
+    },
+    {
+      "id": "la_2_02",
+      "age_months": 2,
+      "domain": "language",
+      "description": "Reacts to loud sounds",
+      "weight": 1
+    },
+    {
+      "id": "so_2_01",
+      "age_months": 2,
+      "domain": "social_emotional",
+      "description": "Calms down when spoken to or picked up",
+      "weight": 1
+    },
+    {
+      "id": "so_2_02",
+      "age_months": 2,
+      "domain": "social_emotional",
+      "description": "Looks at your face",
+      "weight": 1
+    },
+    {
+      "id": "so_2_03",
+      "age_months": 2,
+      "domain": "social_emotional",
+      "description": "Smiles when you talk to or smile at them",
+      "weight": 1
+    },
+    {
+      "id": "co_2_01",
+      "age_months": 2,
+      "domain": "cognitive",
+      "description": "Watches you as you move",
+      "weight": 1
+    },
+    {
+      "id": "co_2_02",
+      "age_months": 2,
+      "domain": "cognitive",
+      "description": "Looks at a toy for several seconds",
+      "weight": 1
+    },
+    {
+      "id": "gr_4_01",
+      "age_months": 4,
+      "domain": "gross_motor",
+      "description": "Holds head steady without support during tummy time",
+      "weight": 1
+    },
+    {
+      "id": "gr_4_02",
+      "age_months": 4,
+      "domain": "gross_motor",
+      "description": "Pushes up onto elbows or forearms when on tummy",
+      "weight": 1
+    },
+    {
+      "id": "gr_4_03",
+      "age_months": 4,
+      "domain": "gross_motor",
+      "description": "Holds a toy when placed in hand",
+      "weight": 1
+    },
+    {
+      "id": "fi_4_01",
+      "age_months": 4,
+      "domain": "fine_motor",
+      "description": "Brings hands to mouth",
+      "weight": 1
+    },
+    {
+      "id": "fi_4_02",
+      "age_months": 4,
+      "domain": "fine_motor",
+      "description": "Reaches for and holds a toy briefly",
+      "weight": 1
+    },
+    {
+      "id": "la_4_01",
+      "age_months": 4,
+      "domain": "language",
+      "description": "Makes vowel sounds",
+      "weight": 1
+    },
+    {
+      "id": "la_4_02",
+      "age_months": 4,
+      "domain": "language",
+      "description": "Turns head toward sound of your voice",
+      "weight": 1
+    },
+    {
+      "id": "so_4_01",
+      "age_months": 4,
+      "domain": "social_emotional",
+      "description": "Smiles on their own to get your attention",
+      "weight": 1
+    },
+    {
+      "id": "so_4_02",
+      "age_months": 4,
+      "domain": "social_emotional",
+      "description": "Laughs or chuckles",
+      "weight": 1
+    },
+    {
+      "id": "so_4_03",
+      "age_months": 4,
+      "domain": "social_emotional",
+      "description": "Looks at you, moves, or makes sounds to get attention",
+      "weight": 1
+    },
+    {
+      "id": "co_4_01",
+      "age_months": 4,
+      "domain": "cognitive",
+      "description": "Follows objects with eyes side to side",
+      "weight": 1
+    },
+    {
+      "id": "co_4_02",
+      "age_months": 4,
+      "domain": "cognitive",
+      "description": "Watches faces closely",
+      "weight": 1
+    },
+    {
+      "id": "gr_6_01",
+      "age_months": 6,
+      "domain": "gross_motor",
+      "description": "Rolls from tummy to back",
+      "weight": 1
+    },
+    {
+      "id": "gr_6_02",
+      "age_months": 6,
+      "domain": "gross_motor",
+      "description": "Sits with support of hands",
+      "weight": 1
+    },
+    {
+      "id": "gr_6_03",
+      "age_months": 6,
+      "domain": "gross_motor",
+      "description": "Bears weight on legs when held standing",
+      "weight": 1
+    },
+    {
+      "id": "fi_6_01",
+      "age_months": 6,
+      "domain": "fine_motor",
+      "description": "Transfers a toy from one hand to another",
+      "weight": 1
+    },
+    {
+      "id": "fi_6_02",
+      "age_months": 6,
+      "domain": "fine_motor",
+      "description": "Brings objects to mouth",
+      "weight": 1
+    },
+    {
+      "id": "fi_6_03",
+      "age_months": 6,
+      "domain": "fine_motor",
+      "description": "Uses hands to explore or reach for toys",
+      "weight": 1
+    },
+    {
+      "id": "la_6_01",
+      "age_months": 6,
+      "domain": "language",
+      "description": "Takes turns making sounds with you",
+      "weight": 1
+    },
+    {
+      "id": "la_6_02",
+      "age_months": 6,
+      "domain": "language",
+      "description": "Blows raspberries",
+      "weight": 1
+    },
+    {
+      "id": "la_6_03",
+      "age_months": 6,
+      "domain": "language",
+      "description": "Makes squealing noises",
+      "weight": 1
+    },
+    {
+      "id": "so_6_01",
+      "age_months": 6,
+      "domain": "social_emotional",
+      "description": "Knows familiar people",
+      "weight": 1
+    },
+    {
+      "id": "so_6_02",
+      "age_months": 6,
+      "domain": "social_emotional",
+      "description": "Likes to look at self in mirror",
+      "weight": 1
+    },
+    {
+      "id": "so_6_03",
+      "age_months": 6,
+      "domain": "social_emotional",
+      "description": "Laughs",
+      "weight": 1
+    },
+    {
+      "id": "co_6_01",
+      "age_months": 6,
+      "domain": "cognitive",
+      "description": "Puts things in mouth to explore them",
+      "weight": 1
+    },
+    {
+      "id": "co_6_02",
+      "age_months": 6,
+      "domain": "cognitive",
+      "description": "Reaches to grab a toy",
+      "weight": 1
+    },
+    {
+      "id": "co_6_03",
+      "age_months": 6,
+      "domain": "cognitive",
+      "description": "Closes lips to show they do not want more food",
+      "weight": 1
+    },
+    {
+      "id": "gr_9_01",
+      "age_months": 9,
+      "domain": "gross_motor",
+      "description": "Sits without support",
+      "weight": 1
+    },
+    {
+      "id": "gr_9_02",
+      "age_months": 9,
+      "domain": "gross_motor",
+      "description": "Pulls to stand while holding furniture",
+      "weight": 1
+    },
+    {
+      "id": "gr_9_03",
+      "age_months": 9,
+      "domain": "gross_motor",
+      "description": "Crawls",
+      "weight": 1
+    },
+    {
+      "id": "fi_9_01",
+      "age_months": 9,
+      "domain": "fine_motor",
+      "description": "Uses fingers to rake food toward self",
+      "weight": 1
+    },
+    {
+      "id": "fi_9_02",
+      "age_months": 9,
+      "domain": "fine_motor",
+      "description": "Picks up small objects with thumb and fingers",
+      "weight": 1
+    },
+    {
+      "id": "fi_9_03",
+      "age_months": 9,
+      "domain": "fine_motor",
+      "description": "Bangs two objects together",
+      "weight": 1
+    },
+    {
+      "id": "la_9_01",
+      "age_months": 9,
+      "domain": "language",
+      "description": "Babbles with strings of sounds",
+      "weight": 1
+    },
+    {
+      "id": "la_9_02",
+      "age_months": 9,
+      "domain": "language",
+      "description": "Lifts arms to be picked up",
+      "weight": 1
+    },
+    {
+      "id": "so_9_01",
+      "age_months": 9,
+      "domain": "social_emotional",
+      "description": "Is shy, clingy, or fearful around strangers",
+      "weight": 1
+    },
+    {
+      "id": "so_9_02",
+      "age_months": 9,
+      "domain": "social_emotional",
+      "description": "Has favorite toys",
+      "weight": 1
+    },
+    {
+      "id": "co_9_01",
+      "age_months": 9,
+      "domain": "cognitive",
+      "description": "Looks for objects when dropped out of sight",
+      "weight": 1
+    },
+    {
+      "id": "co_9_02",
+      "age_months": 9,
+      "domain": "cognitive",
+      "description": "Plays peek-a-boo",
+      "weight": 1
+    },
+    {
+      "id": "gr_12_01",
+      "age_months": 12,
+      "domain": "gross_motor",
+      "description": "Pulls to stand",
+      "weight": 1
+    },
+    {
+      "id": "gr_12_02",
+      "age_months": 12,
+      "domain": "gross_motor",
+      "description": "Walks while holding onto furniture",
+      "weight": 1
+    },
+    {
+      "id": "gr_12_03",
+      "age_months": 12,
+      "domain": "gross_motor",
+      "description": "May take a few independent steps",
+      "weight": 1
+    },
+    {
+      "id": "fi_12_01",
+      "age_months": 12,
+      "domain": "fine_motor",
+      "description": "Picks up small objects with pincer grasp",
+      "weight": 1
+    },
+    {
+      "id": "fi_12_02",
+      "age_months": 12,
+      "domain": "fine_motor",
+      "description": "Drinks from a cup without a lid held by adult",
+      "weight": 1
+    },
+    {
+      "id": "la_12_01",
+      "age_months": 12,
+      "domain": "language",
+      "description": "Calls a parent mama, dada, or special name",
+      "weight": 1
+    },
+    {
+      "id": "la_12_02",
+      "age_months": 12,
+      "domain": "language",
+      "description": "Understands no",
+      "weight": 1
+    },
+    {
+      "id": "la_12_03",
+      "age_months": 12,
+      "domain": "language",
+      "description": "Waves bye-bye",
+      "weight": 1
+    },
+    {
+      "id": "so_12_01",
+      "age_months": 12,
+      "domain": "social_emotional",
+      "description": "Plays games such as peek-a-boo and pat-a-cake",
+      "weight": 1
+    },
+    {
+      "id": "co_12_01",
+      "age_months": 12,
+      "domain": "cognitive",
+      "description": "Puts objects in a container",
+      "weight": 1
+    },
+    {
+      "id": "co_12_02",
+      "age_months": 12,
+      "domain": "cognitive",
+      "description": "Looks for things they see you hide",
+      "weight": 1
+    },
+    {
+      "id": "gr_15_01",
+      "age_months": 15,
+      "domain": "gross_motor",
+      "description": "Takes a few independent steps",
+      "weight": 1
+    },
+    {
+      "id": "gr_15_02",
+      "age_months": 15,
+      "domain": "gross_motor",
+      "description": "Stoops down to pick up an object",
+      "weight": 1
+    },
+    {
+      "id": "fi_15_01",
+      "age_months": 15,
+      "domain": "fine_motor",
+      "description": "Tries to use a spoon",
+      "weight": 1
+    },
+    {
+      "id": "fi_15_02",
+      "age_months": 15,
+      "domain": "fine_motor",
+      "description": "Scribbles on paper",
+      "weight": 1
+    },
+    {
+      "id": "la_15_01",
+      "age_months": 15,
+      "domain": "language",
+      "description": "Uses three or more words besides mama or dada",
+      "weight": 1
+    },
+    {
+      "id": "la_15_02",
+      "age_months": 15,
+      "domain": "language",
+      "description": "Follows one-step directions with a gesture",
+      "weight": 1
+    },
+    {
+      "id": "so_15_01",
+      "age_months": 15,
+      "domain": "social_emotional",
+      "description": "Copies other children while playing",
+      "weight": 1
+    },
+    {
+      "id": "so_15_02",
+      "age_months": 15,
+      "domain": "social_emotional",
+      "description": "Shows you an object they like",
+      "weight": 1
+    },
+    {
+      "id": "co_15_01",
+      "age_months": 15,
+      "domain": "cognitive",
+      "description": "Tries to use switches, knobs, or buttons on a toy",
+      "weight": 1
+    },
+    {
+      "id": "gr_18_01",
+      "age_months": 18,
+      "domain": "gross_motor",
+      "description": "Walks independently without holding on",
+      "weight": 1
+    },
+    {
+      "id": "gr_18_02",
+      "age_months": 18,
+      "domain": "gross_motor",
+      "description": "Climbs onto and off a couch or chair without help",
+      "weight": 1
+    },
+    {
+      "id": "gr_18_03",
+      "age_months": 18,
+      "domain": "gross_motor",
+      "description": "Kicks a ball",
+      "weight": 1
+    },
+    {
+      "id": "fi_18_01",
+      "age_months": 18,
+      "domain": "fine_motor",
+      "description": "Feeds self with fingers",
+      "weight": 1
+    },
+    {
+      "id": "fi_18_02",
+      "age_months": 18,
+      "domain": "fine_motor",
+      "description": "Stacks two or more objects or blocks",
+      "weight": 1
+    },
+    {
+      "id": "la_18_01",
+      "age_months": 18,
+      "domain": "language",
+      "description": "Says at least six words",
+      "weight": 1
+    },
+    {
+      "id": "la_18_02",
+      "age_months": 18,
+      "domain": "language",
+      "description": "Follows one-step directions without gestures",
+      "weight": 1
+    },
+    {
+      "id": "so_18_01",
+      "age_months": 18,
+      "domain": "social_emotional",
+      "description": "Moves away but looks back to ensure you are close",
+      "weight": 1
+    },
+    {
+      "id": "so_18_02",
+      "age_months": 18,
+      "domain": "social_emotional",
+      "description": "Points to show something interesting",
+      "weight": 1
+    },
+    {
+      "id": "co_18_01",
+      "age_months": 18,
+      "domain": "cognitive",
+      "description": "Copies chores or tasks",
+      "weight": 1
+    },
+    {
+      "id": "co_18_02",
+      "age_months": 18,
+      "domain": "cognitive",
+      "description": "Points to at least one body part when asked",
+      "weight": 1
+    },
+    {
+      "id": "gr_24_01",
+      "age_months": 24,
+      "domain": "gross_motor",
+      "description": "Runs",
+      "weight": 1
+    },
+    {
+      "id": "gr_24_02",
+      "age_months": 24,
+      "domain": "gross_motor",
+      "description": "Walks up and down stairs holding on",
+      "weight": 1
+    },
+    {
+      "id": "gr_24_03",
+      "age_months": 24,
+      "domain": "gross_motor",
+      "description": "Kicks a ball",
+      "weight": 1
+    },
+    {
+      "id": "fi_24_01",
+      "age_months": 24,
+      "domain": "fine_motor",
+      "description": "Holds a crayon and scribbles",
+      "weight": 1
+    },
+    {
+      "id": "fi_24_02",
+      "age_months": 24,
+      "domain": "fine_motor",
+      "description": "Eats with a spoon",
+      "weight": 1
+    },
+    {
+      "id": "fi_24_03",
+      "age_months": 24,
+      "domain": "fine_motor",
+      "description": "Draws a vertical line when shown one",
+      "weight": 1
+    },
+    {
+      "id": "la_24_01",
+      "age_months": 24,
+      "domain": "language",
+      "description": "Speaks two-word phrases",
+      "weight": 1
+    },
+    {
+      "id": "la_24_02",
+      "age_months": 24,
+      "domain": "language",
+      "description": "Points to things in a book when named",
+      "weight": 1
+    },
+    {
+      "id": "la_24_03",
+      "age_months": 24,
+      "domain": "language",
+      "description": "Says at least two words together",
+      "weight": 1
+    },
+    {
+      "id": "so_24_01",
+      "age_months": 24,
+      "domain": "social_emotional",
+      "description": "Notices when others are hurt or upset",
+      "weight": 1
+    },
+    {
+      "id": "so_24_02",
+      "age_months": 24,
+      "domain": "social_emotional",
+      "description": "Looks at your face to see how to react",
+      "weight": 1
+    },
+    {
+      "id": "co_24_01",
+      "age_months": 24,
+      "domain": "cognitive",
+      "description": "Follows two-step instructions",
+      "weight": 1
+    },
+    {
+      "id": "co_24_02",
+      "age_months": 24,
+      "domain": "cognitive",
+      "description": "Points to at least two body parts when asked",
+      "weight": 1
+    },
+    {
+      "id": "co_24_03",
+      "age_months": 24,
+      "domain": "cognitive",
+      "description": "Sorts shapes or colors",
+      "weight": 1
+    },
+    {
+      "id": "gr_36_01",
+      "age_months": 36,
+      "domain": "gross_motor",
+      "description": "Climbs stairs alternating feet",
+      "weight": 1
+    },
+    {
+      "id": "gr_36_02",
+      "age_months": 36,
+      "domain": "gross_motor",
+      "description": "Jumps off the ground with both feet",
+      "weight": 1
+    },
+    {
+      "id": "gr_36_03",
+      "age_months": 36,
+      "domain": "gross_motor",
+      "description": "Runs easily avoiding obstacles",
+      "weight": 1
+    },
+    {
+      "id": "fi_36_01",
+      "age_months": 36,
+      "domain": "fine_motor",
+      "description": "Strings beads or large items",
+      "weight": 1
+    },
+    {
+      "id": "fi_36_02",
+      "age_months": 36,
+      "domain": "fine_motor",
+      "description": "Puts on some clothing themself",
+      "weight": 1
+    },
+    {
+      "id": "fi_36_03",
+      "age_months": 36,
+      "domain": "fine_motor",
+      "description": "Uses a fork",
+      "weight": 1
+    },
+    {
+      "id": "la_36_01",
+      "age_months": 36,
+      "domain": "language",
+      "description": "Speaks in sentences of three or more words",
+      "weight": 1
+    },
+    {
+      "id": "la_36_02",
+      "age_months": 36,
+      "domain": "language",
+      "description": "Answers simple who, what, where questions",
+      "weight": 1
+    },
+    {
+      "id": "la_36_03",
+      "age_months": 36,
+      "domain": "language",
+      "description": "Is understood by strangers most of the time",
+      "weight": 1
+    },
+    {
+      "id": "so_36_01",
+      "age_months": 36,
+      "domain": "social_emotional",
+      "description": "Plays alongside other children",
+      "weight": 1
+    },
+    {
+      "id": "so_36_02",
+      "age_months": 36,
+      "domain": "social_emotional",
+      "description": "Shows a wide range of emotions",
+      "weight": 1
+    },
+    {
+      "id": "so_36_03",
+      "age_months": 36,
+      "domain": "social_emotional",
+      "description": "Notices other children and joins them to play",
+      "weight": 1
+    },
+    {
+      "id": "co_36_01",
+      "age_months": 36,
+      "domain": "cognitive",
+      "description": "Draws a circle when shown how",
+      "weight": 1
+    },
+    {
+      "id": "co_36_02",
+      "age_months": 36,
+      "domain": "cognitive",
+      "description": "Identifies at least two colors correctly",
+      "weight": 1
+    },
+    {
+      "id": "co_36_03",
+      "age_months": 36,
+      "domain": "cognitive",
+      "description": "Avoids touching a hot object when warned",
+      "weight": 1
+    },
+    {
+      "id": "gr_48_01",
+      "age_months": 48,
+      "domain": "gross_motor",
+      "description": "Catches a large ball most of the time",
+      "weight": 1
+    },
+    {
+      "id": "gr_48_02",
+      "age_months": 48,
+      "domain": "gross_motor",
+      "description": "Hops on one foot",
+      "weight": 1
+    },
+    {
+      "id": "gr_48_03",
+      "age_months": 48,
+      "domain": "gross_motor",
+      "description": "Climbs stairs alternating feet without support",
+      "weight": 1
+    },
+    {
+      "id": "fi_48_01",
+      "age_months": 48,
+      "domain": "fine_motor",
+      "description": "Draws a person with three or more body parts",
+      "weight": 1
+    },
+    {
+      "id": "fi_48_02",
+      "age_months": 48,
+      "domain": "fine_motor",
+      "description": "Uses scissors",
+      "weight": 1
+    },
+    {
+      "id": "fi_48_03",
+      "age_months": 48,
+      "domain": "fine_motor",
+      "description": "Copies a cross shape",
+      "weight": 1
+    },
+    {
+      "id": "la_48_01",
+      "age_months": 48,
+      "domain": "language",
+      "description": "Says sentences with four or more words",
+      "weight": 1
+    },
+    {
+      "id": "la_48_02",
+      "age_months": 48,
+      "domain": "language",
+      "description": "Tells a simple story",
+      "weight": 1
+    },
+    {
+      "id": "la_48_03",
+      "age_months": 48,
+      "domain": "language",
+      "description": "Answers simple questions about a story",
+      "weight": 1
+    },
+    {
+      "id": "so_48_01",
+      "age_months": 48,
+      "domain": "social_emotional",
+      "description": "Pretends to be something else during play",
+      "weight": 1
+    },
+    {
+      "id": "so_48_02",
+      "age_months": 48,
+      "domain": "social_emotional",
+      "description": "Comforts others who are hurt or sad",
+      "weight": 1
+    },
+    {
+      "id": "so_48_03",
+      "age_months": 48,
+      "domain": "social_emotional",
+      "description": "Prefers playing with other children",
+      "weight": 1
+    },
+    {
+      "id": "co_48_01",
+      "age_months": 48,
+      "domain": "cognitive",
+      "description": "Names a few colors",
+      "weight": 1
+    },
+    {
+      "id": "co_48_02",
+      "age_months": 48,
+      "domain": "cognitive",
+      "description": "Understands same and different",
+      "weight": 1
+    },
+    {
+      "id": "co_48_03",
+      "age_months": 48,
+      "domain": "cognitive",
+      "description": "Follows three-step instructions",
+      "weight": 1
+    },
+    {
+      "id": "gr_60_01",
+      "age_months": 60,
+      "domain": "gross_motor",
+      "description": "Hops, skips, and may begin to somersault",
+      "weight": 1
+    },
+    {
+      "id": "gr_60_02",
+      "age_months": 60,
+      "domain": "gross_motor",
+      "description": "Stands on one foot for 10 seconds",
+      "weight": 1
+    },
+    {
+      "id": "gr_60_03",
+      "age_months": 60,
+      "domain": "gross_motor",
+      "description": "Uses a fork and spoon well",
+      "weight": 1
+    },
+    {
+      "id": "fi_60_01",
+      "age_months": 60,
+      "domain": "fine_motor",
+      "description": "Draws a person with six or more body parts",
+      "weight": 1
+    },
+    {
+      "id": "fi_60_02",
+      "age_months": 60,
+      "domain": "fine_motor",
+      "description": "Copies a triangle or other shapes",
+      "weight": 1
+    },
+    {
+      "id": "fi_60_03",
+      "age_months": 60,
+      "domain": "fine_motor",
+      "description": "Buttons some buttons",
+      "weight": 1
+    },
+    {
+      "id": "la_60_01",
+      "age_months": 60,
+      "domain": "language",
+      "description": "Speaks clearly to most listeners",
+      "weight": 1
+    },
+    {
+      "id": "la_60_02",
+      "age_months": 60,
+      "domain": "language",
+      "description": "Tells a simple story with full sentence structure",
+      "weight": 1
+    },
+    {
+      "id": "la_60_03",
+      "age_months": 60,
+      "domain": "language",
+      "description": "Uses future tense",
+      "weight": 1
+    },
+    {
+      "id": "so_60_01",
+      "age_months": 60,
+      "domain": "social_emotional",
+      "description": "Follows rules or takes turns in games",
+      "weight": 1
+    },
+    {
+      "id": "so_60_02",
+      "age_months": 60,
+      "domain": "social_emotional",
+      "description": "Sings, dances, or acts for you",
+      "weight": 1
+    },
+    {
+      "id": "so_60_03",
+      "age_months": 60,
+      "domain": "social_emotional",
+      "description": "Is aware of gender identity",
+      "weight": 1
+    },
+    {
+      "id": "co_60_01",
+      "age_months": 60,
+      "domain": "cognitive",
+      "description": "Counts to 10 or higher",
+      "weight": 1
+    },
+    {
+      "id": "co_60_02",
+      "age_months": 60,
+      "domain": "cognitive",
+      "description": "Names at least four colors",
+      "weight": 1
+    },
+    {
+      "id": "co_60_03",
+      "age_months": 60,
+      "domain": "cognitive",
+      "description": "Understands basic concepts of time",
+      "weight": 1
+    },
+    {
+      "id": "gr_72_01",
+      "age_months": 72,
+      "domain": "gross_motor",
+      "description": "Skips using alternating feet",
+      "weight": 1
+    },
+    {
+      "id": "gr_72_02",
+      "age_months": 72,
+      "domain": "gross_motor",
+      "description": "Rides a bicycle with or without training wheels",
+      "weight": 1
+    },
+    {
+      "id": "gr_72_03",
+      "age_months": 72,
+      "domain": "gross_motor",
+      "description": "Has good balance and catches a bounced ball reliably",
+      "weight": 1
+    },
+    {
+      "id": "fi_72_01",
+      "age_months": 72,
+      "domain": "fine_motor",
+      "description": "Ties basic knots and may begin learning shoelaces",
+      "weight": 1
+    },
+    {
+      "id": "fi_72_02",
+      "age_months": 72,
+      "domain": "fine_motor",
+      "description": "Copies complex shapes",
+      "weight": 1
+    },
+    {
+      "id": "fi_72_03",
+      "age_months": 72,
+      "domain": "fine_motor",
+      "description": "Writes some letters or numbers",
+      "weight": 1
+    },
+    {
+      "id": "la_72_01",
+      "age_months": 72,
+      "domain": "language",
+      "description": "Uses complex sentences and correct grammar most of the time",
+      "weight": 1
+    },
+    {
+      "id": "la_72_02",
+      "age_months": 72,
+      "domain": "language",
+      "description": "Retells a short story in sequence",
+      "weight": 1
+    },
+    {
+      "id": "la_72_03",
+      "age_months": 72,
+      "domain": "language",
+      "description": "Has vocabulary of 2000 or more words",
+      "weight": 1
+    },
+    {
+      "id": "so_72_01",
+      "age_months": 72,
+      "domain": "social_emotional",
+      "description": "Understands rules and follows multi-step social games",
+      "weight": 1
+    },
+    {
+      "id": "so_72_02",
+      "age_months": 72,
+      "domain": "social_emotional",
+      "description": "Forms friendships and shows empathy consistently",
+      "weight": 1
+    },
+    {
+      "id": "so_72_03",
+      "age_months": 72,
+      "domain": "social_emotional",
+      "description": "Shows increasing independence from parents",
+      "weight": 1
+    },
+    {
+      "id": "co_72_01",
+      "age_months": 72,
+      "domain": "cognitive",
+      "description": "Understands days of the week roughly",
+      "weight": 1
+    },
+    {
+      "id": "co_72_02",
+      "age_months": 72,
+      "domain": "cognitive",
+      "description": "Has basic counting or early number sense to 20",
+      "weight": 1
+    },
+    {
+      "id": "co_72_03",
+      "age_months": 72,
+      "domain": "cognitive",
+      "description": "Sorts objects by more than one feature",
+      "weight": 1
+    }
+  ],
+  "red_flags": [
+    {
+      "age_months": 6,
+      "description": "Does not respond to loud sounds"
+    },
+    {
+      "age_months": 6,
+      "description": "Does not smile at people"
+    },
+    {
+      "age_months": 6,
+      "description": "Cannot hold head steady"
+    },
+    {
+      "age_months": 6,
+      "description": "Does not bring objects to mouth"
+    },
+    {
+      "age_months": 6,
+      "description": "Seems very stiff or very floppy"
+    },
+    {
+      "age_months": 12,
+      "description": "Does not crawl or attempt to move"
+    },
+    {
+      "age_months": 12,
+      "description": "Cannot stand when supported"
+    },
+    {
+      "age_months": 12,
+      "description": "Does not babble (mama, dada)"
+    },
+    {
+      "age_months": 12,
+      "description": "Does not respond to own name"
+    },
+    {
+      "age_months": 12,
+      "description": "Loses skills they once had"
+    },
+    {
+      "age_months": 24,
+      "description": "Does not walk independently"
+    },
+    {
+      "age_months": 24,
+      "description": "Does not use two-word phrases"
+    },
+    {
+      "age_months": 24,
+      "description": "Does not follow simple instructions"
+    },
+    {
+      "age_months": 24,
+      "description": "Does not imitate actions or words"
+    },
+    {
+      "age_months": 24,
+      "description": "Does not make eye contact"
+    },
+    {
+      "age_months": 36,
+      "description": "Falls frequently or has difficulty with stairs"
+    },
+    {
+      "age_months": 36,
+      "description": "Speech is largely unintelligible to strangers"
+    },
+    {
+      "age_months": 36,
+      "description": "Does not engage in pretend play"
+    },
+    {
+      "age_months": 36,
+      "description": "Does not make eye contact or show interest in other children"
+    },
+    {
+      "age_months": 60,
+      "description": "Cannot draw simple shapes or a person"
+    },
+    {
+      "age_months": 60,
+      "description": "Speech is unclear or ungrammatical for age"
+    },
+    {
+      "age_months": 60,
+      "description": "Cannot follow two to three step instructions"
+    },
+    {
+      "age_months": 60,
+      "description": "Shows no interest in interactive or imaginative games"
+    }
+  ]
+}

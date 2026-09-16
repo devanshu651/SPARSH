@@ -1,0 +1,4 @@
+import Button from './Button'
+export function LoadingState({ label = 'Loading…' }) { return <div role="status" className="flex min-h-48 items-center justify-center p-8 text-center text-sm font-medium text-neutral-500">{label}</div> }
+export function ErrorState({ error, onRetry }) { return <div role="alert" className="rounded-2xl border border-red-200 bg-red-50 p-5 text-center"><p className="font-semibold text-red-800">{error?.message || 'Something went wrong.'}</p>{onRetry && <Button variant="secondary" className="mt-4" onClick={onRetry}>Try again</Button>}</div> }
+export function EmptyState({ title, detail, action }) { return <div className="rounded-2xl border border-dashed border-neutral-300 bg-white p-8 text-center"><h2 className="font-bold text-neutral-900">{title}</h2><p className="mt-2 text-sm text-neutral-500">{detail}</p>{action}</div> }
