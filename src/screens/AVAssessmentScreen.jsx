@@ -80,7 +80,7 @@ export default function AVAssessmentScreen({ onNavigate }) {
 
           {/* AI Analysis */}
           <button
-            onClick={() => onNavigate?.('analysis')}
+           onClick={() => onNavigate?.('ai-analysis')}
             className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-health-gradient px-5 py-3.5 text-sm font-bold text-white shadow-md transition hover:opacity-95"
           >
             ✧ Run AI Risk Analysis →

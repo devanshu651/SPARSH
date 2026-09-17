@@ -9,6 +9,8 @@ import AVAssessmentScreen from './screens/AVAssessmentScreen'
 import ChildrenScreen from './screens/ChildrenScreen'
 import AlertsScreen from './screens/AlertsScreen'
 import SettingsScreen from './screens/SettingsScreen'
+import AIRiskAnalysisScreen from './screens/AIRiskAnalysisScreen'
+import AnalyticsScreen from './screens/AnalyticsScreen'
 
 export default function App() {
   const [screen, setScreen] = useState('splash')
@@ -29,6 +31,14 @@ export default function App() {
 {screen === 'settings' && (
   <SettingsScreen onNavigate={setScreen} />
 )}
+{screen === 'ai-analysis' && (
+  <AIRiskAnalysisScreen onNavigate={setScreen} />
+)}
+{screen === 'analytics' && (
+  <AnalyticsScreen onNavigate={setScreen} />
+)}
+
+
     </AppProvider>
   )
 }
