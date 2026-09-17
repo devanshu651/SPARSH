@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import Enum
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class Domain(str, Enum):
@@ -25,20 +25,38 @@ class RiskLevel(str, Enum):
 
 
 class ScreeningAnswer(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     milestone_id: str = Field(min_length=1)
     response: ResponseChoice
 
+    @field_validator("milestone_id")
+    @classmethod
+    def strip_milestone_id(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("must not be blank")
+        return value
+
 
 class ScreeningSubmit(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     child_id: str
     answers: list[ScreeningAnswer] = Field(min_length=1)
-    # Returned by the milestone endpoint.  This makes the question set used by
-    # the client explicit, rather than inferring it from a stale child record.
     checkpoint_age_months: int = Field(ge=0)
     milestone_dataset_version: str = Field(min_length=1, max_length=80)
     client_submission_id: str = Field(min_length=1, max_length=120)
     screened_at: datetime = Field(default_factory=datetime.utcnow)
     notes: str | None = Field(default=None, max_length=1000)
+
+    @field_validator("child_id", "milestone_dataset_version", "client_submission_id")
+    @classmethod
+    def strip_required_text(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("must not be blank")
+        return value
 
 
 class DomainScore(BaseModel):
