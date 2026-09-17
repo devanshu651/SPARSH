@@ -4,3 +4,8 @@ tmp-ui-pdf/
 .env
 .env.*
 !.env.example
+.env
+firebase-credentials.json
+__pycache__/
+*.pyc
+.pytest_cache/

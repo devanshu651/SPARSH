@@ -3,21 +3,21 @@ import { useState } from 'react'
 const tests = [
   {
     title: 'Hearing Test',
-    description: 'Plays tone at different frequencies. Child should respond.',
+    description: 'Plays guided tones. Observe and record the child response.',
     icon: '🔊',
     color: 'teal',
     button: 'Start Hearing Test',
   },
   {
     title: 'Vision Screening',
-    description: 'Age-appropriate eye chart assessment for distance vision.',
+    description: 'Shows an age-appropriate visual prompt.',
     icon: '👁',
     color: 'purple',
     button: 'Start Vision Test',
   },
   {
     title: 'Speech Recording',
-    description: 'Record child repeating words for AI language analysis.',
+    description: 'Records only after caregiver consent.',
     icon: '🎙',
     color: 'red',
     button: 'Start Recording',
@@ -34,6 +34,7 @@ export default function AVAssessmentScreen({ onNavigate }) {
         {/* Header */}
         <header className="mb-5 flex items-center gap-4 text-white">
           <button
+            type="button"
             onClick={() => onNavigate?.('screening')}
             className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/10 text-lg ring-1 ring-white/20 hover:bg-white/20"
           >
@@ -44,6 +45,7 @@ export default function AVAssessmentScreen({ onNavigate }) {
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/60">
               SPARSH
             </p>
+
             <h1 className="text-lg font-bold sm:text-xl">
               Audio-Visual Assessment
             </h1>
@@ -53,16 +55,15 @@ export default function AVAssessmentScreen({ onNavigate }) {
         {/* Main Card */}
         <section className="rounded-[24px] bg-white p-4 shadow-floating sm:p-6">
 
-          {/* AI Information */}
-          <div className="mb-5 flex gap-3 rounded-2xl bg-primary-50 p-4 text-sm text-primary-800">
-            <span className="text-lg">✧</span>
-
+          {/* Device integration notice */}
+          <div className="mb-5 rounded-2xl bg-amber-50 p-4 text-sm text-amber-900">
             <p>
               <span className="font-semibold">
-                AI-assisted tests
+                Device integration pending.
               </span>{' '}
-              use device sensors. Ensure a quiet environment for accurate
-              results.
+              Hearing, camera, and microphone capture require validated
+              native-device workflows before clinical use. These controls do
+              not generate clinical results.
             </p>
           </div>
 
@@ -78,20 +79,22 @@ export default function AVAssessmentScreen({ onNavigate }) {
             ))}
           </div>
 
-          {/* AI Analysis */}
+          {/* Analysis */}
           <button
-           onClick={() => onNavigate?.('ai-analysis')}
+            type="button"
+            onClick={() => onNavigate?.('analysis')}
             className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-health-gradient px-5 py-3.5 text-sm font-bold text-white shadow-md transition hover:opacity-95"
           >
-            ✧ Run AI Risk Analysis →
+            ✧ Run rule-based risk analysis →
           </button>
 
           {activeTest && (
             <p className="mt-3 text-center text-xs font-medium text-teal-700">
-              {activeTest} selected. The test functionality will be connected
+              {activeTest} selected. Device integration will be connected
               later.
             </p>
           )}
+
         </section>
       </div>
     </main>
@@ -103,20 +106,19 @@ function TestCard({ test, active, onStart }) {
     teal: {
       icon: 'bg-teal-50 text-teal-500',
       box: 'bg-teal-50',
-      button:
-        'border-teal-200 text-teal-600 hover:bg-teal-50',
+      button: 'border-teal-200 text-teal-600 hover:bg-teal-50',
     },
+
     purple: {
       icon: 'bg-purple-50 text-purple-500',
       box: 'bg-purple-50',
-      button:
-        'border-purple-200 text-purple-600 hover:bg-purple-50',
+      button: 'border-purple-200 text-purple-600 hover:bg-purple-50',
     },
+
     red: {
       icon: 'bg-red-50 text-red-500',
       box: 'bg-red-50',
-      button:
-        'border-red-200 text-red-500 hover:bg-red-50',
+      button: 'border-red-200 text-red-500 hover:bg-red-50',
     },
   }
 
@@ -131,6 +133,7 @@ function TestCard({ test, active, onStart }) {
       }`}
     >
       <div className="flex items-start gap-3">
+
         <div
           className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl text-lg ${theme.icon}`}
         >
@@ -146,6 +149,7 @@ function TestCard({ test, active, onStart }) {
             {test.description}
           </p>
         </div>
+
       </div>
 
       {/* Visual test area */}
@@ -163,11 +167,13 @@ function TestCard({ test, active, onStart }) {
       </div>
 
       <button
+        type="button"
         onClick={onStart}
         className={`mt-3 w-full rounded-xl border py-2.5 text-sm font-bold transition ${theme.button}`}
       >
         {active ? 'Test Selected' : test.button}
       </button>
+
     </article>
   )
 }

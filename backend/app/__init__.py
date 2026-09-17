@@ -1,0 +1,1 @@
+"""SPARSH application package."""

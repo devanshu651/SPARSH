@@ -1,174 +1,25 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import Button from '../components/Button'
+import { ErrorState, LoadingState, EmptyState } from '../components/AsyncState'
+import { screeningsApi } from '../services/api'
+import { cacheMilestones, clearDraft, getCachedMilestones, loadDraft, saveDraft } from '../services/offline'
+import { useApp } from '../context/AppContext'
 
-const questions = [
-  {
-    category: 'Gross Motor Development',
-    icon: '〽',
-    color: 'blue',
-    question: 'Can the child walk steadily?',
-  },
-  {
-    category: 'Fine Motor Development',
-    icon: '◎',
-    color: 'purple',
-    question: 'Can they hold a crayon/pencil?',
-  },
-  {
-    category: 'Language Development',
-    icon: '◖',
-    color: 'green',
-    question: 'Can they say 2–word sentences?',
-  },
-  {
-    category: 'Social/Emotional Development',
-    icon: '☺',
-    color: 'orange',
-    question: 'Do they play alongside other children?',
-  },
-]
+const labels={gross_motor:'Gross Motor',fine_motor:'Fine Motor',language:'Language',social_emotional:'Social-Emotional',cognitive:'Cognitive'}
 
-export default function ScreeningScreen({ onNavigate }) {
-  const [answers, setAnswers] = useState({})
-
-  const answeredCount = Object.keys(answers).length
-
-  const handleAnswer = (index, answer) => {
-    setAnswers((previous) => ({
-      ...previous,
-      [index]: answer,
-    }))
-  }
-
-  return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-950 via-blue-900 to-teal-900 px-4 py-6">
-      <div className="mx-auto w-full max-w-5xl">
-        {/* Top navigation */}
-        <header className="mb-5 flex items-center justify-between text-white">
-          <button
-            type="button"
-            onClick={() => onNavigate?.('dashboard')}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-xl ring-1 ring-white/20 transition hover:bg-white/20"
-          >
-            ←
-          </button>
-
-          <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
-              SPARSH
-            </p>
-            <h1 className="text-lg font-bold">Development Screening</h1>
-          </div>
-
-          <button
-            type="button"
-            className="rounded-full bg-white px-4 py-2 text-sm font-bold text-blue-800 shadow-lg transition hover:bg-blue-50"
-          >
-            Next
-          </button>
-        </header>
-
-        {/* Screening card */}
-        <section className="mx-auto max-w-2xl rounded-[28px] bg-white p-4 shadow-2xl sm:p-6">
-          {/* Child + progress */}
-          <div className="mb-5">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-sm font-bold text-slate-900">
-                  Priya Sharma
-                  <span className="font-medium text-slate-500"> · Age 2y 4m</span>
-                </p>
-              </div>
-
-              <span className="text-xs font-bold text-blue-700">
-                {answeredCount}/12 answered
-              </span>
-            </div>
-
-            <div className="mt-2 h-2 overflow-hidden rounded-full bg-blue-100">
-              <div
-                className="h-full rounded-full bg-gradient-to-r from-blue-600 to-teal-500 transition-all duration-300"
-                style={{ width: `${(answeredCount / 12) * 100}%` }}
-              />
-            </div>
-          </div>
-
-          {/* Questions */}
-          <div className="space-y-3">
-            {questions.map((item, index) => {
-              const selected = answers[index]
-
-              return (
-                <article
-                  key={item.category}
-                  className="overflow-hidden rounded-2xl border border-blue-100 bg-white shadow-sm transition hover:shadow-md"
-                >
-                  {/* Category */}
-                  <div className="flex items-center gap-3 border-b border-slate-100 px-4 py-4">
-                    <div
-                      className={`grid h-9 w-9 place-items-center rounded-full text-sm font-bold ${
-                        item.color === 'blue'
-                          ? 'bg-blue-50 text-blue-600'
-                          : item.color === 'purple'
-                            ? 'bg-purple-50 text-purple-600'
-                            : item.color === 'green'
-                              ? 'bg-emerald-50 text-emerald-600'
-                              : 'bg-orange-50 text-orange-600'
-                      }`}
-                    >
-                      {item.icon}
-                    </div>
-
-                    <h2 className="text-sm font-bold text-slate-900">
-                      {item.category}
-                    </h2>
-                  </div>
-
-                  {/* Question */}
-                  <div className="flex flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
-                    <p className="text-sm text-slate-700">{item.question}</p>
-
-                    <div className="flex gap-2">
-                      <button
-                        type="button"
-                        onClick={() => handleAnswer(index, 'yes')}
-                        className={`rounded-full border px-4 py-2 text-xs font-bold transition ${
-                          selected === 'yes'
-                            ? 'border-emerald-500 bg-emerald-500 text-white'
-                            : 'border-emerald-200 bg-emerald-50 text-emerald-600 hover:bg-emerald-100'
-                        }`}
-                      >
-                        Yes
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => handleAnswer(index, 'no')}
-                        className={`rounded-full border px-4 py-2 text-xs font-bold transition ${
-                          selected === 'no'
-                            ? 'border-red-500 bg-red-500 text-white'
-                            : 'border-red-200 bg-red-50 text-red-600 hover:bg-red-100'
-                        }`}
-                      >
-                        No
-                      </button>
-                    </div>
-                  </div>
-                </article>
-              )
-            })}
-          </div>
-
-          {/* Continue button */}
-          <button
-            type="button"
-            onClick={() => onNavigate?.('av-assessment')}
-            className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-700 to-teal-600 px-5 py-4 text-sm font-bold text-white shadow-lg transition hover:from-blue-800 hover:to-teal-700"
-          >
-            Proceed to A/V Assessment
-            <span>→</span>
-          </button>
-        </section>
-      </div>
-    </main>
-  )
+export default function ScreeningScreen({onNavigate}) {
+  const {currentChild}=useApp(); const [data,setData]=useState(null); const [error,setError]=useState(null)
+  const [answers,setAnswers]=useState({}); const [domain,setDomain]=useState(0)
+  const load=async()=>{if(!currentChild)return;setError(null);try{const result=await screeningsApi.milestones(currentChild.id);cacheMilestones(currentChild.id,result);setData(result)}catch(e){const cached=getCachedMilestones(currentChild.id);if(cached){setData(cached);setError(new Error('You are offline. Using the last saved questions; reconnect before submitting.'))}else setError(e)}}
+  useEffect(()=>{setData(null);setAnswers({});setDomain(0);load()},[currentChild?.id])
+  useEffect(()=>{if(!currentChild||!data)return;const draft=loadDraft();if(draft?.childId===currentChild.id&&draft.checkpointAgeMonths===data.checkpoint_age_months&&draft.datasetVersion===data.dataset_version)setAnswers(draft.answers||{})},[currentChild?.id,data?.checkpoint_age_months,data?.dataset_version])
+  useEffect(()=>{if(currentChild&&data)saveDraft({childId:currentChild.id,checkpointAgeMonths:data.checkpoint_age_months,datasetVersion:data.dataset_version,answers})},[answers,currentChild?.id,data])
+  const domains=useMemo(()=>[...new Set(data?.milestones?.map(m=>m.domain)||[])],[data]); const tasks=data?.milestones?.filter(m=>m.domain===domains[domain])||[]
+  const total=data?.milestones?.length||0; const unanswered=data?.milestones?.filter(m=>!answers[m.id])||[]; const count=total-unanswered.length
+  const answer=(id,response)=>setAnswers(a=>({...a,[id]:response}))
+  const advance=()=>{if(tasks.some(t=>!answers[t.id]))return;if(domain<domains.length-1){setDomain(d=>d+1);return}sessionStorage.setItem('sparsh:pending-screening',JSON.stringify({child_id:currentChild.id,checkpoint_age_months:data.checkpoint_age_months,milestone_dataset_version:data.dataset_version,client_submission_id:crypto.randomUUID(),answers:data.milestones.map(({id})=>({milestone_id:id,response:answers[id]})),screened_at:new Date().toISOString()}));clearDraft();onNavigate('av-assessment')}
+  if(!currentChild)return <main className="grid min-h-screen place-items-center bg-neutral-50 p-6"><EmptyState title="Choose a child first" detail="Register a child or open an existing record before screening." action={<Button className="mt-4" onClick={()=>onNavigate('records')}>View children</Button>}/></main>
+  if(!data&&!error)return <LoadingState label="Loading age-appropriate milestones…"/>
+  if(!data)return <main className="p-5"><ErrorState error={error} onRetry={load}/></main>
+  return <main className="min-h-screen bg-primary-950 p-4 pb-8"><header className="mx-auto flex max-w-xl items-center justify-between py-3 text-white"><button onClick={()=>onNavigate('dashboard')} className="min-h-11 min-w-11">←</button><div className="text-center"><h1 className="font-bold">Development Screening</h1><p className="text-xs text-white/70">{currentChild.name} · {data.current_age_months} months</p></div><span className="text-xs font-bold">{count}/{total}</span></header><section className="mx-auto max-w-xl rounded-3xl bg-white p-5"><div className="mb-5 h-2 rounded-full bg-primary-100"><div className="h-full rounded-full bg-teal-600" style={{width:`${total?count/total*100:0}%`}}/></div>{error&&<p className="mb-4 rounded-lg bg-amber-50 p-2 text-xs text-amber-800">{error.message}</p>}<p className="text-xs font-bold uppercase tracking-wide text-teal-700">Domain {domain+1} of {domains.length}</p><h2 className="mt-1 text-xl font-extrabold">{labels[domains[domain]]||domains[domain]}</h2><div className="mt-5 space-y-3">{tasks.map(task=><article key={task.id} className={`rounded-2xl border p-4 ${!answers[task.id]?'border-amber-300':''}`}><p className="font-semibold text-neutral-800">{task.task||task.description||task.label}</p><div className="mt-4 grid grid-cols-3 gap-2"><button onClick={()=>answer(task.id,'YES')} className={`min-h-11 rounded-xl border font-bold ${answers[task.id]==='YES'?'border-emerald-600 bg-emerald-600 text-white':'border-emerald-200 text-emerald-700'}`}>Yes</button><button onClick={()=>answer(task.id,'NO')} className={`min-h-11 rounded-xl border font-bold ${answers[task.id]==='NO'?'border-red-600 bg-red-600 text-white':'border-red-200 text-red-700'}`}>No</button><button onClick={()=>answer(task.id,'UNSURE')} className={`min-h-11 rounded-xl border font-bold ${answers[task.id]==='UNSURE'?'border-amber-600 bg-amber-600 text-white':'border-amber-200 text-amber-700'}`}>Unsure</button></div>{!answers[task.id]&&<p className="mt-2 text-xs text-amber-800">Response required</p>}</article>)}</div><div className="mt-5 flex gap-3"><Button variant="secondary" disabled={!domain} onClick={()=>setDomain(d=>d-1)}>Back</Button><Button className="flex-1" onClick={advance} disabled={tasks.some(t=>!answers[t.id])}>{domain===domains.length-1?'Continue to A/V':'Next domain'}</Button></div>{domain===domains.length-1&&unanswered.length>0&&<p className="mt-3 text-sm text-amber-800">{unanswered.length} question{unanswered.length===1?' remains':'s remain'} unanswered.</p>}</section></main>
 }

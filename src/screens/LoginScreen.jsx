@@ -1,16 +1,27 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+
 import AuthShell from '../components/AuthShell'
 import BrandLogo from '../components/BrandLogo'
 import Button from '../components/Button'
 import Input from '../components/Input'
 
-export default function LoginScreen({ onBack, onLogin }) {
+import { authService, readableAuthError } from '../services/auth'
+import { usersApi } from '../services/api'
+import { useApp } from '../context/AppContext'
+import { startDemoMode } from '../services/demo'
+
+export default function LoginScreen({ onBack, onLogin, onRegister }) {
+  const { t, i18n } = useTranslation()
+  const { setCurrentWorker, demoWorker } = useApp()
+
   const [mobile, setMobile] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  function submit(event) {
+  async function submit(event) {
     event.preventDefault()
 
     const cleanMobile = mobile.replace(/\s/g, '')
@@ -25,8 +36,34 @@ export default function LoginScreen({ onBack, onLogin }) {
       return
     }
 
+    setLoading(true)
     setError('')
-    onLogin?.({ mobile: cleanMobile })
+
+    try {
+      const credential = await authService.signInWithEmailPassword(
+        `${cleanMobile}@sparsh.local`,
+        password
+      )
+
+      const profile = await usersApi.getMe()
+
+      setCurrentWorker({
+        ...profile,
+        email: credential.user.email,
+      })
+
+      onLogin?.()
+    } catch (err) {
+      setError(readableAuthError(err))
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  function exploreDemo() {
+    startDemoMode()
+    setCurrentWorker(demoWorker)
+    onLogin?.()
   }
 
   return (
@@ -59,7 +96,30 @@ export default function LoginScreen({ onBack, onLogin }) {
       {/* Logo section */}
       <div className="relative z-10 shrink-0 px-7 pb-6 pt-10 text-center sm:px-10">
 
-        <BrandLogo className="mx-auto h-[4.5rem] w-[4.5rem]" />
+        {/* Language switch */}
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={() =>
+              i18n.changeLanguage(i18n.language === 'en' ? 'hi' : 'en')
+            }
+            className="
+              min-h-10
+              rounded-full
+              bg-white/15
+              px-3
+              text-xs
+              font-bold
+              text-white
+              transition
+              hover:bg-white/25
+            "
+          >
+            {i18n.language === 'en' ? 'हिंदी' : 'English'}
+          </button>
+        </div>
+
+        <BrandLogo className="mx-auto mt-2 h-[4.5rem] w-[4.5rem]" />
 
         <h1 className="mt-3 text-2xl font-extrabold tracking-tight text-white">
           SPARSH
@@ -94,11 +154,11 @@ export default function LoginScreen({ onBack, onLogin }) {
         {/* Heading */}
         <div>
           <h2 className="text-lg font-extrabold text-neutral-900">
-            Welcome back
+            {t('login.welcome')}
           </h2>
 
           <p className="mt-1 text-sm leading-5 text-neutral-500">
-            Sign in to continue monitoring child health and nutrition.
+            Sign in to continue supporting children.
           </p>
         </div>
 
@@ -148,7 +208,15 @@ export default function LoginScreen({ onBack, onLogin }) {
                 autoComplete="tel"
                 maxLength={12}
                 placeholder="Enter 10-digit mobile number"
-                className="min-w-0 flex-1 px-3 text-sm text-neutral-900 outline-none placeholder:text-neutral-400"
+                className="
+                  min-w-0
+                  flex-1
+                  px-3
+                  text-sm
+                  text-neutral-900
+                  outline-none
+                  placeholder:text-neutral-400
+                "
               />
 
             </div>
@@ -171,16 +239,17 @@ export default function LoginScreen({ onBack, onLogin }) {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute bottom-2.5 right-3 text-xs font-semibold text-primary-700 hover:text-primary-900"
+              className="
+                absolute
+                bottom-2.5
+                right-3
+                text-xs
+                font-semibold
+                text-primary-700
+                hover:text-primary-900
+              "
             >
               {showPassword ? 'Hide' : 'Show'}
-            </button>
-
-            <button
-              type="button"
-              className="mt-2 text-xs font-semibold text-primary-700 hover:text-primary-900"
-            >
-              Forgot password?
             </button>
 
           </div>
@@ -197,12 +266,23 @@ export default function LoginScreen({ onBack, onLogin }) {
 
         </div>
 
-        {/* Login button */}
+        {/* Login */}
         <Button
           type="submit"
+          disabled={loading}
           className="mt-5 w-full"
         >
-          Login to dashboard
+          {loading ? 'Signing in…' : 'Login to dashboard'}
+        </Button>
+
+        {/* Demo mode */}
+        <Button
+          type="button"
+          variant="secondary"
+          className="mt-3 w-full"
+          onClick={exploreDemo}
+        >
+          Explore demo without login
         </Button>
 
         {/* Divider */}
@@ -221,7 +301,8 @@ export default function LoginScreen({ onBack, onLogin }) {
         {/* Fingerprint */}
         <button
           type="button"
-          onClick={() => onLogin?.({ biometric: true })}
+          disabled
+          title="Device biometric authentication requires native credential integration."
           className="
             flex
             min-h-11
@@ -234,24 +315,17 @@ export default function LoginScreen({ onBack, onLogin }) {
             border-neutral-200
             text-sm
             font-semibold
-            text-primary-800
-            transition
-            hover:bg-primary-50
-            focus:outline-none
-            focus:ring-2
-            focus:ring-primary-100
+            text-neutral-400
           "
         >
-
           <span
             aria-hidden="true"
-            className="grid h-6 w-6 place-items-center rounded-full bg-primary-50 text-sm"
+            className="grid h-6 w-6 place-items-center rounded-full bg-neutral-50 text-sm"
           >
             ◉
           </span>
 
-          Login with fingerprint
-
+          Login with Fingerprint (coming soon)
         </button>
 
         {/* Register */}
@@ -261,11 +335,16 @@ export default function LoginScreen({ onBack, onLogin }) {
 
           <button
             type="button"
-            className="font-bold text-teal-600 hover:text-teal-700"
+            onClick={onRegister}
+            className="font-bold text-teal-700 underline underline-offset-2"
           >
             Register here
           </button>
 
+        </p>
+
+        <p className="mt-5 text-center text-[10px] text-neutral-400">
+          Government of India · Ministry of Women &amp; Child Development
         </p>
 
       </form>
