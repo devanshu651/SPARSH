@@ -61,6 +61,7 @@ export default function HomeScreen({ onNavigate }) {
   }
 
   const workerName = currentWorker?.name || 'Health Worker'
+  const isAdmin = currentWorker?.role === 'admin'
 
   return (
     <main className="min-h-screen bg-[#f5f8fc] pb-20 text-slate-900">
@@ -308,12 +309,14 @@ export default function HomeScreen({ onNavigate }) {
               onClick={() => navigate('screening')}
             />
 
-            <QuickAction
-              icon="▤"
-              title="Analytics"
-              subtitle="View centre data"
-              onClick={() => navigate('analytics')}
-            />
+            {isAdmin && (
+              <QuickAction
+                icon="⚙️"
+                title="Admin Console"
+                subtitle="Manage centres & users"
+                onClick={() => navigate('admin-console')}
+              />
+            )}
           </div>
         </section>
       </div>
