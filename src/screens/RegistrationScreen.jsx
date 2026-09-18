@@ -1,5 +1,198 @@
 import { useMemo, useState } from 'react'
-import BottomNav from '../components/BottomNav'; import Button from '../components/Button'; import Input from '../components/Input'; import { childrenApi } from '../services/api'; import { useApp } from '../context/AppContext'
-const initial={name:'',dob:'',gender:'',village:'',childIdentifier:'',guardianName:'',mobile:'',weight:'',height:'',muac:'',notes:'',photo:null}
-export default function RegistrationScreen({onNavigate}) { const {currentWorker,setCurrentChild}=useApp(); const [step,setStep]=useState(1); const [form,setForm]=useState(()=>{try{return {...initial,...JSON.parse(localStorage.getItem('sparsh:registration-draft')||'{}')}}catch{return initial}}); const [errors,setErrors]=useState({}); const [saving,setSaving]=useState(false); const [savedChild,setSavedChild]=useState(null); const update=(key)=>(e)=>{const value=e.target.type==='file'?e.target.files?.[0]||null:e.target.value; const next={...form,[key]:value}; setForm(next); localStorage.setItem('sparsh:registration-draft',JSON.stringify({...next,photo:null})); setErrors(p=>({...p,[key]:''}))}; const age=useMemo(()=>form.dob?Math.max(0,Math.floor((Date.now()-new Date(form.dob))/2629800000)):null,[form.dob]); const validate=()=>{const e={}; if(step===1){if(!form.name.trim())e.name='Child name is required.';if(!form.dob||new Date(form.dob)>new Date())e.dob='Enter a valid date of birth.';if(!form.gender)e.gender='Select gender.';if(!form.village.trim())e.village='Village / ward is required.';if(!form.childIdentifier.trim())e.childIdentifier='Child ID is required.'}if(step===2){if(form.weight && (+form.weight<.5||+form.weight>80))e.weight='Enter a weight between 0.5 and 80 kg.';if(form.height && (+form.height<20||+form.height>250))e.height='Enter a height between 20 and 250 cm.';if(form.muac && (+form.muac<50||+form.muac>400))e.muac='Enter MUAC between 50 and 400 mm.'}setErrors(e);return !Object.keys(e).length}; const next=()=>validate()&&setStep(s=>s+1); async function submit(){if(!validate())return; const centreId=currentWorker?.centre_ids?.[0]; if(!centreId){setErrors({submit:'Your worker account has no assigned centre. Ask an administrator to assign one.'});return} setSaving(true);setErrors({});try{const child=savedChild||await childrenApi.create({name:form.name.trim(),date_of_birth:form.dob,child_identifier:form.childIdentifier.trim(),sex:form.gender,guardian_name:form.guardianName||null,guardian_phone:form.mobile||null,centre_id:centreId,centre_name:'Assigned Anganwadi Centre'});setSavedChild(child);setCurrentChild(child);if(form.weight||form.height||form.muac||form.notes)try{await childrenApi.healthData(child.id,{measured_on:new Date().toISOString().slice(0,10),weight_kg:form.weight?+form.weight:null,height_cm:form.height?+form.height:null,muac_mm:form.muac?+form.muac:null,notes:form.notes||null})}catch(error){setErrors({submit:`Child record was saved, but health measurements were not saved: ${error.message}. Retry to save the measurements, or continue to screening.`});return}localStorage.removeItem('sparsh:registration-draft');onNavigate('screening')}catch(error){setErrors({submit:error.message})}finally{setSaving(false)}}
-return <main className="min-h-screen bg-neutral-50 pb-24"><header className="border-b bg-white px-5 py-4"><button onClick={()=>onNavigate('dashboard')} className="text-sm font-bold text-primary-800">← Dashboard</button><h1 className="mt-2 text-xl font-extrabold">Register a child</h1><p className="text-sm text-neutral-500">Step {step} of 3</p><div className="mt-3 flex gap-2">{[1,2,3].map(x=><span key={x} className={`h-2 flex-1 rounded-full ${x<=step?'bg-teal-600':'bg-neutral-200'}`}/>)}</div></header><div className="mx-auto max-w-lg p-5"><div className="rounded-2xl bg-white p-5 shadow-card">{step===1&&<><h2 className="font-bold">Personal information</h2><div className="mt-4 space-y-4"><Input label="Child full name *" value={form.name} onChange={update('name')} error={errors.name}/><Input label="Date of birth *" type="date" max={new Date().toISOString().slice(0,10)} value={form.dob} onChange={update('dob')} error={errors.dob}/>{age!==null&&<p className="text-xs text-teal-700">Age: {age} months</p>}<label className="block text-sm font-medium">Gender *<select className="mt-1.5 min-h-11 w-full rounded-xl border px-3" value={form.gender} onChange={update('gender')}><option value="">Select gender</option><option value="female">Female</option><option value="male">Male</option><option value="other">Other</option></select>{errors.gender&&<span className="text-xs text-risk-high">{errors.gender}</span>}</label><Input label="Village / ward *" value={form.village} onChange={update('village')} error={errors.village}/><Input label="Anganwadi child ID *" value={form.childIdentifier} onChange={update('childIdentifier')} error={errors.childIdentifier}/><Input label="Parent / guardian name" value={form.guardianName} onChange={update('guardianName')}/><Input label="Guardian mobile" inputMode="tel" value={form.mobile} onChange={update('mobile')}/></div></>}{step===2&&<><h2 className="font-bold">Health data</h2><p className="mt-1 text-sm text-neutral-500">Record measurements if available.</p><div className="mt-4 space-y-4"><Input label="Weight (kg)" type="number" min="0.5" max="80" step="0.1" value={form.weight} onChange={update('weight')} error={errors.weight}/><Input label="Height (cm)" type="number" min="20" max="250" step="0.1" value={form.height} onChange={update('height')} error={errors.height}/><Input label="MUAC (mm)" type="number" min="50" max="400" value={form.muac} onChange={update('muac')} error={errors.muac}/><label className="block text-sm font-medium">Notes<textarea className="mt-1.5 w-full rounded-xl border p-3" rows="4" value={form.notes} onChange={update('notes')}/></label></div></>}{step===3&&<><h2 className="font-bold">Photo & confirm</h2><p className="mt-1 text-sm text-neutral-500">A child photo is kept only on this device until a secure upload endpoint is available.</p><label className="mt-4 block rounded-xl border border-dashed p-5 text-center text-sm font-semibold text-primary-800">Add child photo (optional)<input className="sr-only" type="file" accept="image/*" capture="environment" onChange={update('photo')}/></label>{form.photo&&<p className="mt-2 text-xs text-neutral-500">Selected: {form.photo.name}</p>}<div className="mt-5 rounded-xl bg-neutral-50 p-4 text-sm"><p><b>{form.name}</b> · {age} months</p><p>{form.village} · {form.gender}</p><p className="mt-2 text-xs text-amber-700">TODO: secure photo upload awaits a backend upload endpoint.</p></div></>}</div>{errors.submit&&<p role="alert" className="mt-4 rounded-xl bg-red-50 p-3 text-sm text-risk-high">{errors.submit}</p>}<div className="mt-5 flex gap-3">{step>1&&<Button variant="secondary" onClick={()=>setStep(s=>s-1)}>Back</Button>}<Button className="flex-1" disabled={saving} onClick={step===3?submit:next}>{saving?'Saving…':step===3?'Save & start screening':'Continue'}</Button></div></div><BottomNav active="register" onChange={onNavigate}/></main> }
+import BottomNav from '../components/BottomNav'
+import Button from '../components/Button'
+import Input from '../components/Input'
+import { childrenApi } from '../services/api'
+import { useApp } from '../context/AppContext'
+
+const initial = {
+  name: '',
+  dob: '',
+  gender: '',
+  village: '',
+  childIdentifier: '',
+  guardianName: '',
+  mobile: '',
+  weight: '',
+  height: '',
+  muac: '',
+  notes: '',
+  photo: null,
+}
+
+export default function RegistrationScreen({ onNavigate }) {
+  const { currentWorker, setCurrentChild } = useApp()
+  const [step, setStep] = useState(1)
+  const [form, setForm] = useState(() => {
+    try {
+      return { ...initial, ...JSON.parse(localStorage.getItem('sparsh:registration-draft') || '{}') }
+    } catch {
+      return initial
+    }
+  })
+  const [errors, setErrors] = useState({})
+  const [saving, setSaving] = useState(false)
+  const [savedChild, setSavedChild] = useState(null)
+
+  const update = (key) => (e) => {
+    const value = e.target.type === 'file' ? e.target.files?.[0] || null : e.target.value
+    const next = { ...form, [key]: value }
+    setForm(next)
+    localStorage.setItem('sparsh:registration-draft', JSON.stringify({ ...next, photo: null }))
+    setErrors((p) => ({ ...p, [key]: '' }))
+  }
+
+  const age = useMemo(() => (form.dob ? Math.max(0, Math.floor((Date.now() - new Date(form.dob)) / 2629800000)) : null), [form.dob])
+
+  const validate = () => {
+    const e = {}
+    if (step === 1) {
+      if (!form.name.trim()) e.name = 'Child name is required.'
+      if (!form.dob || new Date(form.dob) > new Date()) e.dob = 'Enter a valid date of birth.'
+      if (!form.gender) e.gender = 'Select gender.'
+      if (!form.village.trim()) e.village = 'Village / ward is required.'
+      if (!form.childIdentifier.trim()) e.childIdentifier = 'Child ID is required.'
+    }
+    if (step === 2) {
+      if (form.weight && (+form.weight < 0.5 || +form.weight > 80)) e.weight = 'Enter a weight between 0.5 and 80 kg.'
+      if (form.height && (+form.height < 20 || +form.height > 250)) e.height = 'Enter a height between 20 and 250 cm.'
+      if (form.muac && (+form.muac < 50 || +form.muac > 400)) e.muac = 'Enter MUAC between 50 and 400 mm.'
+    }
+    setErrors(e)
+    return Object.keys(e).length === 0
+  }
+
+  const next = () => validate() && setStep((s) => s + 1)
+
+  async function submit() {
+    if (!validate()) return
+    const centreId = currentWorker?.centre_ids?.[0]
+    if (!centreId) {
+      setErrors({ submit: 'Your worker account has no assigned centre. Ask an administrator to assign one.' })
+      return
+    }
+    setSaving(true)
+    setErrors({})
+    try {
+      const child = savedChild || await childrenApi.create({
+        name: form.name.trim(),
+        date_of_birth: form.dob,
+        child_identifier: form.childIdentifier.trim(),
+        sex: form.gender,
+        guardian_name: form.guardianName || null,
+        guardian_phone: form.mobile || null,
+        centre_id: centreId,
+        centre_name: 'Assigned Anganwadi Centre',
+      })
+      setSavedChild(child)
+      if (form.weight || form.height || form.muac || form.notes) {
+        try {
+          await childrenApi.healthData(child.id, {
+            measured_on: new Date().toISOString().slice(0, 10),
+            weight_kg: form.weight ? +form.weight : null,
+            height_cm: form.height ? +form.height : null,
+            muac_mm: form.muac ? +form.muac : null,
+            notes: form.notes || null,
+          })
+        } catch (error) {
+          setErrors({
+            submit: `Child record was saved, but health measurements were not saved: ${error.message}. Retry to save the measurements, or continue to screening.`,
+          })
+          return
+        }
+      }
+      localStorage.removeItem('sparsh:registration-draft')
+      setForm(initial)
+      setStep(1)
+      onNavigate('children')
+    } catch (error) {
+      setErrors({ submit: error.message || 'Registration failed. Please try again.' })
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <main className="min-h-screen bg-neutral-50 pb-24">
+      <header className="border-b bg-white px-5 py-4">
+        <button onClick={() => onNavigate('dashboard')} className="text-sm font-bold text-primary-800">
+          ← Dashboard
+        </button>
+        <h1 className="mt-2 text-xl font-extrabold">Register a child</h1>
+        <p className="text-sm text-neutral-500">Step {step} of 3</p>
+        <div className="mt-3 flex gap-2">
+          {[1, 2, 3].map((x) => (
+            <span key={x} className={`h-2 flex-1 rounded-full ${x <= step ? 'bg-teal-600' : 'bg-neutral-200'}`} />
+          ))}
+        </div>
+      </header>
+      <div className="mx-auto max-w-lg p-5">
+        <div className="rounded-2xl bg-white p-5 shadow-card">
+          {step === 1 && (
+            <>
+              <h2 className="font-bold">Personal information</h2>
+              <div className="mt-4 space-y-4">
+                <Input label="Child full name *" value={form.name} onChange={update('name')} error={errors.name} />
+                <Input label="Date of birth *" type="date" max={new Date().toISOString().slice(0, 10)} value={form.dob} onChange={update('dob')} error={errors.dob} />
+                {age !== null && <p className="text-xs text-teal-700">Age: {age} months</p>}
+                <label className="block text-sm font-medium">
+                  Gender *
+                  <select className="mt-1.5 min-h-11 w-full rounded-xl border px-3" value={form.gender} onChange={update('gender')}>
+                    <option value="">Select gender</option>
+                    <option value="female">Female</option>
+                    <option value="male">Male</option>
+                    <option value="other">Other</option>
+                  </select>
+                  {errors.gender && <span className="text-xs text-risk-high">{errors.gender}</span>}
+                </label>
+                <Input label="Village / ward *" value={form.village} onChange={update('village')} error={errors.village} />
+                <Input label="Anganwadi child ID *" value={form.childIdentifier} onChange={update('childIdentifier')} error={errors.childIdentifier} />
+                <Input label="Parent / guardian name" value={form.guardianName} onChange={update('guardianName')} />
+                <Input label="Guardian mobile" inputMode="tel" value={form.mobile} onChange={update('mobile')} />
+              </div>
+            </>
+          )}
+          {step === 2 && (
+            <>
+              <h2 className="font-bold">Health data</h2>
+              <p className="mt-1 text-sm text-neutral-500">Record measurements if available.</p>
+              <div className="mt-4 space-y-4">
+                <Input label="Weight (kg)" type="number" min="0.5" max="80" step="0.1" value={form.weight} onChange={update('weight')} error={errors.weight} />
+                <Input label="Height (cm)" type="number" min="20" max="250" step="0.1" value={form.height} onChange={update('height')} error={errors.height} />
+                <Input label="MUAC (mm)" type="number" min="50" max="400" value={form.muac} onChange={update('muac')} error={errors.muac} />
+                <label className="block text-sm font-medium">
+                  Notes
+                  <textarea className="mt-1.5 w-full rounded-xl border p-3" rows="4" value={form.notes} onChange={update('notes')} />
+                </label>
+              </div>
+            </>
+          )}
+          {step === 3 && (
+            <>
+              <h2 className="font-bold">Photo & confirm</h2>
+              <p className="mt-1 text-sm text-neutral-500">A child photo is kept only on this device until a secure upload endpoint is available.</p>
+              <label className="mt-4 block rounded-xl border border-dashed p-5 text-center text-sm font-semibold text-primary-800">
+                Add child photo (optional)
+                <input className="sr-only" type="file" accept="image/*" capture="environment" onChange={update('photo')} />
+              </label>
+              {form.photo && <p className="mt-2 text-xs text-neutral-500">Selected: {form.photo.name}</p>}
+              <div className="mt-5 rounded-xl bg-neutral-50 p-4 text-sm">
+                <p><b>{form.name}</b> · {age} months</p>
+                <p>{form.village} · {form.gender}</p>
+                <p className="mt-2 text-xs text-amber-700">TODO: secure photo upload awaits a backend upload endpoint.</p>
+              </div>
+            </>
+          )}
+        </div>
+        {errors.submit && <p role="alert" className="mt-4 rounded-xl bg-red-50 p-3 text-sm text-risk-high">{errors.submit}</p>}
+        <div className="mt-5 flex gap-3">
+          {step > 1 && <Button variant="secondary" onClick={() => setStep((s) => s - 1)}>Back</Button>}
+          <Button className="flex-1" disabled={saving} onClick={step === 3 ? submit : next}>
+            {saving ? 'Saving…' : step === 3 ? 'Save & continue' : 'Continue'}
+          </Button>
+        </div>
+      </div>
+      <BottomNav active="register" onChange={onNavigate} />
+    </main>
+  )
+}
