@@ -9,7 +9,7 @@ import Input from '../components/Input'
 import { authService, readableAuthError } from '../services/auth'
 import { usersApi } from '../services/api'
 import { useApp } from '../context/AppContext'
-import { startDemoMode } from '../services/demo'
+import { startDemoMode, demoAvailable } from '../services/demo'
 
 export default function LoginScreen({ onBack, onLogin, onRegister }) {
   const { t, i18n } = useTranslation()
@@ -276,14 +276,16 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
         </Button>
 
         {/* Demo mode */}
-        <Button
-          type="button"
-          variant="secondary"
-          className="mt-3 w-full"
-          onClick={exploreDemo}
-        >
-          Explore demo without login
-        </Button>
+        {demoAvailable && (
+          <Button
+            type="button"
+            variant="secondary"
+            className="mt-3 w-full"
+            onClick={exploreDemo}
+          >
+            Explore demo without login
+          </Button>
+        )}
 
         {/* Divider */}
         <div className="my-5 flex items-center gap-3">

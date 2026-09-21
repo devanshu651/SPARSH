@@ -1,9 +1,14 @@
 const key = (name) => `sparsh:demo:${name}`
 const read = (name, fallback) => { try { return JSON.parse(localStorage.getItem(key(name)) || JSON.stringify(fallback)) } catch { return fallback } }
 const write = (name, value) => localStorage.setItem(key(name), JSON.stringify(value))
-export const isDemoMode = () => localStorage.getItem('sparsh:demo-mode') === 'true'
-export const startDemoMode = () => localStorage.setItem('sparsh:demo-mode', 'true')
-export const stopDemoMode = () => localStorage.removeItem('sparsh:demo-mode')
+// Demo mode is only available in development builds. The build-time
+// DEMO_MODE flag is false in production, so localStorage/devtools can never
+// activate demo mode there; the flag is never written or consulted.
+const demoAvailable = import.meta.env.DEMO_MODE === true
+export const isDemoMode = () => demoAvailable && localStorage.getItem('sparsh:demo-mode') === 'true'
+export const startDemoMode = () => { if (!demoAvailable) return; localStorage.setItem('sparsh:demo-mode', 'true') }
+export const stopDemoMode = () => { if (!demoAvailable) return; localStorage.removeItem('sparsh:demo-mode') }
+export { demoAvailable }
 const milestones = ['gross_motor','fine_motor','language','social_emotional','cognitive'].map((domain, index) => ({ id:`demo-${domain}`, domain, task:['Can the child walk or move as expected for their age?','Can the child pick up and hold a small object?','Does the child use age-appropriate words or sounds?','Does the child respond and engage with familiar people?','Does the child explore and solve simple problems?'][index] }))
 const initialCentres = [{id:'demo-centre',code:'AWC-001',name:'Demo Anganwadi Centre',district:'Demo District',state:'Demo State',address:'123 Demo Street',active:true,created_at:new Date().toISOString(),created_by:'demo-admin'}]
 const initialUsers = [{uid:'demo-worker',name:'Demo Anganwadi Worker',role:'worker',centre_ids:['demo-centre'],disabled:false,created_at:new Date().toISOString()},{uid:'demo-supervisor',name:'Demo Supervisor',role:'supervisor',centre_ids:['demo-centre'],disabled:false,created_at:new Date().toISOString()},{uid:'demo-admin',name:'Demo Administrator',role:'admin',centre_ids:[],disabled:false,created_at:new Date().toISOString()}]
