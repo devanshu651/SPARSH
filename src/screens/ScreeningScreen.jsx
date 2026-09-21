@@ -8,7 +8,7 @@ import { useApp } from '../context/AppContext'
 const labels={gross_motor:'Gross Motor',fine_motor:'Fine Motor',language:'Language',social_emotional:'Social-Emotional',cognitive:'Cognitive'}
 
 export default function ScreeningScreen({onNavigate}) {
-  const {currentChild}=useApp(); const [data,setData]=useState(null); const [error,setError]=useState(null)
+  const {currentChild,setPendingScreening}=useApp(); const [data,setData]=useState(null); const [error,setError]=useState(null)
   const [answers,setAnswers]=useState({}); const [domain,setDomain]=useState(0)
   const load=async()=>{if(!currentChild)return;setError(null);try{const result=await screeningsApi.milestones(currentChild.id);cacheMilestones(currentChild.id,result);setData(result)}catch(e){const cached=getCachedMilestones(currentChild.id);if(cached){setData(cached);setError(new Error('You are offline. Using the last saved questions; reconnect before submitting.'))}else setError(e)}}
   useEffect(()=>{setData(null);setAnswers({});setDomain(0);load()},[currentChild?.id])
@@ -17,7 +17,7 @@ export default function ScreeningScreen({onNavigate}) {
   const domains=useMemo(()=>[...new Set(data?.milestones?.map(m=>m.domain)||[])],[data]); const tasks=data?.milestones?.filter(m=>m.domain===domains[domain])||[]
   const total=data?.milestones?.length||0; const unanswered=data?.milestones?.filter(m=>!answers[m.id])||[]; const count=total-unanswered.length
   const answer=(id,response)=>setAnswers(a=>({...a,[id]:response}))
-  const advance=()=>{if(tasks.some(t=>!answers[t.id]))return;if(domain<domains.length-1){setDomain(d=>d+1);return}sessionStorage.setItem('sparsh:pending-screening',JSON.stringify({child_id:currentChild.id,checkpoint_age_months:data.checkpoint_age_months,milestone_dataset_version:data.dataset_version,client_submission_id:crypto.randomUUID(),answers:data.milestones.map(({id})=>({milestone_id:id,response:answers[id]})),screened_at:new Date().toISOString()}));clearDraft();onNavigate('av-assessment')}
+  const advance=()=>{if(tasks.some(t=>!answers[t.id]))return;if(domain<domains.length-1){setDomain(d=>d+1);return}setPendingScreening({child_id:currentChild.id,checkpoint_age_months:data.checkpoint_age_months,milestone_dataset_version:data.dataset_version,client_submission_id:crypto.randomUUID(),answers:data.milestones.map(({id})=>({milestone_id:id,response:answers[id]})),screened_at:new Date().toISOString()});clearDraft();onNavigate('av-assessment')}
   if(!currentChild)return <main className="grid min-h-screen place-items-center bg-neutral-50 p-6"><EmptyState title="Choose a child first" detail="Register a child or open an existing record before screening." action={<Button className="mt-4" onClick={()=>onNavigate('records')}>View children</Button>}/></main>
   if(!data&&!error)return <LoadingState label="Loading age-appropriate milestones…"/>
   if(!data)return <main className="p-5"><ErrorState error={error} onRetry={load}/></main>
