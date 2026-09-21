@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from firebase_admin import firestore
 
 from app.core.firebase import get_firestore_client
+from app.core.audit import audit_log
 from app.core.security import ensure_centre_access, get_current_user, require_roles
 from app.models.auth import CurrentUser, Role
 from app.models.child import ChildCreate, ChildResponse, HealthDataCreate, HealthDataResponse
@@ -54,6 +55,7 @@ def _register_child_in_transaction(db, payload: ChildCreate, user: CurrentUser) 
 def register_child(payload: ChildCreate, user: CurrentUser = Depends(require_roles(Role.WORKER, Role.ADMIN))):
     ensure_centre_access(user, payload.centre_id)
     child_id, data = _register_child_in_transaction(get_firestore_client(), payload, user)
+    audit_log(user.uid, "child_created", child_id, payload.centre_id)
     return ChildResponse(id=child_id, **data)
 
 
@@ -100,6 +102,7 @@ def record_health_data(child_id: str, payload: HealthDataCreate, user: CurrentUs
     data = payload.model_dump() | {"child_id": child_id, "recorded_by": user.uid, "created_at": datetime.now(timezone.utc)}
     ref = get_firestore_client().collection("children").document(child_id).collection("health_data").document()
     ref.set(data)
+    audit_log(user.uid, "health_data_created", child_id, child["centre_id"])
     return HealthDataResponse(id=ref.id, **data)
 
 

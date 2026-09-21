@@ -1,7 +1,8 @@
 ﻿from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.core.firebase import get_firestore_client
-from app.core.security import ensure_centre_access, require_roles
+from app.core.audit import audit_log
+from app.core.security import ensure_centre_access, get_current_user, require_roles
 from app.models.auth import CurrentUser, Role
 from app.models.referral import ReferralCreate, ReferralResponse
 from app.routers.children import age_months, child_from_snapshot
@@ -33,6 +34,7 @@ def generate_referral(payload: ReferralCreate, user: CurrentUser = Depends(requi
     }
     ref = db.collection("referrals").document()
     db.collection("referrals").document(ref.id).set(result | {"screening_id": payload.screening_id})
+    audit_log(user.uid, "referral_created", ref.id, child["centre_id"])
     return ReferralResponse(referral_id=ref.id, **result)
 
 @router.get("/{referral_id}", response_model=ReferralResponse)
