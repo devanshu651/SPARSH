@@ -15,7 +15,7 @@ export const clearDraft = () => sessionStorage.removeItem('sparsh:screening-draf
 // Offline screening queue - IndexedDB backed.
 // ---------------------------------------------------------------------------
 const DB_NAME = 'sparsh-offline'
-const DB_VERSION = 1
+const DB_VERSION = 2
 const STORE_NAME = 'screening_queue'
 const SUBMISSION_INDEX = 'client_submission_id'
 
@@ -31,12 +31,34 @@ function openQueueDb() {
   if (_opening) return _opening
   _opening = new Promise((resolve, reject) => {
     const req = indexedDB.open(DB_NAME, DB_VERSION)
-    req.onupgradeneeded = () => {
+req.onupgradeneeded = async () => {
       const db = req.result
+      const tx = req.transaction
       if (!db.objectStoreNames.contains(STORE_NAME)) {
         const store = db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true })
         store.createIndex(SUBMISSION_INDEX, SUBMISSION_INDEX, { unique: true })
+        return
       }
+      // Migration path (v1 -> v2): ensure the client_submission_id index is
+      // unique. Remove the old non-unique index first.
+      const store = tx.objectStore(STORE_NAME)
+      if (store.indexNames.contains(SUBMISSION_INDEX)) {
+        store.deleteIndex(SUBMISSION_INDEX)
+      }
+      // Deterministically remove duplicate client_submission_id records before
+      // creating the unique index, keeping the oldest (smallest id) item.
+      const items = await promisify(store.getAll())
+      const seen = new Map()
+      for (const item of items) {
+        const key = item.client_submission_id
+        if (key === undefined || key === null) continue
+        if (seen.has(key)) {
+          store.delete(item.id)
+        } else {
+          seen.set(key, item)
+        }
+      }
+      store.createIndex(SUBMISSION_INDEX, SUBMISSION_INDEX, { unique: true })
     }
     req.onsuccess = () => { _dbInstance = req.result; _opening = null; resolve(_dbInstance) }
     req.onerror = () => { _opening = null; reject(req.error) }
