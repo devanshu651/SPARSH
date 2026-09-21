@@ -31,7 +31,7 @@ function openQueueDb() {
   if (_opening) return _opening
   _opening = new Promise((resolve, reject) => {
     const req = indexedDB.open(DB_NAME, DB_VERSION)
-req.onupgradeneeded = async () => {
+req.onupgradeneeded = () => {
       const db = req.result
       const tx = req.transaction
       if (!db.objectStoreNames.contains(STORE_NAME)) {
@@ -39,26 +39,30 @@ req.onupgradeneeded = async () => {
         store.createIndex(SUBMISSION_INDEX, SUBMISSION_INDEX, { unique: true })
         return
       }
-      // Migration path (v1 -> v2): ensure the client_submission_id index is
-      // unique. Remove the old non-unique index first.
+      // Migration path (v1 -> v2): make the client_submission_id index unique.
       const store = tx.objectStore(STORE_NAME)
       if (store.indexNames.contains(SUBMISSION_INDEX)) {
         store.deleteIndex(SUBMISSION_INDEX)
       }
-      // Deterministically remove duplicate client_submission_id records before
-      // creating the unique index, keeping the oldest (smallest id) item.
-      const items = await promisify(store.getAll())
-      const seen = new Map()
-      for (const item of items) {
-        const key = item.client_submission_id
-        if (key === undefined || key === null) continue
-        if (seen.has(key)) {
-          store.delete(item.id)
-        } else {
-          seen.set(key, item)
+      // Deduplicate by client_submission_id using a cursor, keeping the oldest
+      // record (smallest id) and deleting later duplicates. All operations stay
+      // inside the versionchange transaction via request callbacks.
+      const seen = new Set()
+      const cursorReq = store.openCursor()
+      cursorReq.onsuccess = () => {
+        const cursor = cursorReq.result
+        if (!cursor) {
+          store.createIndex(SUBMISSION_INDEX, SUBMISSION_INDEX, { unique: true })
+          return
         }
+        const key = cursor.value.client_submission_id
+        if (key !== undefined && key !== null && seen.has(key)) {
+          cursor.delete()
+        } else if (key !== undefined && key !== null) {
+          seen.add(key)
+        }
+        cursor.continue()
       }
-      store.createIndex(SUBMISSION_INDEX, SUBMISSION_INDEX, { unique: true })
     }
     req.onsuccess = () => { _dbInstance = req.result; _opening = null; resolve(_dbInstance) }
     req.onerror = () => { _opening = null; reject(req.error) }
