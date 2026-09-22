@@ -16,44 +16,65 @@ const steps = [
 ]
 
 export default function AnalysisScreen({ onNavigate }) {
-  const { setScreeningResult, currentChild } = useApp()
+  const { setScreeningResult, currentChild, pendingScreening, setPendingScreening } = useApp()
   const [error, setError] = useState(null)
   const [currentStep, setCurrentStep] = useState(0)
   const [hasPendingData, setHasPendingData] = useState(() => {
-    return Boolean(sessionStorage.getItem('sparsh:pending-screening'))
+    return Boolean(pendingScreening || sessionStorage.getItem('sparsh:pending-screening'))
   })
   const submitting = useRef(false)
 
   const runAnalysis = async () => {
     if (submitting.current) return
     setError(null)
-    const raw = sessionStorage.getItem('sparsh:pending-screening')
 
-    if (!raw) {
+    let payload = pendingScreening
+    if (!payload) {
+      const raw = sessionStorage.getItem('sparsh:pending-screening')
+      if (raw) {
+        try {
+          payload = JSON.parse(raw)
+        } catch {
+          payload = null
+        }
+      }
+    }
+
+    if (!payload) {
       setHasPendingData(false)
       return
     }
 
     setHasPendingData(true)
-    const payload = JSON.parse(raw)
     submitting.current = true
 
     try {
       setCurrentStep(1)
-      await new Promise((r) => setTimeout(r, 450))
+      await new Promise((r) => setTimeout(r, 400))
       setCurrentStep(2)
 
       const subCall = screeningsApi.submit(payload)
       const result = typeof subCall === 'function' ? await subCall(payload) : await subCall
       setCurrentStep(3)
       setScreeningResult(result)
+      setPendingScreening?.(null)
       sessionStorage.removeItem('sparsh:pending-screening')
 
       await new Promise((r) => setTimeout(r, 400))
       onNavigate('report')
     } catch (e) {
-      if (!navigator.onLine) {
-        enqueueScreening(payload)
+      if (e?.status === 409) {
+        setPendingScreening?.(null)
+        sessionStorage.removeItem('sparsh:pending-screening')
+        setError(new Error('This screening was already submitted. Open the child history to view it.'))
+      } else if (!navigator.onLine) {
+        try {
+          await enqueueScreening(payload)
+        } catch {
+          setError(new Error('You are offline. This screening could not be queued.'))
+          return
+        }
+        setPendingScreening?.(null)
         sessionStorage.removeItem('sparsh:pending-screening')
         setError(new Error('Device is offline. This screening has been securely cached in your local queue and will synchronize automatically when connection resumes.'))
       } else {
@@ -65,11 +86,10 @@ export default function AnalysisScreen({ onNavigate }) {
   }
 
   useEffect(() => {
-    const raw = sessionStorage.getItem('sparsh:pending-screening')
-    if (raw) {
+    if (pendingScreening || sessionStorage.getItem('sparsh:pending-screening')) {
       runAnalysis()
     }
-  }, [])
+  }, [pendingScreening])
 
   // PRECONDITION STATE: When opened without an active pending screening session
   if (!hasPendingData && !error) {

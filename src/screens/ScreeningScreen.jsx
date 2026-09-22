@@ -25,7 +25,7 @@ const domainDescriptions = {
 }
 
 export default function ScreeningScreen({ onNavigate }) {
-  const { currentChild, setCurrentChild } = useApp()
+  const { currentChild, setCurrentChild, setPendingScreening } = useApp()
   const [data, setData] = useState(null)
   const [error, setError] = useState(null)
   const [answers, setAnswers] = useState({})
@@ -112,19 +112,23 @@ export default function ScreeningScreen({ onNavigate }) {
       return
     }
 
+    const payload = {
+      child_id: currentChild.id,
+      checkpoint_age_months: data.checkpoint_age_months,
+      milestone_dataset_version: data.dataset_version,
+      client_submission_id: crypto.randomUUID(),
+      answers: data.milestones.map(({ id }) => ({
+        milestone_id: id,
+        response: answers[id]
+      })),
+      screened_at: new Date().toISOString()
+    }
+
+    setPendingScreening?.(payload)
+
     sessionStorage.setItem(
       'sparsh:pending-screening',
-      JSON.stringify({
-        child_id: currentChild.id,
-        checkpoint_age_months: data.checkpoint_age_months,
-        milestone_dataset_version: data.dataset_version,
-        client_submission_id: crypto.randomUUID(),
-        answers: data.milestones.map(({ id }) => ({
-          milestone_id: id,
-          response: answers[id]
-        })),
-        screened_at: new Date().toISOString()
-      })
+      JSON.stringify(payload)
     )
 
     clearDraft()

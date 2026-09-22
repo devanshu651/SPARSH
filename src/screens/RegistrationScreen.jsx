@@ -94,7 +94,12 @@ export default function RegistrationScreen({ onNavigate }) {
   async function submit() {
     if (!validate()) return
 
-    const centreId = currentWorker?.centre_ids?.[0] || 'assigned-centre'
+    const centreId = currentWorker?.centre_ids?.[0]
+    if (!centreId && !currentWorker?.isDemo) {
+      setErrors({ submit: 'Your worker account has no assigned centre. Ask an administrator to assign one.' })
+      return
+    }
+
     setSaving(true)
     setErrors({})
 
@@ -106,9 +111,10 @@ export default function RegistrationScreen({ onNavigate }) {
         sex: form.gender,
         guardian_name: form.guardianName ? form.guardianName.trim() : null,
         guardian_phone: form.mobile ? form.mobile.trim() : null,
-        centre_id: centreId,
+        centre_id: centreId || 'assigned-centre',
         centre_name: 'Assigned Anganwadi Centre'
       }
+
       let child = savedChild
       if (!child) {
         const createCall = childrenApi.create(childPayload)
@@ -144,7 +150,7 @@ export default function RegistrationScreen({ onNavigate }) {
       localStorage.removeItem('sparsh:registration-draft')
       onNavigate('screening')
     } catch (error) {
-      setErrors({ submit: error.message })
+      setErrors({ submit: error.message || 'Registration failed. Please try again.' })
     } finally {
       setSaving(false)
     }

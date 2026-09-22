@@ -73,6 +73,25 @@ export default function ReferralScreen({ onNavigate }) {
     loadAtRiskCohort()
   }, [screeningResult?.screening_id])
 
+  useEffect(() => {
+    const checkExisting = async (sId) => {
+      if (!sId) return
+      try {
+        const rCall = referralsApi.byScreening(sId)
+        const existing = typeof rCall === 'function' ? await rCall(sId) : await rCall
+        if (existing) {
+          setReferralData(existing)
+        }
+      } catch {
+        // Proceed
+      }
+    }
+    const sId = screeningResult?.screening_id || resolvedScreeningId
+    if (sId) {
+      checkExisting(sId)
+    }
+  }, [screeningResult?.screening_id, resolvedScreeningId])
+
   const resolveChildScreening = async (childId) => {
     try {
       const hCall = childrenApi.history(childId)
@@ -102,7 +121,8 @@ export default function ReferralScreen({ onNavigate }) {
   const activePatient = currentChild || atRiskChildren.find((c) => c.id === selectedChildId)
 
   const submitReferral = async () => {
-    if (!resolvedScreeningId && !screeningResult?.screening_id) {
+    const targetScreeningId = resolvedScreeningId || screeningResult?.screening_id
+    if (!targetScreeningId) {
       setError('A valid screening ID is required to generate a formal RBSK referral.')
       return
     }
@@ -120,7 +140,18 @@ export default function ReferralScreen({ onNavigate }) {
       const response = typeof refCall === 'function' ? await refCall(payload) : await refCall
       setReferralData(response)
     } catch (e) {
-      setError(e.message || 'Failed to generate referral slip.')
+      if (e?.status === 409 || e?.message?.includes('already')) {
+        try {
+          const rCall = referralsApi.byScreening(targetScreeningId)
+          const existing = typeof rCall === 'function' ? await rCall(targetScreeningId) : await rCall
+          if (existing) {
+            setReferralData(existing)
+            setError('')
+            return
+          }
+        } catch {}
+      }
+      setError(e?.message || 'Failed to generate referral slip.')
     } finally {
       setSaving(false)
     }

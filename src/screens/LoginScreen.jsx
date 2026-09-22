@@ -7,7 +7,7 @@ import Icon from '../components/Icon'
 import { authService, readableAuthError } from '../services/auth'
 import { usersApi } from '../services/api'
 import { useApp } from '../context/AppContext'
-import { startDemoMode } from '../services/demo'
+import { startDemoMode, demoAvailable } from '../services/demo'
 
 export default function LoginScreen({ onBack, onLogin, onRegister }) {
   const { t, i18n } = useTranslation()
@@ -69,7 +69,7 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
   }
 
   return (
-    <AuthShell>
+    <AuthShell showBackground>
       <div className="space-y-6 py-4">
 
         {/* TOP CONTROLS */}
@@ -167,16 +167,18 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
           </Button>
 
           {/* EXPLORE DEMO MODE */}
-          <div className="pt-2">
-            <Button
-              type="button"
-              variant="secondary"
-              className="w-full text-xs font-semibold border-teal-200 text-teal-800 bg-teal-50/50 hover:bg-teal-50"
-              onClick={exploreDemo}
-            >
-              <span>Explore as Demo Health Worker (Offline Ready)</span>
-            </Button>
-          </div>
+          {demoAvailable && (
+            <div className="pt-2">
+              <Button
+                type="button"
+                variant="secondary"
+                className="w-full text-xs font-semibold border-teal-200 text-teal-800 bg-teal-50/50 hover:bg-teal-50"
+                onClick={exploreDemo}
+              >
+                <span>Explore as Demo Health Worker (Offline Ready)</span>
+              </Button>
+            </div>
+          )}
         </form>
 
         {/* WORKER ENROLMENT GUIDANCE */}

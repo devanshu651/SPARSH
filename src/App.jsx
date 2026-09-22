@@ -21,6 +21,7 @@ import ChildrenScreen from './screens/ChildrenScreen'
 import AnalyticsScreen from './screens/AnalyticsScreen'
 import AlertsScreen from './screens/AlertsScreen'
 import SettingsScreen from './screens/SettingsScreen'
+import AdminConsoleScreen from './screens/AdminConsoleScreen'
 
 const getInitialScreen = () => {
   if (typeof window !== 'undefined' && window.history.state && window.history.state.screen) {
@@ -192,6 +193,12 @@ export default function App() {
 
       {screen === 'settings' && (
         <SettingsScreen
+          onNavigate={navigate}
+        />
+      )}
+
+      {screen === 'admin-console' && (
+        <AdminConsoleScreen
           onNavigate={navigate}
         />
       )}

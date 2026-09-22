@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { childrenApi } from '../services/api'
+import { childrenApi, referralsApi } from '../services/api'
 import { ErrorState, LoadingState, EmptyState } from '../components/AsyncState'
 import AppLayout from '../components/AppLayout'
 import Card from '../components/Card'
@@ -13,6 +13,7 @@ export default function HistoryScreen({ onNavigate }) {
   const { currentChild, setCurrentChild } = useApp()
   const [history, setHistory] = useState(null)
   const [health, setHealth] = useState(null)
+  const [referrals, setReferrals] = useState([])
   const [error, setError] = useState(null)
 
   // Cohort state for child selection precondition
@@ -74,6 +75,22 @@ export default function HistoryScreen({ onNavigate }) {
       ])
       setHistory(h && typeof h === 'object' ? h : null)
       setHealth(Array.isArray(measurements) ? measurements : [])
+
+      if (h && Array.isArray(h.screenings) && h.screenings.length > 0) {
+        const referralData = await Promise.all(
+          h.screenings.map(async (s) => {
+            try {
+              const rCall = referralsApi.byScreening(s.screening_id)
+              return typeof rCall === 'function' ? await rCall(s.screening_id) : await rCall
+            } catch {
+              return null
+            }
+          })
+        )
+        setReferrals(referralData.filter(Boolean))
+      } else {
+        setReferrals([])
+      }
     } catch (e) {
       setError(e)
     }
@@ -560,6 +577,12 @@ export default function HistoryScreen({ onNavigate }) {
                         <p className="text-[11px] text-neutral-500">
                           Missed developmental weight: {sc.total_missed_weight ?? 0}
                         </p>
+                        {referrals.find((r) => r.screening_id === sc.screening_id) && (
+                          <div className="mt-1.5 flex items-center gap-1.5 rounded-md bg-teal-50 px-2 py-0.5 text-[11px] text-teal-800 border border-teal-200/80">
+                            <Icon name="hospital" className="h-3 w-3 text-teal-700 shrink-0" />
+                            <span>Referral: <strong className="font-mono">{referrals.find((r) => r.screening_id === sc.screening_id).referral_id}</strong> → {referrals.find((r) => r.screening_id === sc.screening_id).facility_name}</span>
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -578,6 +601,31 @@ export default function HistoryScreen({ onNavigate }) {
             </p>
           )}
         </Card>
+
+        {/* REFERRALS SECTION */}
+        {referrals.length > 0 && (
+          <Card title="Referrals & Clinical Escalations" subtitle="Specialized facility referral records">
+            <div className="space-y-3">
+              {referrals.map((r) => {
+                const tone = r.risk_level === 'RED' ? 'high' : r.risk_level === 'YELLOW' ? 'moderate' : 'normal'
+                return (
+                  <div key={r.referral_id} className="rounded-xl bg-neutral-50 p-3.5 text-xs border border-neutral-200/80">
+                    <div className="flex items-center justify-between">
+                      <BadgePill tone={tone} dot>{r.risk_level}</BadgePill>
+                      <span className="text-[11px] font-mono text-primary-700 font-semibold">{r.referral_id}</span>
+                    </div>
+                    <p className="mt-2 text-neutral-800">
+                      <span className="font-semibold text-neutral-500">Facility:</span> {r.facility_name}
+                    </p>
+                    <p className="mt-1 text-neutral-500">
+                      Referred by {r.worker_name || 'Worker'} on {r.generated_at ? new Date(r.generated_at).toLocaleDateString() : '—'}
+                    </p>
+                  </div>
+                )
+              })}
+            </div>
+          </Card>
+        )}
 
       </div>
 

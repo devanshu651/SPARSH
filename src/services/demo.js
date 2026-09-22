@@ -1,12 +1,20 @@
 const key = (name) => `sparsh:demo:${name}`
 const read = (name, fallback) => { try { return JSON.parse(localStorage.getItem(key(name)) || JSON.stringify(fallback)) } catch { return fallback } }
 const write = (name, value) => localStorage.setItem(key(name), JSON.stringify(value))
-export const isDemoMode = () => localStorage.getItem('sparsh:demo-mode') === 'true'
-export const startDemoMode = () => localStorage.setItem('sparsh:demo-mode', 'true')
-export const stopDemoMode = () => localStorage.removeItem('sparsh:demo-mode')
+// Demo mode is only available in development builds. The build-time
+// DEMO_MODE flag is false in production, so localStorage/devtools can never
+// activate demo mode there; the flag is never written or consulted.
+const demoAvailable = import.meta.env.DEMO_MODE === true
+export const isDemoMode = () => demoAvailable && localStorage.getItem('sparsh:demo-mode') === 'true'
+export const startDemoMode = () => { if (!demoAvailable) return; localStorage.setItem('sparsh:demo-mode', 'true') }
+export const stopDemoMode = () => { if (!demoAvailable) return; localStorage.removeItem('sparsh:demo-mode') }
+export { demoAvailable }
 const milestones = ['gross_motor','fine_motor','language','social_emotional','cognitive'].map((domain, index) => ({ id:`demo-${domain}`, domain, task:['Can the child walk or move as expected for their age?','Can the child pick up and hold a small object?','Does the child use age-appropriate words or sounds?','Does the child respond and engage with familiar people?','Does the child explore and solve simple problems?'][index] }))
+const initialCentres = [{id:'demo-centre',code:'AWC-001',name:'Demo Anganwadi Centre',district:'Demo District',state:'Demo State',address:'123 Demo Street',active:true,created_at:new Date().toISOString(),created_by:'demo-admin'}]
+const initialUsers = [{uid:'demo-worker',name:'Demo Anganwadi Worker',role:'worker',centre_ids:['demo-centre'],disabled:false,created_at:new Date().toISOString()},{uid:'demo-supervisor',name:'Demo Supervisor',role:'supervisor',centre_ids:['demo-centre'],disabled:false,created_at:new Date().toISOString()},{uid:'demo-admin',name:'Demo Administrator',role:'admin',centre_ids:[],disabled:false,created_at:new Date().toISOString()}]
 export const demoApi = {
-  users: { getMe: async () => ({ uid:'demo-worker', role:'worker', name:'Demo Anganwadi Worker', centre_ids:['demo-centre'] }) },
+  users: { getMe: async () => ({ uid:'demo-worker', role:'worker', name:'Demo Anganwadi Worker', centre_ids:['demo-centre'] }), list: async () => read('users', initialUsers), create: async (data) => { const user={...data,uid:`demo-user-${Date.now()}`,disabled:false,created_at:new Date().toISOString()};const items=[...read('users', initialUsers),user];write('users',items);return user }, update: async (uid,data) => { const users=read('users', initialUsers).map(u=>u.uid===uid?{...u,...data}:u);write('users',users);return users.find(u=>u.uid===uid) }, setActivation: async (uid,disabled) => { const users=read('users', initialUsers).map(u=>u.uid===uid?{...u,disabled}:u);write('users',users);return users.find(u=>u.uid===uid) } },
+  centres: { list: async () => read('centres', initialCentres), create: async (data) => { const centre={...data,id:`demo-centre-${Date.now()}`,active:true,created_at:new Date().toISOString(),created_by:'demo-admin'};const items=[...read('centres', initialCentres),centre];write('centres',items);return centre }, update: async (centreId,data) => { const centres=read('centres', initialCentres).map(c=>c.id===centreId?{...c,...data}:c);write('centres',centres);return centres.find(c=>c.id===centreId) } },
   children: {
     list: async () => read('children', []),
     get: async (id) => read('children', []).find(x => x.id === id),
@@ -20,5 +28,5 @@ export const demoApi = {
     submit: async payload => { const missed=payload.answers.filter(x=>x.response==='NO').length;const risk_level=missed>=3?'RED':missed>=1?'YELLOW':'GREEN';const result={screening_id:`demo-screening-${Date.now()}`,child_id:payload.child_id,risk_level,risk_label:risk_level==='RED'?'High developmental risk':risk_level==='YELLOW'?'Moderate developmental risk':'Development on track',total_missed_weight:missed,domain_scores:Object.fromEntries(milestones.map(m=>[m.domain,{missed_weight:payload.answers.find(x=>x.milestone_id===m.id)?.response==='NO'?1:0,missed_count:payload.answers.find(x=>x.milestone_id===m.id)?.response==='NO'?1:0,unsure_count:0,status:'complete'}])),recommendation:risk_level==='GREEN'?'Continue routine monitoring.':'Discuss follow-up with a supervisor.',milestone_dataset_version:'demo',screened_at:payload.screened_at};const all=read('screenings',{});write('screenings',{...all,[payload.child_id]:[...(all[payload.child_id]||[]),{screening_id:result.screening_id,screened_at:result.screened_at,risk_level,total_missed_weight:missed}]});const children=read('children',[]).map(c=>c.id===payload.child_id?{...c,latest_risk:risk_level}:c);write('children',children);return result },
     risk: async () => { throw new Error('Demo risk lookup is not available.') },
   },
-  referrals: { create: async data => ({referral_id:`demo-referral-${Date.now()}`,...data}) },
+  referrals: { create: async data => ({referral_id:`demo-referral-${Date.now()}`,...data}), get: async id => read('referrals',[]).find(x=>x.referral_id===id), byScreening: async screeningId => read('referrals',[]).find(x=>x.screening_id===screeningId) },
 }

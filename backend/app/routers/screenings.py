@@ -1,6 +1,7 @@
 ﻿from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.core.firebase import get_firestore_client
+from app.core.audit import audit_log
 from app.core.security import ensure_centre_access, get_current_user, require_roles
 from app.models.auth import CurrentUser, Role
 from app.models.screening import ChildHistoryResponse, RiskScoreResponse, ScreeningHistoryItem, ScreeningSubmit
@@ -30,8 +31,14 @@ def submit_screening(payload: ScreeningSubmit, user: CurrentUser = Depends(requi
     if existing:
         raise HTTPException(status_code=409, detail="This screening was already submitted. Open the child's history to view it.")
     answer_data = [item.model_dump(mode="json") for item in payload.answers]; result = calculate_risk(answer_data, milestones)
-    now = datetime.now(timezone.utc); screening = payload.model_dump(mode="json") | {"answers": answer_data, **{key: (value.model_dump() if key == "domain_scores" else value.value if hasattr(value, "value") else value) for key,value in result.items()}, "checkpoint_age_months": expected_age, "milestone_dataset_version": dataset_version, "created_by": user.uid, "created_at": now}
+    now = datetime.now(timezone.utc)
+    serialized = {
+        key: ({domain: score.model_dump(mode="json") for domain, score in value.items()} if key == "domain_scores" else value.value if hasattr(value, "value") else value)
+        for key, value in result.items()
+    }
+    screening = payload.model_dump(mode="json") | {"answers": answer_data, **serialized, "checkpoint_age_months": expected_age, "milestone_dataset_version": dataset_version, "created_by": user.uid, "created_at": now}
     ref = db.collection("screenings").document(); db.collection("screenings").document(ref.id).set(screening)
+    audit_log(user.uid, "screening_submitted", ref.id, child["centre_id"])
     return RiskScoreResponse(screening_id=ref.id, child_id=payload.child_id, screened_at=payload.screened_at, **result, milestone_dataset_version=screening["milestone_dataset_version"])
 @router.get("/screenings/{screening_id}/risk", response_model=RiskScoreResponse)
 def get_risk_score(screening_id: str, user: CurrentUser = Depends(get_current_user)):

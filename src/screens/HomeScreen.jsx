@@ -96,6 +96,7 @@ export default function HomeScreen({ onNavigate }) {
 
   const workerName = currentWorker?.name || 'Healthcare Worker'
   const centreName = currentWorker?.centre_ids?.[0] ? `Centre: ${currentWorker.centre_ids[0]}` : 'Ward 4 Health Centre'
+  const isAdmin = currentWorker?.role === 'admin'
 
   const todayFormatted = new Intl.DateTimeFormat('en-IN', {
     weekday: 'long',
@@ -410,6 +411,18 @@ export default function HomeScreen({ onNavigate }) {
                   <span className="mt-2 text-xs font-bold text-neutral-900">Clinical Alerts</span>
                   <span className="text-[10px] text-neutral-500">Triage notices</span>
                 </button>
+
+                {isAdmin && (
+                  <button
+                    type="button"
+                    onClick={() => onNavigate?.('admin-console')}
+                    className="flex flex-col items-start rounded-lg border border-neutral-200 bg-neutral-50/50 p-3 text-left transition hover:bg-neutral-100 hover:border-neutral-300"
+                  >
+                    <Icon name="settings" className="h-4 w-4 text-primary-800" />
+                    <span className="mt-2 text-xs font-bold text-neutral-900">Admin Console</span>
+                    <span className="text-[10px] text-neutral-500">Manage centres & users</span>
+                  </button>
+                )}
               </div>
             </Card>
           </div>

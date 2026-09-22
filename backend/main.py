@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.routers import children, screenings, referrals, users
+from app.routers import centres, children, screenings, referrals, users
 
 
 app = FastAPI(
@@ -20,6 +20,7 @@ app.add_middleware(
 )
 
 app.include_router(users.router, prefix="/api/v1")
+app.include_router(centres.router, prefix="/api/v1")
 app.include_router(children.router, prefix="/api/v1")
 app.include_router(screenings.router, prefix="/api/v1")
 app.include_router(referrals.router, prefix="/api/v1")
