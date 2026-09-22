@@ -1,261 +1,358 @@
-import React from 'react'
-
-const monthlyData = [
-  { month: 'Mar', value: 42 },
-  { month: 'Apr', value: 58 },
-  { month: 'May', value: 51 },
-  { month: 'Jun', value: 74 },
-  { month: 'Jul', value: 68 },
-  { month: 'Aug', value: 85 },
-]
-
-const workers = [
-  { name: 'Sunita Devi', ward: 'Ward 4', screened: 85, score: 98, initial: 'S' },
-  { name: 'Rekha Yadav', ward: 'Ward 7', screened: 72, score: 94, initial: 'R' },
-  { name: 'Meena Patil', ward: 'Ward 2', screened: 68, score: 91, initial: 'M' },
-]
+import { useState, useEffect, useMemo } from 'react'
+import { childrenApi } from '../services/api'
+import { useApp } from '../context/AppContext'
+import AppLayout from '../components/AppLayout'
+import Card from '../components/Card'
+import Button from '../components/Button'
+import BadgePill from '../components/BadgePill'
+import Icon from '../components/Icon'
+import { LoadingState, ErrorState } from '../components/AsyncState'
 
 export default function AnalyticsScreen({ onNavigate }) {
+  const { currentWorker, setCurrentChild } = useApp()
+  const [children, setChildren] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  const loadData = async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const fn = childrenApi.list()
+      const data = typeof fn === 'function' ? await fn() : await fn
+      setChildren(Array.isArray(data) ? data : [])
+    } catch (err) {
+      setError(err)
+      setChildren([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    loadData()
+  }, [])
+
+  // Derive real statistics from cohort
+  const stats = useMemo(() => {
+    const total = children.length
+    const screened = children.filter((c) => !!c.latest_risk).length
+    const red = children.filter((c) => c.latest_risk === 'RED').length
+    const yellow = children.filter((c) => c.latest_risk === 'YELLOW').length
+    const green = children.filter((c) => c.latest_risk === 'GREEN').length
+    const pending = total - screened
+
+    const compliance = total > 0 ? Math.round((screened / total) * 100) : 0
+    const redPct = screened > 0 ? Math.round((red / screened) * 100) : 0
+    const yellowPct = screened > 0 ? Math.round((yellow / screened) * 100) : 0
+    const greenPct = screened > 0 ? Math.round((green / screened) * 100) : 0
+
+    return {
+      total,
+      screened,
+      red,
+      yellow,
+      green,
+      pending,
+      compliance,
+      redPct,
+      yellowPct,
+      greenPct
+    }
+  }, [children])
+
+  // Children flagged for priority follow-up
+  const priorityChildren = useMemo(() => {
+    return children
+      .filter((c) => c.latest_risk === 'RED' || c.latest_risk === 'YELLOW' || !c.latest_risk)
+      .sort((a, b) => {
+        const order = { RED: 0, YELLOW: 1 }
+        const rA = order[a.latest_risk] ?? 2
+        const rB = order[b.latest_risk] ?? 2
+        return rA - rB
+      })
+  }, [children])
+
+  const handleInspectChild = (child) => {
+    setCurrentChild(child)
+    if (child.latest_risk === 'RED') {
+      onNavigate?.('referral')
+    } else {
+      onNavigate?.('history')
+    }
+  }
+
+  const centreTitle = currentWorker?.centre_ids?.[0] ? `Centre: ${currentWorker.centre_ids[0]}` : 'Ward 4 Sub-centre'
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#18346f] via-[#14558a] to-[#0d6b68] lg:bg-[#f5f8fc]">
-      <div className="mx-auto min-h-screen w-full max-w-md bg-[#f7f9fd] pb-24 shadow-2xl lg:max-w-5xl lg:rounded-none">
+    <AppLayout
+      active="analytics"
+      onNavigate={onNavigate}
+      backTo="dashboard"
+      title="Supervisor Population Surveillance & Analytics"
+      subtitle={`${centreTitle} · RBSK Developmental Screening Coverage & Triage`}
+      actions={
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => window.print()}
+        >
+          <Icon name="report" className="h-4 w-4 text-neutral-600" />
+          <span>Export Monthly Audit</span>
+        </Button>
+      }
+    >
+      <div className="mx-auto max-w-7xl space-y-6 p-4 sm:p-6 lg:p-8">
 
-        {/* Header */}
-        <header className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-100 bg-white px-5 py-4">
-          <button
-            type="button"
-            onClick={() => onNavigate?.('dashboard')}
-            className="grid h-9 w-9 place-items-center rounded-full bg-blue-50 text-xl text-blue-600"
-          >
-            ‹
-          </button>
-
-          <h1 className="text-[16px] font-bold text-slate-900">
-            Supervisor Analytics
-          </h1>
-
-          <button
-            type="button"
-            className="rounded-full bg-blue-50 px-3 py-2 text-[11px] font-semibold text-blue-600"
-          >
-            📅 Aug 2025
-          </button>
-        </header>
-
-        <main className="space-y-4 px-4 py-3">
-
-          {/* KPI Cards */}
-          <section className="grid grid-cols-3 gap-2">
-            <div className="rounded-2xl border border-blue-100 bg-white p-3 text-center shadow-sm">
-              <div className="mx-auto mb-2 grid h-9 w-9 place-items-center rounded-full bg-blue-50 text-blue-600">
-                ♙
+        {loading ? (
+          <LoadingState label="Computing cohort population analytics..." />
+        ) : error ? (
+          <ErrorState error={error} onRetry={loadData} />
+        ) : (
+          <>
+            {/* TOP LEVEL KPI STRIP */}
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+              
+              {/* Total Cohort */}
+              <div className="rounded-xl border border-neutral-200/80 bg-white p-4 shadow-card">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-neutral-600">Total Registered Cohort</span>
+                  <div className="grid h-8 w-8 place-items-center rounded-lg bg-primary-50 text-primary-800">
+                    <Icon name="children" className="h-4 w-4" />
+                  </div>
+                </div>
+                <p className="mt-3 text-2xl font-bold text-neutral-900">{stats.total}</p>
+                <p className="mt-1 text-[11px] text-neutral-500">Under-5 children in assigned ward</p>
               </div>
-              <div className="text-[18px] font-bold text-slate-900">284</div>
-              <div className="text-[9px] text-slate-500">Total Screened</div>
-            </div>
 
-            <div className="rounded-2xl border border-red-100 bg-white p-3 text-center shadow-sm">
-              <div className="mx-auto mb-2 grid h-9 w-9 place-items-center rounded-full bg-red-50 text-red-500">
-                ⚠
+              {/* Compliance */}
+              <div className="rounded-xl border border-neutral-200/80 bg-white p-4 shadow-card">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-neutral-600">Screening Compliance</span>
+                  <div className="grid h-8 w-8 place-items-center rounded-lg bg-teal-50 text-teal-800">
+                    <Icon name="checkCircle" className="h-4 w-4" />
+                  </div>
+                </div>
+                <p className="mt-3 text-2xl font-bold text-teal-700">{stats.compliance}%</p>
+                <p className="mt-1 text-[11px] text-neutral-500">{stats.screened} of {stats.total} evaluated</p>
               </div>
-              <div className="text-[18px] font-bold text-slate-900">47</div>
-              <div className="text-[9px] text-slate-500">At Risk</div>
-            </div>
 
-            <div className="rounded-2xl border border-orange-100 bg-white p-3 text-center shadow-sm">
-              <div className="mx-auto mb-2 grid h-9 w-9 place-items-center rounded-full bg-orange-50 text-orange-500">
-                ➤
+              {/* High Risk Cases */}
+              <div className="rounded-xl border border-red-200 bg-red-50/50 p-4 shadow-card">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-red-800">High Risk Delays (RED)</span>
+                  <div className="grid h-8 w-8 place-items-center rounded-lg bg-red-100 text-red-700">
+                    <Icon name="hospital" className="h-4 w-4" />
+                  </div>
+                </div>
+                <p className="mt-3 text-2xl font-bold text-red-700">{stats.red}</p>
+                <p className="mt-1 text-[11px] text-red-600 font-medium">
+                  {stats.redPct}% of evaluated children
+                </p>
               </div>
-              <div className="text-[18px] font-bold text-slate-900">23</div>
-              <div className="text-[9px] text-slate-500">Referrals</div>
+
+              {/* Moderate Delays */}
+              <div className="rounded-xl border border-amber-200 bg-amber-50/50 p-4 shadow-card">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-amber-800">Moderate Watch (YELLOW)</span>
+                  <div className="grid h-8 w-8 place-items-center rounded-lg bg-amber-100 text-amber-700">
+                    <Icon name="alerts" className="h-4 w-4" />
+                  </div>
+                </div>
+                <p className="mt-3 text-2xl font-bold text-amber-700">{stats.yellow}</p>
+                <p className="mt-1 text-[11px] text-amber-600 font-medium">
+                  {stats.yellowPct}% under community follow-up
+                </p>
+              </div>
             </div>
-          </section>
 
-          {/* Monthly Screenings */}
-          <section className="rounded-2xl border border-blue-100 bg-white p-4 shadow-sm">
-            <div className="mb-5 flex items-center justify-between">
-              <h2 className="text-[13px] font-bold text-slate-900">
-                Monthly Screenings
-              </h2>
+            {/* CHARTS GRID */}
+            <div className="grid gap-6 lg:grid-cols-2">
 
-              <span className="rounded-full bg-blue-50 px-3 py-1 text-[10px] font-semibold text-blue-600">
-                2025
-              </span>
-            </div>
-
-            <div className="flex h-32 items-end justify-between gap-2 px-1">
-              {monthlyData.map((item) => {
-                const isCurrent = item.month === 'Aug'
-                const height = `${(item.value / 85) * 100}%`
-
-                return (
+              {/* POPULATION RISK DISTRIBUTION */}
+              <Card
+                title="Developmental Risk Profile"
+                subtitle="RBSK triage distribution across screened children in this centre"
+              >
+                <div className="mt-2 flex flex-col sm:flex-row items-center justify-around gap-6 py-4">
+                  
+                  {/* Conic Ring Chart */}
                   <div
-                    key={item.month}
-                    className="flex h-full flex-1 flex-col items-center justify-end"
+                    className="relative grid h-36 w-36 shrink-0 place-items-center rounded-full shadow-inner"
+                    style={{
+                      background: stats.screened > 0
+                        ? `conic-gradient(#16a34a 0% ${stats.greenPct}%, #d97706 ${stats.greenPct}% ${stats.greenPct + stats.yellowPct}%, #dc2626 ${stats.greenPct + stats.yellowPct}% 100%)`
+                        : '#e2e8f0'
+                    }}
                   >
-                    <span className="mb-1 text-[9px] font-medium text-blue-600">
-                      {item.value}
-                    </span>
-
-                    <div
-                      className={`w-full max-w-[32px] rounded-t-xl ${
-                        isCurrent
-                          ? 'bg-blue-600'
-                          : 'bg-blue-100'
-                      }`}
-                      style={{ height }}
-                    />
-
-                    <span className="mt-1 text-[9px] text-slate-500">
-                      {item.month}
-                    </span>
-                  </div>
-                )
-              })}
-            </div>
-          </section>
-
-          {/* Risk Distribution */}
-          <section className="rounded-2xl border border-blue-100 bg-white p-4 shadow-sm">
-            <h2 className="mb-4 text-[13px] font-bold text-slate-900">
-              Risk Distribution
-            </h2>
-
-            <div className="flex items-center gap-5">
-              {/* Donut */}
-              <div
-                className="relative grid h-24 w-24 shrink-0 place-items-center rounded-full"
-                style={{
-                  background:
-                    'conic-gradient(#22c55e 0deg 216deg, #f59e0b 216deg 302.4deg, #ef4444 302.4deg 360deg)',
-                }}
-              >
-                <div className="grid h-16 w-16 place-items-center rounded-full bg-white">
-                  <div className="text-center">
-                    <div className="text-[18px] font-bold text-slate-900">
-                      284
-                    </div>
-                    <div className="text-[8px] text-slate-500">
-                      Total
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Legend */}
-              <div className="flex-1 space-y-2">
-                <div className="flex items-center justify-between text-[10px]">
-                  <div className="flex items-center gap-2">
-                    <span className="h-2.5 w-2.5 rounded-full bg-green-500" />
-                    <span>Normal</span>
-                  </div>
-                  <div className="flex gap-2">
-                    <b className="text-green-600">169</b>
-                    <span className="rounded bg-green-50 px-1 text-green-600">60%</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between text-[10px]">
-                  <div className="flex items-center gap-2">
-                    <span className="h-2.5 w-2.5 rounded-full bg-orange-500" />
-                    <span>Moderate</span>
-                  </div>
-                  <div className="flex gap-2">
-                    <b className="text-orange-500">68</b>
-                    <span className="rounded bg-orange-50 px-1 text-orange-500">24%</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between text-[10px]">
-                  <div className="flex items-center gap-2">
-                    <span className="h-2.5 w-2.5 rounded-full bg-red-500" />
-                    <span>At Risk</span>
-                  </div>
-                  <div className="flex gap-2">
-                    <b className="text-red-500">47</b>
-                    <span className="rounded bg-red-50 px-1 text-red-500">16%</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Worker Performance */}
-          <section className="rounded-2xl border border-blue-100 bg-white p-4 shadow-sm">
-            <h2 className="mb-3 text-[13px] font-bold text-slate-900">
-              Worker Performance
-            </h2>
-
-            <div>
-              {workers.map((worker, index) => (
-                <div
-                  key={worker.name}
-                  className={`flex items-center justify-between py-3 ${
-                    index !== workers.length - 1
-                      ? 'border-b border-slate-100'
-                      : ''
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="grid h-8 w-8 place-items-center rounded-full bg-blue-600 text-[11px] font-bold text-white">
-                      {worker.initial}
-                    </div>
-
-                    <div>
-                      <div className="text-[11px] font-semibold text-slate-900">
-                        {worker.name}
-                      </div>
-                      <div className="text-[9px] text-slate-400">
-                        {worker.ward} · {worker.screened} screened
+                    <div className="grid h-26 w-26 place-items-center rounded-full bg-white shadow-xs">
+                      <div className="text-center">
+                        <span className="text-2xl font-extrabold text-neutral-900">{stats.screened}</span>
+                        <span className="block text-[9px] font-bold uppercase tracking-wider text-neutral-400">Screened</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="text-[11px] font-bold text-slate-900">
-                    <span className="mr-1 text-orange-400">☆</span>
-                    {worker.score}%
+                  {/* Legend & Breakdown */}
+                  <div className="w-full max-w-xs space-y-2.5 text-xs">
+                    <div className="flex items-center justify-between rounded-lg bg-emerald-50/70 p-2.5 border border-emerald-100">
+                      <div className="flex items-center gap-2">
+                        <span className="h-2.5 w-2.5 rounded-full bg-emerald-600" />
+                        <span className="font-semibold text-emerald-950">On Track (GREEN)</span>
+                      </div>
+                      <span className="font-bold text-emerald-900">{stats.green} ({stats.greenPct}%)</span>
+                    </div>
+
+                    <div className="flex items-center justify-between rounded-lg bg-amber-50/70 p-2.5 border border-amber-100">
+                      <div className="flex items-center gap-2">
+                        <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />
+                        <span className="font-semibold text-amber-950">Moderate Delay (YELLOW)</span>
+                      </div>
+                      <span className="font-bold text-amber-900">{stats.yellow} ({stats.yellowPct}%)</span>
+                    </div>
+
+                    <div className="flex items-center justify-between rounded-lg bg-red-50/70 p-2.5 border border-red-100">
+                      <div className="flex items-center gap-2">
+                        <span className="h-2.5 w-2.5 rounded-full bg-red-600" />
+                        <span className="font-semibold text-red-950">High Risk Delay (RED)</span>
+                      </div>
+                      <span className="font-bold text-red-900">{stats.red} ({stats.redPct}%)</span>
+                    </div>
+
+                    <div className="flex items-center justify-between rounded-lg bg-neutral-100/70 p-2.5 border border-neutral-200">
+                      <div className="flex items-center gap-2">
+                        <span className="h-2.5 w-2.5 rounded-full bg-neutral-400" />
+                        <span className="font-semibold text-neutral-700">Screening Pending</span>
+                      </div>
+                      <span className="font-bold text-neutral-800">{stats.pending}</span>
+                    </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          </section>
+              </Card>
 
-        </main>
-
-        {/* Bottom Navigation */}
-        <nav className="safe-bottom fixed inset-x-0 bottom-0 z-20 border-t border-slate-100 bg-white/95 px-3 pt-2 shadow-[0_-8px_24px_rgba(15,23,42,0.05)] backdrop-blur lg:absolute lg:mx-auto lg:max-w-md">
-          <div className="mx-auto flex max-w-md justify-between">
-            {[
-              ['dashboard', '⌂', 'Home'],
-              ['children', '♧', 'Children'],
-              ['screening', '▤', 'Screening'],
-              ['analytics', '▥', 'Analytics'],
-              ['alerts', '♧', 'Alerts'],
-            ].map(([id, icon, label]) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => onNavigate?.(id)}
-                className={`flex min-w-14 flex-col items-center gap-0.5 rounded-lg px-3 py-1 text-[9px] font-semibold ${
-                  id === 'analytics'
-                    ? 'text-blue-600'
-                    : 'text-slate-400'
-                }`}
+              {/* CLINICAL PROTOCOL ADHERENCE & TARGETS */}
+              <Card
+                title="Supervisory Operational Standards"
+                subtitle="Frontline milestone delivery targets and referral tracking"
               >
-                <span
-                  className={`grid h-6 w-7 place-items-center rounded-lg text-base ${
-                    id === 'analytics' ? 'bg-blue-50' : ''
-                  }`}
-                >
-                  {icon}
-                </span>
-                {label}
-              </button>
-            ))}
-          </div>
-        </nav>
+                <div className="mt-2 space-y-4 text-xs">
+                  <div>
+                    <div className="flex justify-between font-semibold text-neutral-700 mb-1">
+                      <span>Under-5 Cohort Screening Coverage</span>
+                      <span>{stats.compliance}% / 100% Target</span>
+                    </div>
+                    <div className="h-2.5 w-full overflow-hidden rounded-full bg-neutral-100">
+                      <div
+                        className="h-full rounded-full bg-teal-600 transition-all duration-500"
+                        style={{ width: `${stats.compliance}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="rounded-lg border border-neutral-100 bg-neutral-50/80 p-3.5 space-y-2">
+                    <div className="flex justify-between items-center text-[11px]">
+                      <span className="text-neutral-500 font-medium">Assigned Anganwadi Centre:</span>
+                      <span className="font-bold text-neutral-900">{currentWorker?.centre_ids?.[0] || 'AWC-MH-2847'}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-[11px]">
+                      <span className="text-neutral-500 font-medium">Lead Health Caseworker:</span>
+                      <span className="font-bold text-neutral-900">{currentWorker?.name || 'Healthcare Worker'}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-[11px]">
+                      <span className="text-neutral-500 font-medium">RBSK Dataset Version:</span>
+                      <span className="font-bold text-teal-800">Version 2.4 (2025 Standard)</span>
+                    </div>
+                  </div>
+
+                  <div className="rounded-lg bg-teal-50 p-3 text-[11px] text-teal-800 border border-teal-200">
+                    <span className="font-bold">Supervisor Guidance:</span>
+                    <p className="mt-0.5 leading-relaxed">
+                      Children flagged with RED high risk require immediate DEIC referral documentation. Moderate cases should be re-evaluated at the 4-week nutritional checkpoint visit.
+                    </p>
+                  </div>
+                </div>
+              </Card>
+
+            </div>
+
+            {/* PRIORITY ATTENTION TABLE */}
+            <Card
+              title="Ward Priority Attention Roster"
+              subtitle="Children requiring immediate specialist referral or developmental follow-up"
+            >
+              {priorityChildren.length === 0 ? (
+                <p className="text-xs text-neutral-500 py-4">
+                  No children currently require priority intervention in this ward.
+                </p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead>
+                      <tr className="border-b border-neutral-200 text-neutral-400 font-semibold uppercase tracking-wider text-[10px]">
+                        <th className="py-2.5 px-3">Child Name & Identifier</th>
+                        <th className="py-2.5 px-3">Age</th>
+                        <th className="py-2.5 px-3">Guardian</th>
+                        <th className="py-2.5 px-3">Clinical Triage</th>
+                        <th className="py-2.5 px-3 text-right">Caseworker Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-neutral-100">
+                      {priorityChildren.map((c) => {
+                        const tone =
+                          c.latest_risk === 'RED'
+                            ? 'high'
+                            : c.latest_risk === 'YELLOW'
+                            ? 'moderate'
+                            : 'neutral'
+
+                        const label =
+                          c.latest_risk === 'RED'
+                            ? 'High Risk (RED)'
+                            : c.latest_risk === 'YELLOW'
+                            ? 'Moderate Delay'
+                            : 'Pending Initial Screening'
+
+                        return (
+                          <tr key={c.id} className="hover:bg-neutral-50/60">
+                            <td className="py-3 px-3 font-semibold text-neutral-900">
+                              <div className="flex items-center gap-2">
+                                <span>{c.name || 'Unnamed Child'}</span>
+                                <span className="text-[10px] text-neutral-400 font-normal">({c.child_identifier || '—'})</span>
+                              </div>
+                            </td>
+                            <td className="py-3 px-3 text-neutral-700">
+                              {c.age_months !== null && c.age_months !== undefined ? `${c.age_months}m` : '—'}
+                            </td>
+                            <td className="py-3 px-3 text-neutral-600">
+                              {c.guardian_name || '—'}
+                            </td>
+                            <td className="py-3 px-3">
+                              <BadgePill tone={tone} dot>
+                                {label}
+                              </BadgePill>
+                            </td>
+                            <td className="py-3 px-3 text-right">
+                              <Button
+                                size="sm"
+                                variant={c.latest_risk === 'RED' ? 'destructive' : 'secondary'}
+                                onClick={() => handleInspectChild(c)}
+                              >
+                                <span>{c.latest_risk === 'RED' ? 'Issue Referral →' : !c.latest_risk ? 'Screen →' : 'View Record →'}</span>
+                              </Button>
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </Card>
+
+          </>
+        )}
 
       </div>
-    </div>
+    </AppLayout>
   )
 }

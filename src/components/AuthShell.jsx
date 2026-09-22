@@ -1,103 +1,82 @@
+import BrandLogo from './BrandLogo'
+
 export default function AuthShell({
   children,
   className = '',
-  showBackground = false,
+  showBackground = false
 }) {
   return (
-    <main className="grid min-h-screen overflow-hidden bg-slate-100 lg:grid-cols-[minmax(0,1fr)_30rem]">
-
-      {/* LEFT SIDE */}
+    <main className="grid min-h-screen bg-neutral-100 lg:grid-cols-12">
+      {/* LEFT SIDE INSTITUTIONAL BRAND PANEL */}
       <section
-        className={`relative hidden min-h-screen overflow-hidden text-white lg:flex lg:flex-col ${
-          showBackground ? '' : 'bg-health-gradient'
+        className={`relative hidden overflow-hidden text-white lg:col-span-6 lg:flex lg:flex-col lg:justify-between lg:p-12 xl:col-span-7 xl:p-16 ${
+          showBackground
+            ? 'bg-primary-950'
+            : 'bg-gradient-to-br from-primary-950 via-primary-900 to-teal-950'
         }`}
       >
-        {/* Mother & child background - ONLY when requested */}
+        {/* Mother-child background image — ONLY when showBackground is true (Splash) */}
         {showBackground && (
-          <>
+          <div className="absolute inset-0">
             <img
               src="/mother-child.png"
               alt=""
-              className="absolute inset-0 h-full w-full object-cover object-center"
+              className="h-full w-full object-cover object-center opacity-65"
             />
-
-            {/* Blue → teal overlay */}
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-900/95 via-blue-800/75 to-teal-500/55" />
-          </>
+            {/* Dark navy overlay: heavier on the left for maximum text contrast, lighter on the right to keep mother and child clearly visible */}
+            <div className="absolute inset-0 bg-gradient-to-r from-primary-950/95 via-primary-950/80 to-primary-950/45" />
+          </div>
         )}
 
-        {/* Decorative glow */}
-        <div className="pointer-events-none absolute -left-28 top-24 h-80 w-80 rounded-full bg-cyan-300/10 blur-3xl" />
-
-        <div className="pointer-events-none absolute bottom-0 right-0 h-96 w-96 rounded-full bg-teal-300/15 blur-3xl" />
-
-        {/* Decorative circles */}
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -left-24 bottom-24 h-72 w-72 rounded-full border border-white/10" />
-
-          <div className="absolute -right-20 top-24 h-52 w-52 rounded-full border border-white/10" />
+        {/* Top brand header */}
+        <div className="relative z-10">
+          <BrandLogo className="h-10 w-10" showWordmark light />
         </div>
 
-        {/* LEFT CONTENT */}
-        <div className="relative z-10 flex min-h-screen flex-col justify-between p-14">
+        {/* Core clinical messaging */}
+        <div className="relative z-10 max-w-lg space-y-4">
+          <span className="inline-flex items-center gap-1.5 rounded-md bg-teal-500/15 px-3 py-1 text-xs font-semibold text-teal-300 ring-1 ring-inset ring-teal-400/25">
+            Public Health & Child Welfare Protocol
+          </span>
 
-          <p className="text-sm font-semibold tracking-[0.2em] text-white/70">
-            SPARSH HEALTH PLATFORM
+          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl leading-tight">
+            Early detection for every child. Brighter developmental futures.
+          </h2>
+
+          <p className="text-sm leading-relaxed text-neutral-300">
+            SPARSH equips Anganwadi and community healthcare workers with standardized milestone screening,
+            growth monitoring, and timely DEIC clinical referral pathways.
           </p>
 
-          <div className="max-w-xl">
-            <p className="text-5xl font-bold leading-tight">
-              Early detection for
-              <br />
-              every child.
-            </p>
-
-            <p className="mt-5 max-w-md text-lg leading-8 text-white/75">
-              A trusted platform for assessment, screening,
-              <br />
-              response and holistic child development.
-            </p>
+          <div className="grid grid-cols-2 gap-4 pt-4 text-xs">
+            <div className="rounded-lg border border-white/10 bg-white/5 p-3">
+              <span className="font-bold text-white block">RBSK Compliant</span>
+              <span className="text-neutral-400 text-[11px]">5 Developmental Domains</span>
+            </div>
+            <div className="rounded-lg border border-white/10 bg-white/5 p-3">
+              <span className="font-bold text-white block">Offline First</span>
+              <span className="text-neutral-400 text-[11px]">Syncs in Remote Sub-centres</span>
+            </div>
           </div>
+        </div>
 
-          <p className="text-sm text-white/55">
-            Smart Platform for Assessment of Response, Screening &amp; Holistic Development
+        {/* Bottom footer credit */}
+        <div className="relative z-10 text-xs text-neutral-400 border-t border-white/10 pt-6">
+          <p className="font-semibold text-neutral-300">
+            Smart Platform for Assessment of Response, Screening & Holistic Development
           </p>
-
+          <p className="mt-1 text-[11px] text-neutral-500">
+            Supporting community health workers across India
+          </p>
         </div>
       </section>
 
-      {/* RIGHT SIDE */}
-      <section
-        className={`relative flex min-h-screen items-center justify-center bg-health-gradient sm:p-6 lg:bg-white ${className}`}
-      >
-        {/* Main application card */}
-        <div
-          className="
-            relative
-            flex
-            h-full
-            min-h-screen
-            w-full
-            flex-col
-            overflow-hidden
-            bg-health-gradient
-            shadow-2xl
-
-            sm:h-auto
-            sm:min-h-[46rem]
-            sm:max-w-[30rem]
-            sm:rounded-[2rem]
-
-            lg:h-[46rem]
-            lg:min-h-0
-            lg:max-w-[30rem]
-            lg:rounded-[2rem]
-          "
-        >
+      {/* RIGHT SIDE INTERACTIVE FORM PANEL */}
+      <section className={`flex flex-col justify-center bg-white p-6 sm:p-10 lg:col-span-6 lg:p-12 xl:col-span-5 ${className}`}>
+        <div className="mx-auto w-full max-w-md">
           {children}
         </div>
       </section>
-
     </main>
   )
 }

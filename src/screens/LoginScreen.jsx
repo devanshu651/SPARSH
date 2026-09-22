@@ -1,11 +1,9 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-
 import AuthShell from '../components/AuthShell'
-import BrandLogo from '../components/BrandLogo'
 import Button from '../components/Button'
 import Input from '../components/Input'
-
+import Icon from '../components/Icon'
 import { authService, readableAuthError } from '../services/auth'
 import { usersApi } from '../services/api'
 import { useApp } from '../context/AppContext'
@@ -23,11 +21,10 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
 
   async function submit(event) {
     event.preventDefault()
-
     const cleanMobile = mobile.replace(/\s/g, '')
 
     if (!/^\d{10}$/.test(cleanMobile)) {
-      setError('Enter a valid 10-digit mobile number.')
+      setError('Please enter a valid 10-digit mobile number.')
       return
     }
 
@@ -45,11 +42,12 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
         password
       )
 
-      const profile = await usersApi.getMe()
+      const meCall = usersApi.getMe()
+      const profile = typeof meCall === 'function' ? await meCall() : await meCall
 
       setCurrentWorker({
         ...profile,
-        email: credential.user.email,
+        email: credential.user.email
       })
 
       onLogin?.()
@@ -66,289 +64,136 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
     onLogin?.()
   }
 
+  const toggleLang = () => {
+    i18n.changeLanguage(i18n.language === 'en' ? 'hi' : 'en')
+  }
+
   return (
     <AuthShell>
+      <div className="space-y-6 py-4">
 
-      {/* Back button */}
-      <button
-        type="button"
-        onClick={onBack}
-        className="
-          absolute
-          left-6
-          top-7
-          z-30
-          rounded-full
-          bg-white/10
-          p-2
-          text-white/90
-          transition
-          hover:bg-white/20
-          focus:outline-none
-          focus:ring-2
-          focus:ring-white
-        "
-        aria-label="Back to welcome screen"
-      >
-        ←
-      </button>
-
-      {/* Logo section */}
-      <div className="relative z-10 shrink-0 px-7 pb-6 pt-10 text-center sm:px-10">
-
-        {/* Language switch */}
-        <div className="flex justify-end">
+        {/* TOP CONTROLS */}
+        <div className="flex items-center justify-between">
           <button
             type="button"
-            onClick={() =>
-              i18n.changeLanguage(i18n.language === 'en' ? 'hi' : 'en')
-            }
-            className="
-              min-h-10
-              rounded-full
-              bg-white/15
-              px-3
-              text-xs
-              font-bold
-              text-white
-              transition
-              hover:bg-white/25
-            "
+            onClick={onBack}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-200 px-2.5 py-1 text-xs font-semibold text-neutral-600 hover:bg-neutral-50"
           >
-            {i18n.language === 'en' ? 'हिंदी' : 'English'}
+            <Icon name="arrowLeft" className="h-3.5 w-3.5" />
+            <span>Back</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={toggleLang}
+            className="rounded-lg border border-neutral-200 px-2.5 py-1 text-xs font-semibold text-primary-800 hover:bg-neutral-50"
+          >
+            {i18n.language === 'en' ? 'हिंदी (Hindi)' : 'English'}
           </button>
         </div>
 
-        <BrandLogo className="mx-auto mt-2 h-[4.5rem] w-[4.5rem]" />
-
-        <h1 className="mt-3 text-2xl font-extrabold tracking-tight text-white">
-          SPARSH
-        </h1>
-
-        <p className="mt-1 text-[0.63rem] font-bold tracking-[0.12em] text-cyan-100">
-          CHILD DEVELOPMENT SCREENING
-        </p>
-
-      </div>
-
-      {/* Login form */}
-      <form
-        onSubmit={submit}
-        noValidate
-        className="
-          relative
-          z-20
-          flex
-          flex-1
-          flex-col
-          rounded-t-[2rem]
-          bg-white
-          px-6
-          pb-7
-          pt-6
-          shadow-[0_-12px_30px_rgba(7,31,89,0.12)]
-          sm:px-8
-        "
-      >
-
-        {/* Heading */}
+        {/* HEADING */}
         <div>
-          <h2 className="text-lg font-extrabold text-neutral-900">
-            {t('login.welcome')}
-          </h2>
-
-          <p className="mt-1 text-sm leading-5 text-neutral-500">
-            Sign in to continue supporting children.
+          <h1 className="text-xl font-bold tracking-tight text-neutral-900 sm:text-2xl">
+            {t('login.welcome', 'Sign in to SPARSH')}
+          </h1>
+          <p className="mt-1 text-xs text-neutral-500 sm:text-sm">
+            Enter your registered Anganwadi worker mobile number and password.
           </p>
         </div>
 
-        {/* Inputs */}
-        <div className="mt-5 space-y-4">
+        {/* LOGIN FORM */}
+        <form onSubmit={submit} noValidate className="space-y-4">
 
-          {/* Mobile number */}
-          <label className="block">
-
-            <span className="mb-1.5 block text-sm font-semibold text-neutral-700">
-              Mobile number
+          {/* Mobile number with +91 prefix */}
+          <div>
+            <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-neutral-600">
+              Registered Mobile Number *
             </span>
-
-            <div
-              className={`
-                flex
-                min-h-11
-                overflow-hidden
-                rounded-xl
-                border
-                bg-white
-                transition
-                focus-within:border-primary-700
-                focus-within:ring-2
-                focus-within:ring-primary-100
-                ${
-                  error &&
-                  !/^\d{10}$/.test(mobile.replace(/\s/g, ''))
-                    ? 'border-risk-high'
-                    : 'border-neutral-200'
-                }
-              `}
-            >
-
-              <span className="flex items-center border-r border-neutral-200 px-3 text-sm font-semibold text-neutral-700">
+            <div className={`flex min-h-11 overflow-hidden rounded-lg border bg-white transition focus-within:border-primary-700 focus-within:ring-2 focus-within:ring-primary-100 ${
+              error && !/^\d{10}$/.test(mobile.replace(/\s/g, ''))
+                ? 'border-red-500'
+                : 'border-neutral-300'
+            }`}>
+              <span className="flex items-center border-r border-neutral-200 bg-neutral-50 px-3 text-xs font-bold text-neutral-600">
                 +91
               </span>
-
               <input
-                value={mobile}
-                onChange={(event) =>
-                  setMobile(
-                    event.target.value.replace(/[^\d\s]/g, '')
-                  )
-                }
+                type="tel"
                 inputMode="numeric"
-                autoComplete="tel"
-                maxLength={12}
-                placeholder="Enter 10-digit mobile number"
-                className="
-                  min-w-0
-                  flex-1
-                  px-3
-                  text-sm
-                  text-neutral-900
-                  outline-none
-                  placeholder:text-neutral-400
-                "
+                maxLength={10}
+                value={mobile}
+                onChange={(e) => setMobile(e.target.value.replace(/\D/g, ''))}
+                placeholder="10-digit mobile number"
+                className="w-full px-3 text-sm text-neutral-900 outline-none placeholder:text-neutral-400"
               />
-
             </div>
-
-          </label>
+          </div>
 
           {/* Password */}
           <div className="relative">
-
             <Input
-              label="Password"
+              label="Password *"
               type={showPassword ? 'text' : 'password'}
               value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              autoComplete="current-password"
-              placeholder="Enter your password"
-              className="pr-12"
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your worker password"
+              error={error && password.length < 6 ? 'Password is required' : ''}
             />
-
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="
-                absolute
-                bottom-2.5
-                right-3
-                text-xs
-                font-semibold
-                text-primary-700
-                hover:text-primary-900
-              "
+              className="absolute right-3 top-8 text-xs font-semibold text-primary-700 hover:text-primary-900"
             >
               {showPassword ? 'Hide' : 'Show'}
             </button>
-
           </div>
 
-          {/* Error */}
           {error && (
-            <p
-              role="alert"
-              className="-mt-1 text-xs font-medium text-risk-high"
-            >
+            <div className="rounded-lg bg-red-50 p-3 text-xs font-medium text-red-700 border border-red-200" role="alert">
               {error}
-            </p>
+            </div>
           )}
 
-        </div>
-
-        {/* Login */}
-        <Button
-          type="submit"
-          disabled={loading}
-          className="mt-5 w-full"
-        >
-          {loading ? 'Signing in…' : 'Login to dashboard'}
-        </Button>
-
-        {/* Demo mode */}
-        <Button
-          type="button"
-          variant="secondary"
-          className="mt-3 w-full"
-          onClick={exploreDemo}
-        >
-          Explore demo without login
-        </Button>
-
-        {/* Divider */}
-        <div className="my-5 flex items-center gap-3">
-
-          <span className="h-px flex-1 bg-neutral-100" />
-
-          <span className="text-[0.65rem] font-medium uppercase tracking-wide text-neutral-400">
-            or secure sign in
-          </span>
-
-          <span className="h-px flex-1 bg-neutral-100" />
-
-        </div>
-
-        {/* Fingerprint */}
-        <button
-          type="button"
-          disabled
-          title="Device biometric authentication requires native credential integration."
-          className="
-            flex
-            min-h-11
-            w-full
-            items-center
-            justify-center
-            gap-2
-            rounded-xl
-            border
-            border-neutral-200
-            text-sm
-            font-semibold
-            text-neutral-400
-          "
-        >
-          <span
-            aria-hidden="true"
-            className="grid h-6 w-6 place-items-center rounded-full bg-neutral-50 text-sm"
+          <Button
+            type="submit"
+            variant="primary"
+            size="lg"
+            className="w-full text-sm font-bold"
+            disabled={loading}
+            loading={loading}
           >
-            ◉
-          </span>
+            Sign In to Field Dashboard
+          </Button>
 
-          Login with Fingerprint (coming soon)
-        </button>
+          {/* EXPLORE DEMO MODE */}
+          <div className="pt-2">
+            <Button
+              type="button"
+              variant="secondary"
+              className="w-full text-xs font-semibold border-teal-200 text-teal-800 bg-teal-50/50 hover:bg-teal-50"
+              onClick={exploreDemo}
+            >
+              <span>Explore as Demo Health Worker (Offline Ready)</span>
+            </Button>
+          </div>
+        </form>
 
-        {/* Register */}
-        <p className="mt-auto pt-5 text-center text-xs text-neutral-500">
-
-          New to SPARSH?{' '}
-
+        {/* WORKER ENROLMENT GUIDANCE */}
+        <div className="border-t border-neutral-100 pt-4 text-center">
+          <p className="text-xs text-neutral-500">
+            Need account access for your Anganwadi centre?
+          </p>
           <button
             type="button"
             onClick={onRegister}
-            className="font-bold text-teal-700 underline underline-offset-2"
+            className="mt-1 text-xs font-bold text-primary-700 hover:text-primary-900 hover:underline"
           >
-            Register here
+            View Worker Provisioning Instructions →
           </button>
+        </div>
 
-        </p>
-
-        <p className="mt-5 text-center text-[10px] text-neutral-400">
-          Government of India · Ministry of Women &amp; Child Development
-        </p>
-
-      </form>
-
+      </div>
     </AuthShell>
   )
 }
