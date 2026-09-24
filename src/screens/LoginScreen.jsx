@@ -52,7 +52,11 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
 
       onLogin?.()
     } catch (err) {
-      setError(readableAuthError(err))
+      if (err?.status === 401) {
+        setError('Login failed. Please check your credentials or contact administrator.')
+      } else {
+        setError(readableAuthError(err))
+      }
     } finally {
       setLoading(false)
     }

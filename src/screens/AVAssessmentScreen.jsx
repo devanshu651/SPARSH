@@ -1,574 +1,384 @@
-import { useState, useEffect, useRef } from 'react'
-import AppLayout from '../components/AppLayout'
-import Button from '../components/Button'
-import Card from '../components/Card'
-import BadgePill from '../components/BadgePill'
-import Icon from '../components/Icon'
+import { useState, useRef, useEffect } from 'react'
 import { useApp } from '../context/AppContext'
 
-const tests = [
-  {
-    id: 'hearing',
-    title: 'Auditory Tone Response',
-    description: 'Generates calibrated pure audio tones (500Hz, 1000Hz, 2000Hz, 4000Hz) to test infant acoustic startle reflex or head-turning response.',
-    icon: 'hearing',
-    category: 'Auditory & Cranial Nerve VIII',
-    instruction: 'Ensure the testing room is quiet. Position phone 20–30 cm from left/right ear. Observe startle, blink, or turning response.'
-  },
-  {
-    id: 'vision',
-    title: 'Visual Tracking & Fixation',
-    description: 'Displays a high-contrast moving visual target (red focal disc) to assess horizontal and vertical ocular pursuit and binocular fixation.',
-    icon: 'vision',
-    category: 'Visual & Oculomotor',
-    instruction: 'Position device screen 30–40 cm from child’s eyes. Tap Start Pursuit and observe smooth pursuit without nystagmus.'
-  },
-  {
-    id: 'speech',
-    title: 'Vocalization & Speech Sample',
-    description: 'Timed 30-second clinical observation interval to document spontaneous vocalizations (cooing, babbling, or multi-word utterances).',
-    icon: 'speech',
-    category: 'Language & Vocal Expression',
-    instruction: 'Engage caregiver in calm vocal play with child. Record observed vocalization complexity within the 30-second window.'
-  }
-]
-
 export default function AVAssessmentScreen({ onNavigate }) {
-  const { currentChild } = useApp()
-  const [observations, setObservations] = useState({
-    hearing: null, // 'normal' | 'concern'
-    vision: null,  // 'normal' | 'concern'
-    speech: null   // 'normal' | 'concern'
-  })
+  const { currentChild, pendingScreening, setPendingScreening } = useApp()
 
-  // Audio Tone Generator State
-  const [playingFreq, setPlayingFreq] = useState(null)
+  const [hearingResponse, setHearingResponse] = useState(null) // 'responded' | 'no_response' | 'unsure'
+  const [visualResponse, setVisualResponse] = useState(null)   // 'responded' | 'no_response' | 'unsure'
+  
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false)
+  const [showVisualTarget, setShowVisualTarget] = useState(false)
+  const [audioError, setAudioError] = useState(null)
+
   const audioCtxRef = useRef(null)
-  const oscRef = useRef(null)
 
-  // Visual Tracking Modal State
-  const [showVisualModal, setShowVisualModal] = useState(false)
-  const [trackingActive, setTrackingActive] = useState(false)
-  const [targetPos, setTargetPos] = useState({ x: 50, y: 50 })
-  const animationFrameRef = useRef(null)
+  // Web Audio API tone generator - plays audible tone locally without external files
+  const playHearingTone = async () => {
+    if (isPlayingAudio) return
+    setIsPlayingAudio(true)
+    setAudioError(null)
 
-  // Speech Timer State
-  const [timerRunning, setTimerRunning] = useState(false)
-  const [secondsRemaining, setSecondsRemaining] = useState(30)
-  const [vocalChecklist, setVocalChecklist] = useState({
-    cooing: false,
-    babbling: false,
-    words: false
-  })
-
-  // Web Audio Tone Synthesis
-  const playTone = (freq) => {
-    stopTone()
     try {
-      const AudioContext = window.AudioContext || window.webkitAudioContext
-      if (!AudioContext) return
-      const ctx = new AudioContext()
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext
+      if (!AudioContextClass) {
+        throw new Error('Web Audio API is not supported in this browser.')
+      }
+
+      if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
+        audioCtxRef.current = new AudioContextClass()
+      }
+
+      const ctx = audioCtxRef.current
+      if (ctx.state === 'suspended') {
+        await ctx.resume()
+      }
+
+      const now = ctx.currentTime
+      const duration = 1.8
+
+      // Pleasant multi-tone chime (C5 -> E5 -> G5)
       const osc = ctx.createOscillator()
       const gain = ctx.createGain()
 
       osc.type = 'sine'
-      osc.frequency.setValueAtTime(freq, ctx.currentTime)
+      osc.frequency.setValueAtTime(523.25, now)
+      osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.4)
+      osc.frequency.exponentialRampToValueAtTime(523.25, now + 0.9)
+      osc.frequency.exponentialRampToValueAtTime(783.99, now + 1.4)
 
-      // Soft envelope to avoid speaker click
-      gain.gain.setValueAtTime(0.01, ctx.currentTime)
-      gain.gain.exponentialRampToValueAtTime(0.3, ctx.currentTime + 0.05)
+      // Smooth gain envelope to prevent clicking
+      gain.gain.setValueAtTime(0.001, now)
+      gain.gain.linearRampToValueAtTime(0.35, now + 0.15)
+      gain.gain.exponentialRampToValueAtTime(0.001, now + duration)
 
       osc.connect(gain)
       gain.connect(ctx.destination)
 
-      osc.start()
-      audioCtxRef.current = ctx
-      oscRef.current = osc
-      setPlayingFreq(freq)
+      osc.start(now)
+      osc.stop(now + duration)
 
-      // Automatically turn off after 2.5 seconds
       setTimeout(() => {
-        stopTone()
-      }, 2500)
-    } catch {
-      stopTone()
+        setIsPlayingAudio(false)
+      }, duration * 1000 + 100)
+    } catch (err) {
+      console.error('Audio playback error:', err)
+      setAudioError('Unable to play sound. Ensure device audio is unmuted.')
+      setIsPlayingAudio(false)
     }
   }
 
-  const stopTone = () => {
-    if (oscRef.current) {
-      try {
-        oscRef.current.stop()
-        oscRef.current.disconnect()
-      } catch {}
-      oscRef.current = null
-    }
-    if (audioCtxRef.current) {
-      try {
-        audioCtxRef.current.close()
-      } catch {}
-      audioCtxRef.current = null
-    }
-    setPlayingFreq(null)
-  }
-
+  // Clean up AudioContext on unmount
   useEffect(() => {
-    return () => stopTone()
+    return () => {
+      if (audioCtxRef.current && audioCtxRef.current.state !== 'closed') {
+        audioCtxRef.current.close().catch(() => {})
+      }
+    }
   }, [])
 
-  // Visual Tracking Animation
-  useEffect(() => {
-    if (!trackingActive) return
-    let startTime = performance.now()
+  const hasConcerningObservation =
+    hearingResponse === 'no_response' || visualResponse === 'no_response'
 
-    const animate = (currentTime) => {
-      const elapsed = (currentTime - startTime) / 1000 // seconds
-      // Horizontal smooth harmonic motion
-      const x = 50 + 38 * Math.sin(elapsed * 1.2)
-      // Vertical smooth motion with different frequency
-      const y = 50 + 25 * Math.sin(elapsed * 0.8)
-      setTargetPos({ x, y })
-      animationFrameRef.current = requestAnimationFrame(animate)
+  const handleProceed = () => {
+    // Preserve existing pendingScreening payload structure for backend submission
+    if (pendingScreening) {
+      setPendingScreening({
+        ...pendingScreening,
+        av_observation: {
+          hearing: hearingResponse,
+          visual: visualResponse,
+          observed_at: new Date().toISOString(),
+        },
+      })
     }
-
-    animationFrameRef.current = requestAnimationFrame(animate)
-    return () => {
-      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current)
-    }
-  }, [trackingActive])
-
-  // Speech Timer Countdown
-  useEffect(() => {
-    let interval = null
-    if (timerRunning && secondsRemaining > 0) {
-      interval = setInterval(() => {
-        setSecondsRemaining((prev) => prev - 1)
-      }, 1000)
-    } else if (secondsRemaining === 0) {
-      setTimerRunning(false)
-    }
-    return () => clearInterval(interval)
-  }, [timerRunning, secondsRemaining])
-
-  const setFinding = (testId, status) => {
-    setObservations((prev) => ({
-      ...prev,
-      [testId]: status
-    }))
-  }
-
-  const handleProceedToAnalysis = () => {
-    // Persist AV findings into sessionStorage draft if exists
-    try {
-      const raw = sessionStorage.getItem('sparsh:pending-screening')
-      if (raw) {
-        const payload = JSON.parse(raw)
-        payload.av_assessments = observations
-        sessionStorage.setItem('sparsh:pending-screening', JSON.stringify(payload))
-      }
-    } catch {}
-
     onNavigate?.('analysis')
   }
 
-  const completedCount = Object.values(observations).filter(Boolean).length
-
   return (
-    <AppLayout
-      active="screening"
-      onNavigate={onNavigate}
-      backTo="screening"
-      title="Audio-Visual Sensory Check"
-      subtitle={`Supplemental screening module · Patient: ${currentChild?.name || 'Screened Infant'}`}
-      actions={
-        <div className="flex items-center gap-2">
-          <BadgePill tone={completedCount === 3 ? 'normal' : 'teal'}>
-            {completedCount} of 3 Checked
-          </BadgePill>
-        </div>
-      }
-    >
-      <div className="mx-auto max-w-4xl space-y-6 p-4 sm:p-6 lg:p-8">
+    <main className="min-h-screen bg-health-gradient px-4 py-6 sm:px-6 lg:px-10">
+      <div className="mx-auto max-w-3xl">
 
-        {/* CLINICAL PROTOCOL NOTICE */}
-        <div className="rounded-xl border border-teal-200 bg-teal-50/70 p-4 sm:p-5">
-          <div className="flex items-start gap-3.5">
-            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-teal-100 text-teal-800">
-              <Icon name="shield" className="h-5 w-5" />
-            </div>
+        {/* Header */}
+        <header className="mb-5 flex items-center justify-between text-white">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => onNavigate?.('screening')}
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/10 text-lg ring-1 ring-white/20 hover:bg-white/20"
+              aria-label="Back to screening"
+            >
+              ←
+            </button>
+
             <div>
-              <h2 className="text-sm font-bold text-neutral-900">
-                RBSK Supplemental Sensory Observation Protocol
-              </h2>
-              <p className="mt-1 text-xs text-neutral-600 leading-relaxed">
-                Frontline audio-visual stimuli aid frontline workers in detecting covert sensory impairments.
-                Use the calibrated tone generator and visual pursuit target below to evaluate cranial nerve reflexes.
-                Findings directly enrich the RBSK diagnostic analysis.
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/70">
+                SPARSH
               </p>
+              <h1 className="text-lg font-extrabold sm:text-xl">
+                Audio-Visual Observation
+              </h1>
             </div>
           </div>
-        </div>
 
-        {/* MODULE 1: AUDITORY TONE RESPONSE */}
-        <Card className="p-5">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-            <div className="flex items-start gap-3.5">
-              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-primary-50 text-primary-800 border border-primary-100">
-                <Icon name="hearing" className="h-5 w-5" />
-              </div>
+          {currentChild && (
+            <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-semibold text-white">
+              {currentChild.name}
+            </span>
+          )}
+        </header>
+
+        {/* Main Container */}
+        <div className="space-y-5">
+
+          {/* Non-Diagnostic Disclaimer Card */}
+          <div className="rounded-2xl border border-amber-200 bg-amber-50/95 p-4 text-xs leading-relaxed text-amber-950 shadow-sm">
+            <div className="flex items-start gap-2.5">
+              <span className="text-base">ℹ️</span>
               <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-teal-700">
-                    Hearing & Sensory
-                  </span>
-                  {observations.hearing && (
-                    <BadgePill tone={observations.hearing === 'normal' ? 'normal' : 'high'} dot>
-                      {observations.hearing === 'normal' ? 'Normal Startle / Response' : 'Auditory Concern'}
-                    </BadgePill>
-                  )}
-                </div>
-                <h3 className="mt-0.5 text-base font-bold text-neutral-900">
-                  Auditory Tone Response (Calibrated Pure Tones)
-                </h3>
-                <p className="mt-1 text-xs text-neutral-600 max-w-xl leading-relaxed">
-                  Emit diagnostic audio frequencies to verify auditory nerve pathway response.
-                  Observe infant blink reflex (auropalpebral), motor startle, or head turn toward sound source.
+                <p className="font-bold text-amber-900">
+                  Screening Observation Aid — Not a Diagnostic Test
                 </p>
-                <div className="mt-2.5 rounded-md bg-neutral-50 px-3 py-1.5 text-[11px] text-neutral-500 border border-neutral-200/60">
-                  <span className="font-semibold text-neutral-700">Protocol:</span> Hold device 20 cm from ear; test both left and right ears.
-                </div>
+                <p className="mt-0.5 text-amber-800">
+                  SPARSH does not diagnose hearing loss, visual impairment, or medical conditions.
+                  Use these observation aids to check the child&apos;s immediate behavioral responses during screening.
+                </p>
               </div>
             </div>
           </div>
 
-          {/* Tone Generator Controls */}
-          <div className="mt-5 rounded-lg border border-neutral-200 bg-neutral-50/60 p-4">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <div>
-                <span className="text-xs font-bold text-neutral-800">Calibrated Test Frequencies:</span>
-                <p className="text-[11px] text-neutral-500">Select frequency to emit calibrated sine audio pulse (2.5s)</p>
+          {/* 1. HEARING OBSERVATION CARD */}
+          <section className="rounded-3xl bg-white p-5 shadow-card sm:p-6">
+            <div className="flex items-center gap-3 border-b border-neutral-100 pb-4">
+              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-teal-50 text-xl text-teal-600">
+                🔊
               </div>
+              <div>
+                <h2 className="text-base font-bold text-neutral-900">
+                  Hearing Observation
+                </h2>
+                <p className="text-xs text-neutral-500">
+                  Play the sound and observe whether the child responds to it.
+                </p>
+              </div>
+            </div>
 
-              <div className="flex flex-wrap items-center gap-2">
-                {[500, 1000, 2000, 4000].map((freq) => {
-                  const isPlaying = playingFreq === freq
-                  return (
+            {/* Sound Action Area */}
+            <div className="mt-5 rounded-2xl bg-teal-50/60 p-4 text-center">
+              <p className="mb-3 text-xs font-medium text-teal-900">
+                Ensure device volume is turned on. Hold the device near the child.
+              </p>
+
+              <button
+                type="button"
+                onClick={playHearingTone}
+                disabled={isPlayingAudio}
+                className={`inline-flex min-h-12 items-center justify-center gap-2.5 rounded-xl px-6 py-3 text-sm font-bold text-white transition shadow-sm ${
+                  isPlayingAudio
+                    ? 'bg-teal-400 cursor-not-allowed animate-pulse'
+                    : 'bg-teal-600 hover:bg-teal-700 active:scale-[0.98]'
+                }`}
+              >
+                <span>{isPlayingAudio ? '🔊' : '▶'}</span>
+                <span>{isPlayingAudio ? 'Playing Sound…' : 'Play Sound'}</span>
+              </button>
+
+              {isPlayingAudio && (
+                <div className="mt-3 flex items-center justify-center gap-1">
+                  <span className="h-2 w-1 animate-bounce bg-teal-600 rounded-full" style={{ animationDelay: '0ms' }} />
+                  <span className="h-3 w-1 animate-bounce bg-teal-600 rounded-full" style={{ animationDelay: '150ms' }} />
+                  <span className="h-4 w-1 animate-bounce bg-teal-600 rounded-full" style={{ animationDelay: '300ms' }} />
+                  <span className="h-3 w-1 animate-bounce bg-teal-600 rounded-full" style={{ animationDelay: '150ms' }} />
+                  <span className="h-2 w-1 animate-bounce bg-teal-600 rounded-full" style={{ animationDelay: '0ms' }} />
+                </div>
+              )}
+
+              {audioError && (
+                <p className="mt-2 text-xs font-semibold text-red-600">{audioError}</p>
+              )}
+            </div>
+
+            {/* Hearing Response options */}
+            <div className="mt-5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2">
+                Child Response to Sound
+              </label>
+              <div className="grid grid-cols-3 gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setHearingResponse('responded')}
+                  className={`min-h-12 rounded-xl border px-2 text-xs font-bold transition ${
+                    hearingResponse === 'responded'
+                      ? 'border-emerald-600 bg-emerald-600 text-white shadow-sm'
+                      : 'border-neutral-200 bg-white text-neutral-700 hover:bg-emerald-50'
+                  }`}
+                >
+                  ✓ Responded
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setHearingResponse('no_response')}
+                  className={`min-h-12 rounded-xl border px-2 text-xs font-bold transition ${
+                    hearingResponse === 'no_response'
+                      ? 'border-red-600 bg-red-600 text-white shadow-sm'
+                      : 'border-neutral-200 bg-white text-neutral-700 hover:bg-red-50'
+                  }`}
+                >
+                  ✕ Did not respond
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setHearingResponse('unsure')}
+                  className={`min-h-12 rounded-xl border px-2 text-xs font-bold transition ${
+                    hearingResponse === 'unsure'
+                      ? 'border-amber-600 bg-amber-600 text-white shadow-sm'
+                      : 'border-neutral-200 bg-white text-neutral-700 hover:bg-amber-50'
+                  }`}
+                >
+                  ? Unsure
+                </button>
+              </div>
+            </div>
+          </section>
+
+          {/* 2. VISUAL OBSERVATION CARD */}
+          <section className="rounded-3xl bg-white p-5 shadow-card sm:p-6">
+            <div className="flex items-center gap-3 border-b border-neutral-100 pb-4">
+              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-purple-50 text-xl text-purple-600">
+                👁
+              </div>
+              <div>
+                <h2 className="text-base font-bold text-neutral-900">
+                  Visual Observation
+                </h2>
+                <p className="text-xs text-neutral-500">
+                  Display high-contrast visual target and observe the child&apos;s response.
+                </p>
+              </div>
+            </div>
+
+            {/* Target Display Toggle / Area */}
+            <div className="mt-5">
+              {!showVisualTarget ? (
+                <div className="rounded-2xl border-2 border-dashed border-purple-200 bg-purple-50/40 p-6 text-center">
+                  <p className="text-xs text-purple-900 mb-3">
+                    Display a large high-contrast visual target to test eye tracking and focus.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setShowVisualTarget(true)}
+                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-purple-700 px-5 text-xs font-bold text-white transition hover:bg-purple-800 shadow-sm"
+                  >
+                    <span>👁</span> Show Target
+                  </button>
+                </div>
+              ) : (
+                <div className="rounded-2xl border border-purple-200 bg-neutral-900 p-5 text-center shadow-inner">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-semibold text-purple-300">
+                      High-Contrast Tracking Target
+                    </span>
                     <button
-                      key={freq}
                       type="button"
-                      onClick={() => (isPlaying ? stopTone() : playTone(freq))}
-                      className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-bold transition shadow-xs ${
-                        isPlaying
-                          ? 'bg-primary-950 text-white ring-2 ring-primary-500 animate-pulse'
-                          : 'border border-neutral-300 bg-white text-neutral-800 hover:bg-neutral-50'
-                      }`}
+                      onClick={() => setShowVisualTarget(false)}
+                      className="rounded-lg bg-white/20 px-2.5 py-1 text-xs font-bold text-white hover:bg-white/30"
                     >
-                      <Icon name="hearing" className="h-3.5 w-3.5" />
-                      <span>{freq} Hz {isPlaying ? 'Playing...' : ''}</span>
+                      Hide Target ✕
                     </button>
-                  )
-                })}
-              </div>
-            </div>
+                  </div>
 
-            {/* Findings selection */}
-            <div className="mt-4 pt-3 border-t border-neutral-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-              <span className="text-xs font-semibold text-neutral-700">Observed Clinical Response:</span>
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  variant={observations.hearing === 'normal' ? 'primary' : 'secondary'}
-                  onClick={() => setFinding('hearing', 'normal')}
-                >
-                  <Icon name="check" className="h-3.5 w-3.5" />
-                  <span>Prompt Reflex Observed (Pass)</span>
-                </Button>
-                <Button
-                  size="sm"
-                  variant={observations.hearing === 'concern' ? 'destructive' : 'secondary'}
-                  onClick={() => setFinding('hearing', 'concern')}
-                >
-                  <Icon name="alertTriangle" className="h-3.5 w-3.5" />
-                  <span>No Reflex / Suspected Concern</span>
-                </Button>
-              </div>
-            </div>
-          </div>
-        </Card>
+                  {/* High contrast SVG Target Animation */}
+                  <div className="relative mx-auto my-4 flex h-44 w-full max-w-sm items-center justify-center overflow-hidden rounded-xl bg-black">
+                    <div className="animate-pulse space-y-2 text-center">
+                      <div className="mx-auto flex h-28 w-28 items-center justify-center rounded-full border-4 border-yellow-400 bg-red-600 shadow-lg transition-transform duration-1000 transform hover:scale-110">
+                        <div className="h-16 w-16 rounded-full border-4 border-white bg-yellow-400 flex items-center justify-center">
+                          <div className="h-8 w-8 rounded-full bg-black" />
+                        </div>
+                      </div>
+                      <p className="text-[10px] uppercase font-bold tracking-widest text-yellow-300">
+                        Move device slowly to observe tracking
+                      </p>
+                    </div>
+                  </div>
 
-        {/* MODULE 2: VISUAL TRACKING & FIXATION */}
-        <Card className="p-5">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-            <div className="flex items-start gap-3.5">
-              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-teal-50 text-teal-800 border border-teal-100">
-                <Icon name="vision" className="h-5 w-5" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-teal-700">
-                    Vision & Ocular Motor
-                  </span>
-                  {observations.vision && (
-                    <BadgePill tone={observations.vision === 'normal' ? 'normal' : 'high'} dot>
-                      {observations.vision === 'normal' ? 'Normal Visual Fixation' : 'Tracking Deficit'}
-                    </BadgePill>
-                  )}
-                </div>
-                <h3 className="mt-0.5 text-base font-bold text-neutral-900">
-                  Visual Tracking & Fixation Target
-                </h3>
-                <p className="mt-1 text-xs text-neutral-600 max-w-xl leading-relaxed">
-                  Presents a high-contrast target moving across the horizontal and vertical field of view.
-                  Examines ability to fixate binocularly, track past midline, and follow smoothly without erratic jerks or strabismus.
-                </p>
-                <div className="mt-2.5 rounded-md bg-neutral-50 px-3 py-1.5 text-[11px] text-neutral-500 border border-neutral-200/60">
-                  <span className="font-semibold text-neutral-700">Protocol:</span> Hold screen at 35 cm distance in moderate lighting.
-                </div>
-              </div>
-            </div>
-
-            <div className="flex shrink-0 sm:self-start">
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={() => {
-                  setShowVisualModal(true)
-                  setTrackingActive(true)
-                }}
-              >
-                <Icon name="vision" className="h-4 w-4" />
-                <span>Launch Interactive Target</span>
-              </Button>
-            </div>
-          </div>
-
-          <div className="mt-4 pt-3 border-t border-neutral-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-            <span className="text-xs font-semibold text-neutral-700">Observed Clinical Response:</span>
-            <div className="flex gap-2">
-              <Button
-                size="sm"
-                variant={observations.vision === 'normal' ? 'primary' : 'secondary'}
-                onClick={() => setFinding('vision', 'normal')}
-              >
-                <Icon name="check" className="h-3.5 w-3.5" />
-                <span>Smooth Pursuit Across Midline</span>
-              </Button>
-              <Button
-                size="sm"
-                variant={observations.vision === 'concern' ? 'destructive' : 'secondary'}
-                onClick={() => setFinding('vision', 'concern')}
-              >
-                <Icon name="alertTriangle" className="h-3.5 w-3.5" />
-                <span>Inability to Fixate / Eye Misalignment</span>
-              </Button>
-            </div>
-          </div>
-        </Card>
-
-        {/* MODULE 3: VOCALIZATION & SPEECH SAMPLE */}
-        <Card className="p-5">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-            <div className="flex items-start gap-3.5">
-              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-amber-50 text-amber-800 border border-amber-100">
-                <Icon name="speech" className="h-5 w-5" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-amber-700">
-                    Language & Acoustic Sample
-                  </span>
-                  {observations.speech && (
-                    <BadgePill tone={observations.speech === 'normal' ? 'normal' : 'high'} dot>
-                      {observations.speech === 'normal' ? 'Age-Appropriate Vocalization' : 'Vocal Concern'}
-                    </BadgePill>
-                  )}
-                </div>
-                <h3 className="mt-0.5 text-base font-bold text-neutral-900">
-                  Timed Spontaneous Vocalization Window
-                </h3>
-                <p className="mt-1 text-xs text-neutral-600 max-w-xl leading-relaxed">
-                  30-second structured observation of verbal interactions, response to mother’s voice, and production of vowel sounds or consonant babble.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Timer & Checklist */}
-          <div className="mt-4 rounded-lg border border-neutral-200 bg-neutral-50/60 p-4">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <div className="grid h-10 w-10 place-items-center rounded-full bg-white border border-neutral-200 font-bold text-sm text-primary-800">
-                  {secondsRemaining}s
-                </div>
-                <div>
-                  <span className="text-xs font-bold text-neutral-800">Observation Timer</span>
-                  <p className="text-[11px] text-neutral-500">
-                    {timerRunning ? 'Timer active — observe vocal sounds' : secondsRemaining === 0 ? 'Observation interval complete' : 'Ready to begin observation'}
+                  <p className="text-xs text-neutral-300">
+                    Observe if the child fixes gaze on the target or follows its movement.
                   </p>
                 </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                {!timerRunning ? (
-                  <Button
-                    size="sm"
-                    variant="primary"
-                    onClick={() => {
-                      setSecondsRemaining(30)
-                      setTimerRunning(true)
-                    }}
-                  >
-                    <span>{secondsRemaining === 30 ? 'Start 30s Timer' : 'Restart Timer'}</span>
-                  </Button>
-                ) : (
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    onClick={() => setTimerRunning(false)}
-                  >
-                    <span>Pause</span>
-                  </Button>
-                )}
-              </div>
+              )}
             </div>
 
-            {/* Vocal signs observed checklist */}
-            <div className="mt-3 pt-3 border-t border-neutral-200 grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={vocalChecklist.cooing}
-                  onChange={(e) => setVocalChecklist({ ...vocalChecklist, cooing: e.target.checked })}
-                  className="rounded border-neutral-300 text-primary-800 focus:ring-primary-700"
-                />
-                <span className="text-neutral-700 font-medium">Vowel Cooing (aa/oo)</span>
+            {/* Visual Response options */}
+            <div className="mt-5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2">
+                Child Response to Visual Target
               </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={vocalChecklist.babbling}
-                  onChange={(e) => setVocalChecklist({ ...vocalChecklist, babbling: e.target.checked })}
-                  className="rounded border-neutral-300 text-primary-800 focus:ring-primary-700"
-                />
-                <span className="text-neutral-700 font-medium">Consonant Babbling (ba/da)</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={vocalChecklist.words}
-                  onChange={(e) => setVocalChecklist({ ...vocalChecklist, words: e.target.checked })}
-                  className="rounded border-neutral-300 text-primary-800 focus:ring-primary-700"
-                />
-                <span className="text-neutral-700 font-medium">Words / Imitation</span>
-              </label>
-            </div>
-
-            {/* Findings selection */}
-            <div className="mt-4 pt-3 border-t border-neutral-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-              <span className="text-xs font-semibold text-neutral-700">Observed Clinical Response:</span>
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  variant={observations.speech === 'normal' ? 'primary' : 'secondary'}
-                  onClick={() => setFinding('speech', 'normal')}
+              <div className="grid grid-cols-3 gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setVisualResponse('responded')}
+                  className={`min-h-12 rounded-xl border px-2 text-xs font-bold transition ${
+                    visualResponse === 'responded'
+                      ? 'border-emerald-600 bg-emerald-600 text-white shadow-sm'
+                      : 'border-neutral-200 bg-white text-neutral-700 hover:bg-emerald-50'
+                  }`}
                 >
-                  <Icon name="check" className="h-3.5 w-3.5" />
-                  <span>Age-Appropriate Vocalizations</span>
-                </Button>
-                <Button
-                  size="sm"
-                  variant={observations.speech === 'concern' ? 'destructive' : 'secondary'}
-                  onClick={() => setFinding('speech', 'concern')}
+                  ✓ Responded
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setVisualResponse('no_response')}
+                  className={`min-h-12 rounded-xl border px-2 text-xs font-bold transition ${
+                    visualResponse === 'no_response'
+                      ? 'border-red-600 bg-red-600 text-white shadow-sm'
+                      : 'border-neutral-200 bg-white text-neutral-700 hover:bg-red-50'
+                  }`}
                 >
-                  <Icon name="alertTriangle" className="h-3.5 w-3.5" />
-                  <span>No Vocalization / Atypical Cries</span>
-                </Button>
+                  ✕ Did not respond
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setVisualResponse('unsure')}
+                  className={`min-h-12 rounded-xl border px-2 text-xs font-bold transition ${
+                    visualResponse === 'unsure'
+                      ? 'border-amber-600 bg-amber-600 text-white shadow-sm'
+                      : 'border-neutral-200 bg-white text-neutral-700 hover:bg-amber-50'
+                  }`}
+                >
+                  ? Unsure
+                </button>
               </div>
             </div>
-          </div>
-        </Card>
+          </section>
 
-        {/* SUBMISSION ACTION */}
-        <div className="rounded-xl border border-neutral-200 bg-white p-5 shadow-card flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div>
-            <h4 className="text-sm font-bold text-neutral-900">
-              Ready to Compute Developmental Risk
-            </h4>
-            <p className="mt-0.5 text-xs text-neutral-500">
-              Transmits RBSK milestone answers and supplemental sensory checks to the clinical diagnostic engine.
+          {/* Concerning Observation Banner */}
+          {hasConcerningObservation && (
+            <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-xs font-semibold text-red-900 shadow-sm">
+              ⚠️ Concerning screening observation — consider further professional evaluation.
+            </div>
+          )}
+
+          {/* Action / Next Step */}
+          <div className="pt-2">
+            <button
+              type="button"
+              onClick={handleProceed}
+              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-health-gradient px-5 py-4 text-sm font-extrabold text-white shadow-lg transition hover:opacity-95 active:scale-[0.99]"
+            >
+              <span>✧ Run rule-based risk analysis →</span>
+            </button>
+            <p className="mt-2 text-center text-[11px] text-white/70">
+              Observation notes are attached to this screening session.
             </p>
           </div>
 
-          <Button
-            variant="teal"
-            size="lg"
-            className="w-full sm:w-auto font-bold"
-            onClick={handleProceedToAnalysis}
-          >
-            <Icon name="screening" className="h-4 w-4" />
-            <span>Generate Clinical Risk Evaluation →</span>
-          </Button>
         </div>
 
       </div>
-
-      {/* INTERACTIVE VISUAL TRACKING FULL-SCREEN MODAL */}
-      {showVisualModal && (
-        <div
-          className="fixed inset-0 z-50 flex flex-col bg-neutral-950 p-4 text-white"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="tracking-title"
-        >
-          {/* Top banner controls */}
-          <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
-            <div>
-              <h3 id="tracking-title" className="text-sm font-bold text-white">
-                Ocular Pursuit Visual Target
-              </h3>
-              <p className="text-xs text-neutral-400">
-                Hold device 30–40 cm from infant eyes · Observe smooth binocular pursuit
-              </p>
-            </div>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => {
-                setTrackingActive(false)
-                setShowVisualModal(false)
-              }}
-            >
-              <Icon name="cross" className="h-4 w-4" />
-              <span>Done / Close</span>
-            </Button>
-          </div>
-
-          {/* Dynamic visual tracking field */}
-          <div className="relative flex-1 overflow-hidden">
-            {/* Smooth animated high-contrast focal target */}
-            <div
-              className="absolute -translate-x-1/2 -translate-y-1/2 transition-transform duration-75 ease-linear pointer-events-none"
-              style={{
-                left: `${targetPos.x}%`,
-                top: `${targetPos.y}%`
-              }}
-            >
-              <div className="relative flex items-center justify-center h-24 w-24 rounded-full bg-red-600 shadow-[0_0_40px_rgba(239,68,68,0.8)] animate-pulse">
-                <div className="h-16 w-16 rounded-full bg-white flex items-center justify-center">
-                  <div className="h-8 w-8 rounded-full bg-red-600" />
-                </div>
-              </div>
-            </div>
-
-            {/* Target motion indicator */}
-            <div className="absolute bottom-4 inset-x-0 text-center pointer-events-none">
-              <span className="rounded-full bg-neutral-900/80 px-4 py-1.5 text-xs text-neutral-300 backdrop-blur-xs border border-neutral-700">
-                Observing gaze fixation across horizontal and vertical axes
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
-    </AppLayout>
+    </main>
   )
 }

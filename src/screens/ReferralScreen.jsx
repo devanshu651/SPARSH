@@ -7,7 +7,7 @@ import Card from '../components/Card'
 import Select from '../components/Select'
 import BadgePill from '../components/BadgePill'
 import Icon from '../components/Icon'
-import { LoadingState, EmptyState } from '../components/AsyncState'
+import { LoadingState } from '../components/AsyncState'
 
 const facilities = [
   'District Early Intervention Centre (DEIC) — District Civil Hospital',
@@ -36,11 +36,13 @@ export default function ReferralScreen({ onNavigate }) {
   const [atRiskChildren, setAtRiskChildren] = useState([])
   const [loadingCohort, setLoadingCohort] = useState(false)
   const [selectedChildId, setSelectedChildId] = useState(currentChild?.id || '')
-  const [resolvedScreeningId, setResolvedScreeningId] = useState(screeningResult?.screening_id || '')
+  const [resolvedScreeningId, setResolvedScreeningId] = useState(
+    screeningResult?.risk_level === 'RED' ? screeningResult?.screening_id || '' : ''
+  )
 
   useEffect(() => {
-    // If we already have a screeningResult in context, use it directly
-    if (screeningResult?.screening_id) {
+    // If we already have a RED screeningResult in context, use it directly
+    if (screeningResult?.screening_id && screeningResult?.risk_level === 'RED') {
       setResolvedScreeningId(screeningResult.screening_id)
       if (currentChild?.id) setSelectedChildId(currentChild.id)
       return
@@ -60,7 +62,6 @@ export default function ReferralScreen({ onNavigate }) {
           const first = currentChild?.latest_risk === 'RED' ? currentChild : redList[0]
           setSelectedChildId(first.id)
           setCurrentChild(first)
-          // Resolve child's latest screening ID
           resolveChildScreening(first.id)
         }
       } catch {
@@ -71,7 +72,7 @@ export default function ReferralScreen({ onNavigate }) {
     }
 
     loadAtRiskCohort()
-  }, [screeningResult?.screening_id])
+  }, [screeningResult?.screening_id, screeningResult?.risk_level])
 
   useEffect(() => {
     const checkExisting = async (sId) => {
@@ -86,20 +87,20 @@ export default function ReferralScreen({ onNavigate }) {
         // Proceed
       }
     }
-    const sId = screeningResult?.screening_id || resolvedScreeningId
+    const sId = (screeningResult?.risk_level === 'RED' && screeningResult?.screening_id) || resolvedScreeningId
     if (sId) {
       checkExisting(sId)
     }
-  }, [screeningResult?.screening_id, resolvedScreeningId])
+  }, [screeningResult?.screening_id, screeningResult?.risk_level, resolvedScreeningId])
 
   const resolveChildScreening = async (childId) => {
     try {
       const hCall = childrenApi.history(childId)
       const history = typeof hCall === 'function' ? await hCall(childId) : await hCall
       if (history?.screenings?.length > 0) {
-        // Latest screening
-        const latest = history.screenings[history.screenings.length - 1]
-        setResolvedScreeningId(latest.screening_id)
+        const redScreenings = history.screenings.filter((s) => s.risk_level === 'RED')
+        const target = redScreenings.length > 0 ? redScreenings[redScreenings.length - 1] : history.screenings[history.screenings.length - 1]
+        setResolvedScreeningId(target.screening_id)
       } else {
         setResolvedScreeningId(`SR-${childId.slice(-5).toUpperCase()}`)
       }
@@ -121,9 +122,9 @@ export default function ReferralScreen({ onNavigate }) {
   const activePatient = currentChild || atRiskChildren.find((c) => c.id === selectedChildId)
 
   const submitReferral = async () => {
-    const targetScreeningId = resolvedScreeningId || screeningResult?.screening_id
+    const targetScreeningId = (screeningResult?.risk_level === 'RED' && screeningResult?.screening_id) || resolvedScreeningId
     if (!targetScreeningId) {
-      setError('A valid screening ID is required to generate a formal RBSK referral.')
+      setError('A valid RED risk screening ID is required to generate a formal RBSK referral.')
       return
     }
 
@@ -157,8 +158,10 @@ export default function ReferralScreen({ onNavigate }) {
     }
   }
 
-  // Handle case where no screening exists and no RED children in cohort
-  if (!screeningResult && !loadingCohort && atRiskChildren.length === 0) {
+  const isEligibleRed = (screeningResult?.risk_level === 'RED') || (atRiskChildren.length > 0) || Boolean(resolvedScreeningId)
+
+  // Handle case where no RED screening exists and no RED children in cohort
+  if (!isEligibleRed && !loadingCohort) {
     return (
       <AppLayout
         active="screening"
@@ -333,7 +336,7 @@ export default function ReferralScreen({ onNavigate }) {
                   </p>
 
                   <p className="mt-1 text-xs text-red-700 font-semibold">
-                    Screening Reference: {resolvedScreeningId || screeningResult?.screening_id || 'Pending Triage'}
+                    Screening Reference: {(screeningResult?.risk_level === 'RED' && screeningResult?.screening_id) || resolvedScreeningId || 'Pending Triage'}
                   </p>
                 </div>
               </div>
@@ -420,6 +423,14 @@ export default function ReferralScreen({ onNavigate }) {
                 </div>
 
                 <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-end">
+                  {screeningResult && (
+                    <Button
+                      variant="outline"
+                      onClick={() => onNavigate?.('report')}
+                    >
+                      <span>← Return to Assessment Report</span>
+                    </Button>
+                  )}
                   <Button
                     variant="secondary"
                     onClick={() => onNavigate?.('history')}
