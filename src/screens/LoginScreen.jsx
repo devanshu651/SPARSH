@@ -74,7 +74,7 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
 
   return (
     <AuthShell showBackground>
-      <div className="space-y-6 py-4">
+      <div className="space-y-4 sm:space-y-6 py-1 sm:py-4">
 
         {/* TOP CONTROLS */}
         <div className="flex items-center justify-between">
@@ -107,11 +107,11 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
         </div>
 
         {/* LOGIN FORM */}
-        <form onSubmit={submit} noValidate className="space-y-4">
+        <form onSubmit={submit} noValidate className="space-y-3.5 sm:space-y-4">
 
           {/* Mobile number with +91 prefix */}
           <div>
-            <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-neutral-600">
+            <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-neutral-600">
               Registered Mobile Number *
             </span>
             <div className={`flex min-h-11 overflow-hidden rounded-lg border bg-white transition focus-within:border-primary-700 focus-within:ring-2 focus-within:ring-primary-100 ${
@@ -172,7 +172,7 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
 
           {/* EXPLORE DEMO MODE */}
           {demoAvailable && (
-            <div className="pt-2">
+            <div className="pt-1 sm:pt-2">
               <Button
                 type="button"
                 variant="secondary"
@@ -186,7 +186,7 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
         </form>
 
         {/* WORKER ENROLMENT GUIDANCE */}
-        <div className="border-t border-neutral-100 pt-4 text-center">
+        <div className="border-t border-neutral-100 pt-3 sm:pt-4 text-center">
           <p className="text-xs text-neutral-500">
             Need account access for your Anganwadi centre?
           </p>

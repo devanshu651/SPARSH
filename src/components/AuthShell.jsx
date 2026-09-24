@@ -72,7 +72,7 @@ export default function AuthShell({
       </section>
 
       {/* RIGHT SIDE INTERACTIVE FORM PANEL */}
-      <section className={`flex flex-col justify-center bg-white p-6 sm:p-10 lg:col-span-6 lg:p-12 xl:col-span-5 ${className}`}>
+      <section className={`flex flex-col justify-center bg-white p-4 py-6 sm:p-10 lg:col-span-6 lg:p-12 xl:col-span-5 ${className}`}>
         <div className="mx-auto w-full max-w-md">
           {children}
         </div>
