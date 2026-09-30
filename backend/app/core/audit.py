@@ -11,6 +11,7 @@ ALLOWED_ACTIONS = frozenset({
     "health_data_created",
     "screening_submitted",
     "referral_created",
+    "assistant_requested",
 })
 
 AUDIT_COLLECTION = "audit_logs"

@@ -39,6 +39,20 @@ class ScreeningAnswer(BaseModel):
         return value
 
 
+class AVResponse(str, Enum):
+    RESPONDED = "responded"
+    NO_RESPONSE = "no_response"
+    UNSURE = "unsure"
+
+
+class AVObservation(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    hearing: AVResponse | None = None
+    visual: AVResponse | None = None
+    observed_at: datetime
+
+
 class ScreeningSubmit(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -49,6 +63,7 @@ class ScreeningSubmit(BaseModel):
     client_submission_id: str = Field(min_length=1, max_length=120)
     screened_at: datetime = Field(default_factory=datetime.utcnow)
     notes: str | None = Field(default=None, max_length=1000)
+    av_observation: AVObservation | None = None
 
     @field_validator("child_id", "milestone_dataset_version", "client_submission_id")
     @classmethod
@@ -63,6 +78,7 @@ class DomainScore(BaseModel):
     missed_weight: float
     missed_count: int
     unsure_count: int
+    answered_count: int = 0
     status: str
 
 
@@ -76,6 +92,10 @@ class RiskScoreResponse(BaseModel):
     recommendation: str
     milestone_dataset_version: str
     screened_at: datetime
+    rule_findings: list[str] = Field(default_factory=list)
+    red_flag_ids: list[str] = Field(default_factory=list)
+    risk_factor_ids: list[str] = Field(default_factory=list)
+    ml_assessment: dict | None = None
 
 
 class ScreeningHistoryItem(BaseModel):
@@ -83,6 +103,13 @@ class ScreeningHistoryItem(BaseModel):
     screened_at: datetime
     risk_level: RiskLevel
     total_missed_weight: float
+    checkpoint_age_months: int | None = None
+    domain_scores: dict[str, DomainScore] = Field(default_factory=dict)
+    answers: list[ScreeningAnswer] = Field(default_factory=list)
+    red_flag_ids: list[str] = Field(default_factory=list)
+    risk_factor_ids: list[str] = Field(default_factory=list)
+    milestone_dataset_version: str | None = None
+    missed_milestones: list[dict] = Field(default_factory=list)
 
 
 class ChildHistoryResponse(BaseModel):

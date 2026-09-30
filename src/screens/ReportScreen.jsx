@@ -17,21 +17,21 @@ import { EmptyState } from '../components/AsyncState'
 const riskStyles = {
   GREEN: {
     badge: 'normal',
-    title: 'Development On Track',
+    title: 'Follow-up threshold not reached',
     banner: 'border-emerald-200 bg-emerald-50/70 text-emerald-900',
     iconColor: 'text-emerald-700',
     icon: 'checkCircle'
   },
   YELLOW: {
     badge: 'moderate',
-    title: 'Moderate Developmental Delay',
+    title: 'Review recommended',
     banner: 'border-amber-200 bg-amber-50/70 text-amber-900',
     iconColor: 'text-amber-700',
     icon: 'alertTriangle'
   },
   RED: {
     badge: 'high',
-    title: 'High Developmental Risk Identified',
+    title: 'Follow-up recommended',
     banner: 'border-red-200 bg-red-50/70 text-red-900',
     iconColor: 'text-red-700',
     icon: 'alertCircle'
@@ -50,11 +50,15 @@ export default function ReportScreen({ onNavigate }) {
         .replace('_', ' ')
         .replace(/\b\w/g, (l) => l.toUpperCase())
 
-      const score = Math.max(0, 100 - (value.missed_weight || 0) * 20)
+      const denominator = value.answered_count || 0
+      const score = denominator > 0 ? Math.round(((denominator - (value.missed_count || 0) - (value.unsure_count || 0)) / denominator) * 100) : null
       return {
         domain: formattedDomain,
         score,
-        missed: value.missed_count || 0
+        missed: value.missed_count || 0,
+        unsure: value.unsure_count || 0,
+        answered: denominator,
+        status: value.status
       }
     })
   }, [screeningResult])
@@ -65,8 +69,8 @@ export default function ReportScreen({ onNavigate }) {
         active="screening"
         onNavigate={onNavigate}
         backTo="dashboard"
-        title="Developmental Assessment Report"
-        subtitle="Standardized RBSK Clinical Assessment & Recommendations"
+        title="Developmental Screening Report"
+        subtitle="Screening indication and follow-up information"
         actions={
           <div className="flex items-center gap-2">
             <Button
@@ -97,18 +101,17 @@ export default function ReportScreen({ onNavigate }) {
                 <div className="flex items-center gap-2">
                   <span className="inline-flex items-center gap-1.5 rounded-md bg-teal-500/20 px-2.5 py-0.5 text-xs font-semibold text-teal-200 ring-1 ring-inset ring-teal-400/30">
                     <Icon name="report" className="h-3.5 w-3.5" />
-                    Clinical Record Structure
+                    Screening record
                   </span>
                   <span className="text-xs text-primary-200">
-                    RBSK Standard Clinical Output
+                    Backend-calculated result
                   </span>
                 </div>
                 <h1 className="mt-2 text-xl font-bold tracking-tight text-white sm:text-2xl">
-                  Developmental Assessment Report
+                  Developmental Screening Report
                 </h1>
                 <p className="mt-1 text-xs text-primary-100/90 sm:text-sm max-w-2xl leading-relaxed">
-                  Comprehensive multi-domain developmental evaluation, spider-chart performance analysis,
-                  and caseworker intervention guidance aligned with national child health guidelines.
+                  A summary of recorded screening responses, domain scores, and the configured follow-up recommendation.
                 </p>
               </div>
 
@@ -124,7 +127,7 @@ export default function ReportScreen({ onNavigate }) {
           </section>
 
           {/* PRECONDITION NOTICE */}
-          <Card title="Assessment Report Precondition" subtitle="Clinical documentation requirement">
+          <Card title="Screening Report" subtitle="Complete a screening to view its result">
             <div className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50/60 p-8 text-center">
               <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-primary-100 text-primary-800">
                 <Icon name="report" className="h-6 w-6" />
@@ -133,8 +136,7 @@ export default function ReportScreen({ onNavigate }) {
                 Complete Screening First to Generate Report
               </h3>
               <p className="mt-1 text-xs text-neutral-500 max-w-md mx-auto leading-relaxed">
-                Developmental reports are generated dynamically from verified milestone observation data.
-                To view a child&apos;s developmental radar profile, domain scoring, and referral status, complete an active screening session.
+                This report uses the screening information recorded for the child. It does not provide a diagnosis.
               </p>
 
               <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
@@ -189,12 +191,12 @@ export default function ReportScreen({ onNavigate }) {
                     <Icon name="alertTriangle" className="h-4 w-4" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-neutral-900">Clinical Risk Classification</h4>
-                    <span className="text-[11px] text-neutral-500">National Health Triage</span>
+                    <h4 className="text-xs font-bold text-neutral-900">Screening indication</h4>
+                    <span className="text-[11px] text-neutral-500">Configured screening rules</span>
                   </div>
                 </div>
                 <p className="mt-2 text-xs text-neutral-600 leading-relaxed">
-                  Automatic algorithmic categorisation into On Track (GREEN), Moderate Delay (YELLOW), or High Risk (RED) with clear caseworker next steps.
+                  The backend applies configured thresholds and provides a follow-up recommendation for AWW review.
                 </p>
               </div>
 
@@ -204,12 +206,12 @@ export default function ReportScreen({ onNavigate }) {
                     <Icon name="info" className="h-4 w-4" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-neutral-900">Caregiver Stimulation Guidance</h4>
-                    <span className="text-[11px] text-neutral-500">Home-based exercises</span>
+                    <h4 className="text-xs font-bold text-neutral-900">Follow-up guidance</h4>
+                    <span className="text-[11px] text-neutral-500">Configured recommendation</span>
                   </div>
                 </div>
                 <p className="mt-2 text-xs text-neutral-600 leading-relaxed">
-                  Targeted sensory and motor stimulation activities tailored to the specific developmental milestones flagged during observation.
+                  This version does not include an approved activity library. Use the configured recommendation and local guidance.
                 </p>
               </div>
 
@@ -219,12 +221,12 @@ export default function ReportScreen({ onNavigate }) {
                     <Icon name="hospital" className="h-4 w-4" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-neutral-900">Official RBSK Form 3A Docket</h4>
-                    <span className="text-[11px] text-neutral-500">Specialist medical escalation</span>
+                    <h4 className="text-xs font-bold text-neutral-900">Referral record</h4>
+                    <span className="text-[11px] text-neutral-500">Worker-initiated follow-up</span>
                   </div>
                 </div>
                 <p className="mt-2 text-xs text-neutral-600 leading-relaxed">
-                  For high-risk findings, directly generates a standardized referral docket for the District Early Intervention Centre (DEIC).
+                  An Anganwadi Worker can create a referral using the existing referral workflow when appropriate.
                 </p>
               </div>
             </div>
@@ -247,8 +249,8 @@ export default function ReportScreen({ onNavigate }) {
       active="screening"
       onNavigate={onNavigate}
       backTo="dashboard"
-      title="Developmental Assessment Report"
-      subtitle={`Screening Reference: ${screeningResult.screening_id || 'SR-04821'}`}
+        title="Developmental Screening Report"
+        subtitle={`Screening Reference: ${screeningResult.screening_id || '—'}`}
       actions={
         <Button
           variant="secondary"
@@ -304,14 +306,14 @@ export default function ReportScreen({ onNavigate }) {
             <div className="flex-1">
               <div className="flex items-center gap-2.5">
                 <span className="text-xs font-bold uppercase tracking-wider">
-                  RBSK Risk Level: {screeningResult.risk_level}
+                  Screening indication: {screeningResult.risk_level}
                 </span>
                 <BadgePill tone={risk.badge} dot>
                   {risk.title}
                 </BadgePill>
               </div>
               <h3 className="mt-1 text-base font-bold">
-                {screeningResult.risk_label || risk.title}
+                {risk.title}
               </h3>
               <p className="mt-1 text-xs sm:text-sm leading-relaxed opacity-90">
                 {screeningResult.recommendation}
@@ -325,7 +327,7 @@ export default function ReportScreen({ onNavigate }) {
                     onClick={() => onNavigate('referral')}
                   >
                     <Icon name="hospital" className="h-4 w-4" />
-                    <span>Generate Immediate DEIC Referral →</span>
+                    <span>Generate referral →</span>
                   </Button>
                 </div>
               )}
@@ -339,7 +341,7 @@ export default function ReportScreen({ onNavigate }) {
           {/* RADAR CHART VISUALIZATION */}
           <Card
             title="Developmental Domain Profile"
-            subtitle="Normalized milestone mastery (0–100%)"
+            subtitle="YES responses as a share of answered items"
           >
             <div className="h-64 w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -350,7 +352,7 @@ export default function ReportScreen({ onNavigate }) {
                     tick={{ fill: '#475569', fontSize: 11, fontWeight: 600 }}
                   />
                   <Radar
-                    name="Mastery Score"
+                    name="YES responses"
                     dataKey="score"
                     stroke="#0f766e"
                     fill="#14b8a6"
@@ -372,13 +374,13 @@ export default function ReportScreen({ onNavigate }) {
                   <div>
                     <p className="text-xs font-bold text-neutral-900">{item.domain}</p>
                     <p className="text-[11px] text-neutral-500">
-                      {item.missed > 0 ? `${item.missed} milestone(s) delayed` : 'All tasks achieved for age'}
+                      {item.answered ? `${item.missed} No · ${item.unsure} Unsure · ${item.answered} answered` : 'Response counts unavailable for this record'}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-xs font-bold text-neutral-800">{item.score}%</span>
-                    <BadgePill tone={item.score >= 80 ? 'normal' : item.score >= 60 ? 'moderate' : 'high'}>
-                      {item.score >= 80 ? 'Normal' : item.score >= 60 ? 'Concern' : 'Delayed'}
+                    <span className="text-xs font-bold text-neutral-800">{item.score === null ? '—' : `${item.score}% YES`}</span>
+                    <BadgePill tone={item.status === 'WATCH' ? 'moderate' : 'neutral'}>
+                      {item.status === 'WATCH' ? 'Needs follow-up' : 'Threshold not reached'}
                     </BadgePill>
                   </div>
                 </div>
@@ -438,7 +440,7 @@ export default function ReportScreen({ onNavigate }) {
                 className="flex-1 sm:flex-initial"
               >
                 <Icon name="hospital" className="h-4 w-4" />
-                <span>Create DEIC Referral</span>
+                <span>Create referral</span>
               </Button>
             )}
             <Button

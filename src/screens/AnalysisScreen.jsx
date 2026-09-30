@@ -10,9 +10,9 @@ import { ErrorState, EmptyState } from '../components/AsyncState'
 
 const steps = [
   'Verifying recorded milestone responses',
-  'Transmitting clinical screening data',
-  'Applying RBSK developmental risk evaluation rules',
-  'Generating comprehensive developmental report'
+  'Submitting screening responses securely',
+  'Applying configured screening rules',
+  'Preparing the screening summary'
 ]
 
 export default function AnalysisScreen({ onNavigate }) {
@@ -98,8 +98,8 @@ export default function AnalysisScreen({ onNavigate }) {
         active="screening"
         onNavigate={onNavigate}
         backTo="screening"
-        title="Developmental Diagnostic Analysis"
-        subtitle="RBSK Algorithmic Risk Evaluation Engine"
+        title="Screening Result Review"
+        subtitle="Backend-calculated screening indication"
         actions={
           <Button
             variant="primary"
@@ -120,18 +120,17 @@ export default function AnalysisScreen({ onNavigate }) {
                 <div className="flex items-center gap-2">
                   <span className="inline-flex items-center gap-1.5 rounded-md bg-teal-500/20 px-2.5 py-0.5 text-xs font-semibold text-teal-200 ring-1 ring-inset ring-teal-400/30">
                     <Icon name="analytics" className="h-3.5 w-3.5" />
-                    Clinical Engine
+                    Screening rules
                   </span>
                   <span className="text-xs text-primary-200">
-                    RBSK Standard Version 2025
+                    Current configured rules
                   </span>
                 </div>
                 <h1 className="mt-2 text-xl font-bold tracking-tight text-white sm:text-2xl">
-                  Developmental Diagnostic Engine
+                  Developmental Screening Summary
                 </h1>
                 <p className="mt-1 text-xs text-primary-100/90 sm:text-sm max-w-2xl leading-relaxed">
-                  Automated rule-based evaluation of early childhood developmental milestones.
-                  Translates frontline questionnaire responses into clinical delay indices and referral actions.
+                  SPARSH applies its configured screening rules to recorded responses. An Anganwadi Worker reviews the result and follow-up recommendation.
                 </p>
               </div>
 
@@ -147,7 +146,7 @@ export default function AnalysisScreen({ onNavigate }) {
           </section>
 
           {/* PRECONDITION NOTICE CARD */}
-          <Card title="Screening Precondition Required" subtitle="Analysis engine inputs">
+          <Card title="Screening Required" subtitle="Complete a screening to review its result">
             <div className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50/60 p-8 text-center">
               <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-primary-100 text-primary-800">
                 <Icon name="screening" className="h-6 w-6" />
@@ -156,7 +155,7 @@ export default function AnalysisScreen({ onNavigate }) {
                 No Pending Milestone Screening Found
               </h3>
               <p className="mt-1 text-xs text-neutral-500 max-w-md mx-auto leading-relaxed">
-                The diagnostic engine evaluates child responses recorded during an active screening session.
+                The screening service evaluates child responses recorded during an active screening session.
                 To run an analysis, select a child from the cohort and complete their age-appropriate milestone questions.
               </p>
 
@@ -190,30 +189,30 @@ export default function AnalysisScreen({ onNavigate }) {
             <div className="rounded-xl border border-neutral-200/80 bg-white p-4 shadow-card">
               <div className="flex items-center gap-2">
                 <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-950">On Track (GREEN)</h4>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-950">GREEN · Follow-up threshold not reached</h4>
               </div>
               <p className="mt-2 text-xs text-neutral-600 leading-relaxed">
-                Child achieves all critical developmental milestones for their age checkpoint. Routine monitoring continues at next scheduled Anganwadi visit.
+                The configured screening score is below the follow-up thresholds. Continue routine observation and follow local guidance.
               </p>
             </div>
 
             <div className="rounded-xl border border-neutral-200/80 bg-white p-4 shadow-card">
               <div className="flex items-center gap-2">
                 <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />
-                <h4 className="text-xs font-bold uppercase tracking-wider text-amber-950">Moderate Delay (YELLOW)</h4>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-amber-950">YELLOW · Review recommended</h4>
               </div>
               <p className="mt-2 text-xs text-neutral-600 leading-relaxed">
-                1–2 milestone delays identified. Caseworker assigns targeted home stimulation exercises and schedules a re-screening checkpoint in 4 weeks.
+        The configured screening score reached the review threshold. Review the affected domains and follow the configured recommendation.
               </p>
             </div>
 
             <div className="rounded-xl border border-neutral-200/80 bg-white p-4 shadow-card">
               <div className="flex items-center gap-2">
                 <span className="h-2.5 w-2.5 rounded-full bg-red-600" />
-                <h4 className="text-xs font-bold uppercase tracking-wider text-red-950">High Risk (RED)</h4>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-red-950">RED · Follow-up recommended</h4>
               </div>
               <p className="mt-2 text-xs text-neutral-600 leading-relaxed">
-                3 or more milestone failures or covert sensory impairment. Automatically triggers formal RBSK Form 3A referral to District Early Intervention Centre (DEIC).
+        The configured screening score reached the follow-up rule. An Anganwadi Worker reviews and initiates referral when appropriate.
               </p>
             </div>
           </section>
@@ -229,8 +228,8 @@ export default function AnalysisScreen({ onNavigate }) {
       active="screening"
       onNavigate={onNavigate}
       backTo="screening"
-      title="Developmental Diagnostic Analysis"
-      subtitle="Applying RBSK Clinical Evaluation Rules"
+      title="Screening Result Review"
+      subtitle="Applying configured screening rules"
     >
       <div className="mx-auto max-w-xl p-4 sm:p-8">
         {error ? (
@@ -265,7 +264,7 @@ export default function AnalysisScreen({ onNavigate }) {
               Evaluating Developmental Milestones
             </h1>
             <p className="mt-1 text-xs text-neutral-500">
-              Patient: {currentChild?.name || 'Selected Child'} · Applying RBSK Scoring Rules
+              Child: {currentChild?.name || 'Selected Child'} · Applying backend screening rules
             </p>
 
             {/* Step checklist */}
@@ -304,7 +303,7 @@ export default function AnalysisScreen({ onNavigate }) {
             </div>
 
             <p className="mt-6 text-[11px] text-neutral-400">
-              SPARSH Diagnostic Rule Engine · RBSK Standard
+              SPARSH deterministic screening rules
             </p>
           </div>
         )}

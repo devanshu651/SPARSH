@@ -22,6 +22,7 @@ import AnalyticsScreen from './screens/AnalyticsScreen'
 import AlertsScreen from './screens/AlertsScreen'
 import SettingsScreen from './screens/SettingsScreen'
 import AdminConsoleScreen from './screens/AdminConsoleScreen'
+import ChildProfileScreen from './screens/ChildProfileScreen'
 
 const getInitialScreen = () => {
   if (typeof window !== 'undefined' && window.history.state && window.history.state.screen) {
@@ -165,6 +166,10 @@ export default function App() {
         <HistoryScreen
           onNavigate={navigate}
         />
+      )}
+
+      {screen === 'child-profile' && (
+        <ChildProfileScreen onNavigate={navigate} />
       )}
 
       {screen === 'records' && (

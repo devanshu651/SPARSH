@@ -9,9 +9,9 @@ import { LoadingState, ErrorState, EmptyState } from '../components/AsyncState'
 
 const riskFilters = [
   { id: 'All', label: 'All Children' },
-  { id: 'RED', label: 'High Risk' },
-  { id: 'YELLOW', label: 'Moderate' },
-  { id: 'GREEN', label: 'On Track' },
+  { id: 'RED', label: 'Needs follow-up' },
+  { id: 'YELLOW', label: 'Review recommended' },
+  { id: 'GREEN', label: 'Follow-up threshold not reached' },
 ]
 
 export default function ChildrenScreen({ onNavigate }) {
@@ -119,7 +119,7 @@ export default function ChildrenScreen({ onNavigate }) {
               </h1>
               <p className="mt-1 text-xs text-neutral-500 sm:text-sm max-w-2xl leading-relaxed">
                 Complete roster of enrolled children under your health centre surveillance.
-                Review developmental milestones, anthropometric nutrition vitals, and initiate periodic RBSK screenings.
+                Review developmental screening history and initiate age-based screenings.
               </p>
             </div>
 
@@ -188,7 +188,7 @@ export default function ChildrenScreen({ onNavigate }) {
         ) : childrenList.length === 0 ? (
           <EmptyState
             title="No children registered yet"
-            detail="Your Anganwadi centre cohort directory is currently empty. Enrol children to monitor milestone progress, log growth anthropometrics, and identify developmental delays early."
+            detail="Your Anganwadi centre cohort directory is currently empty. Enrol children to record developmental screening and follow-up history."
             icon="children"
             action={
               <div className="flex flex-wrap items-center justify-center gap-2.5">
@@ -241,11 +241,11 @@ export default function ChildrenScreen({ onNavigate }) {
 
               const riskLabel =
                 child.latest_risk === 'RED'
-                  ? 'High Risk'
+                  ? 'Needs follow-up'
                   : child.latest_risk === 'YELLOW'
-                  ? 'Moderate Delay'
+                  ? 'Review recommended'
                   : child.latest_risk === 'GREEN'
-                  ? 'On Track'
+                  ? 'Follow-up threshold not reached'
                   : 'Not Screened'
 
               return (
@@ -292,9 +292,9 @@ export default function ChildrenScreen({ onNavigate }) {
                       variant="secondary"
                       size="sm"
                       className="flex-1 text-xs"
-                      onClick={() => handleSelectChild(child, 'history')}
+                      onClick={() => handleSelectChild(child, 'child-profile')}
                     >
-                      <span>Medical Record</span>
+                      <span>Development Profile</span>
                     </Button>
                     <Button
                       variant="primary"

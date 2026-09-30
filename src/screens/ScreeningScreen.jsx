@@ -30,6 +30,8 @@ export default function ScreeningScreen({ onNavigate }) {
   const [error, setError] = useState(null)
   const [answers, setAnswers] = useState({})
   const [domainIndex, setDomainIndex] = useState(0)
+  const [reviewing, setReviewing] = useState(false)
+  const [pendingPayload, setPendingPayload] = useState(null)
 
   const handleSelectChildForScreening = (child) => {
     setCurrentChild(child)
@@ -58,6 +60,8 @@ export default function ScreeningScreen({ onNavigate }) {
     setData(null)
     setAnswers({})
     setDomainIndex(0)
+    setReviewing(false)
+    setPendingPayload(null)
     load()
   }, [currentChild?.id])
 
@@ -124,15 +128,8 @@ export default function ScreeningScreen({ onNavigate }) {
       screened_at: new Date().toISOString()
     }
 
-    setPendingScreening?.(payload)
-
-    sessionStorage.setItem(
-      'sparsh:pending-screening',
-      JSON.stringify(payload)
-    )
-
-    clearDraft()
-    onNavigate('av-assessment')
+    setPendingPayload(payload)
+    setReviewing(true)
   }
 
   // Cohort state for child selection precondition
@@ -177,7 +174,7 @@ export default function ScreeningScreen({ onNavigate }) {
         onNavigate={onNavigate}
         backTo="dashboard"
         title="Child Developmental Screening"
-        subtitle="Standardized RBSK 5-Domain Observation Protocol (0–6 Years)"
+        subtitle="Age-based developmental screening across five domains"
         actions={
           <Button
             variant="primary"
@@ -198,18 +195,18 @@ export default function ScreeningScreen({ onNavigate }) {
                 <div className="flex items-center gap-2">
                   <span className="inline-flex items-center gap-1.5 rounded-md bg-teal-500/20 px-2.5 py-0.5 text-xs font-semibold text-teal-200 ring-1 ring-inset ring-teal-400/30">
                     <Icon name="screening" className="h-3.5 w-3.5" />
-                    Standard Clinical Protocol
+                    Screening workflow
                   </span>
                   <span className="text-xs text-primary-200">
-                    RBSK 5-Domain Surveillance
+                    Developmental screening
                   </span>
                 </div>
                 <h1 className="mt-2 text-xl font-bold tracking-tight text-white sm:text-2xl">
                   Child Developmental Screening
                 </h1>
                 <p className="mt-1 text-xs text-primary-100/90 sm:text-sm max-w-2xl leading-relaxed">
-                  Early detection of developmental delays and neurodevelopmental impairments in infants and preschool children.
-                  Select a child from your registered cohort to initiate their age-banded evaluation.
+                  Record screening observations and identify areas that may need follow-up.
+                  Select a child from your registered cohort to start age-based milestone questions.
                 </p>
               </div>
 
@@ -234,7 +231,7 @@ export default function ScreeningScreen({ onNavigate }) {
                 <h3 className="text-sm font-bold text-neutral-900">Child & Checkpoint</h3>
               </div>
               <p className="mt-2 text-xs text-neutral-500 leading-relaxed">
-                Select an enrolled child. SPARSH automatically calculates their age in months to retrieve calibrated RBSK milestone checkpoints.
+                Select an enrolled child. SPARSH uses the recorded date of birth to select the configured age checkpoint.
               </p>
             </div>
 
@@ -255,10 +252,10 @@ export default function ScreeningScreen({ onNavigate }) {
                 <div className="grid h-8 w-8 place-items-center rounded-lg bg-amber-50 text-xs font-bold text-amber-800">
                   3
                 </div>
-                <h3 className="text-sm font-bold text-neutral-900">Triage & DEIC Escalation</h3>
+                <h3 className="text-sm font-bold text-neutral-900">Screening follow-up</h3>
               </div>
               <p className="mt-2 text-xs text-neutral-500 leading-relaxed">
-                Instant rule engine evaluation classifies outcomes (On Track, Moderate Delay, or High Risk) and issues official RBSK Form 3A referral slips.
+                The backend applies configured screening rules and provides follow-up recommendations. An Anganwadi Worker reviews and initiates referrals when appropriate.
               </p>
             </div>
           </section>
@@ -292,7 +289,7 @@ export default function ScreeningScreen({ onNavigate }) {
             ) : cohort.length === 0 ? (
               <EmptyState
                 title="No children registered yet"
-                detail="Developmental milestone screening requires a registered child profile with a verified date of birth. Enrol your first child to begin the screening protocol."
+                detail="Developmental screening requires a registered child profile with a date of birth. Enrol a child to begin age-based questions."
                 icon="children"
                 action={
                   <div className="flex flex-wrap items-center justify-center gap-2.5">
@@ -418,7 +415,7 @@ export default function ScreeningScreen({ onNavigate }) {
                 <h4 className="font-bold text-neutral-900">What happens after selecting a child?</h4>
                 <p className="mt-1">
                   SPARSH determines the child&apos;s age-bracket checkpoint and loads their specific milestone questionnaire.
-                  You can complete each domain at your own pace, save drafts offline, and optionally conduct supplemental sensory checks (audio tone response, visual pursuit tracking, and speech sampling) before running the diagnostic risk engine.
+                  You can complete each domain at your own pace and save drafts offline. Screening scores and recommendations are calculated by the backend.
                 </p>
               </div>
             </div>
@@ -459,13 +456,44 @@ export default function ScreeningScreen({ onNavigate }) {
     )
   }
 
+  if (reviewing && pendingPayload) {
+    return (
+      <AppLayout active="screening" onNavigate={onNavigate} backTo="dashboard" title="Review screening responses" subtitle={`${currentChild?.name || 'Child'} · ${pendingPayload.checkpoint_age_months} month checkpoint`}>
+        <div className="mx-auto max-w-3xl space-y-5 p-4 sm:p-6">
+          <p className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900">Review every response before continuing. Scores are calculated by the backend after submission.</p>
+          {domains.map((domain) => (
+            <section key={domain} className="rounded-xl border border-neutral-200 bg-white p-4">
+              <h2 className="mb-3 font-bold text-neutral-900">{domainLabels[domain] || domain}</h2>
+              <ul className="space-y-2">
+                {data.milestones.filter((item) => item.domain === domain).map((item) => (
+                  <li key={item.id} className="flex items-start justify-between gap-3 border-t border-neutral-100 pt-2 text-sm">
+                    <span>{item.question || item.description}</span><strong className="shrink-0">{answers[item.id]}</strong>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+          <div className="flex flex-wrap justify-between gap-3">
+            <Button variant="secondary" onClick={() => setReviewing(false)}>Edit responses</Button>
+            <Button variant="primary" onClick={() => {
+              setPendingScreening?.(pendingPayload)
+              sessionStorage.setItem('sparsh:pending-screening', JSON.stringify(pendingPayload))
+              clearDraft()
+              onNavigate('av-assessment')
+            }}>Continue to next step</Button>
+          </div>
+        </div>
+      </AppLayout>
+    )
+  }
+
   return (
     <AppLayout
       active="screening"
       onNavigate={onNavigate}
       backTo="dashboard"
       title="Child Development Screening"
-      subtitle="Standardized RBSK Observation Protocol"
+      subtitle="Age-based milestone questions"
     >
       <div className="mx-auto max-w-4xl space-y-6 p-4 sm:p-6 lg:p-8">
 
@@ -581,7 +609,7 @@ export default function ScreeningScreen({ onNavigate }) {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <p className="text-sm font-semibold text-neutral-900 leading-snug">
-                      <span className="mr-1.5 font-bold text-neutral-400">{index + 1}.</span>
+                      <span className="mr-1.5 font-bold text-neutral-400">Question {index + 1} of {currentTasks.length}.</span>
                       {taskText}
                     </p>
                     {currentAnswer && (

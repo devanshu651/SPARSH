@@ -118,6 +118,16 @@ def test_child_creation_invokes_audit_after_success():
     assert record["action"] == "child_created"
     assert record["resource_id"] == "child-1"
     assert record["centre_id"] == "centre-a"
+
+
+def test_assistant_request_is_audited_without_child_details():
+    db = Mock()
+    with _with_audit_db(db):
+        audit.audit_log("u1", "assistant_requested", "screening-1", "centre-a")
+    record = db.collection("audit_logs").add.call_args[0][0]
+    assert record["action"] == "assistant_requested"
+    assert record["resource_id"] == "screening-1"
+    assert "child_name" not in record
     assert record["timestamp"] is firestore.SERVER_TIMESTAMP
 
 
