@@ -19,18 +19,20 @@ export default function HistoryScreen({ onNavigate }) {
   // Cohort state for child selection precondition
   const [cohort, setCohort] = useState([])
   const [loadingCohort, setLoadingCohort] = useState(false)
+  const [cohortError, setCohortError] = useState(null)
   const [cohortSearch, setCohortSearch] = useState('')
 
   useEffect(() => {
     if (!currentChild) {
       setLoadingCohort(true)
+      setCohortError(null)
       const fetchCohort = async () => {
         try {
           const fn = childrenApi.list()
           const res = typeof fn === 'function' ? await fn() : await fn
           setCohort(Array.isArray(res) ? res : [])
-        } catch {
-          setCohort([])
+        } catch (error) {
+          setCohortError(error)
         } finally {
           setLoadingCohort(false)
         }
@@ -82,8 +84,8 @@ export default function HistoryScreen({ onNavigate }) {
             try {
               const rCall = referralsApi.byScreening(s.screening_id)
               return typeof rCall === 'function' ? await rCall(s.screening_id) : await rCall
-            } catch {
-              return null
+            } catch (error) {
+              throw error
             }
           })
         )
@@ -172,7 +174,7 @@ export default function HistoryScreen({ onNavigate }) {
                     Longitudinal Child Records
                   </span>
                   <span className="text-xs text-neutral-400">
-                    RBSK Growth & Milestone Surveillance
+                    Growth and milestone history
                   </span>
                 </div>
                 <h1 className="mt-2 text-xl font-bold tracking-tight text-neutral-900 sm:text-2xl">
@@ -215,6 +217,8 @@ export default function HistoryScreen({ onNavigate }) {
 
             {loadingCohort ? (
               <LoadingState label="Loading ward child cohort records..." />
+            ) : cohortError ? (
+              <ErrorState error={cohortError} onRetry={() => window.location.reload()} />
             ) : cohort.length === 0 ? (
               <EmptyState
                 title="No children registered yet"
@@ -419,7 +423,7 @@ export default function HistoryScreen({ onNavigate }) {
                   )}
                 </div>
                 <p className="text-xs text-neutral-500 mt-0.5">
-                  ID: <span className="font-semibold text-neutral-700">{currentChild.child_identifier || 'AW-04821'}</span>
+                  ID: <span className="font-semibold text-neutral-700">{currentChild.child_identifier || 'Not recorded'}</span>
                   {' · '}
                   Guardian: <span className="font-semibold text-neutral-700">{currentChild.guardian_name || 'Primary Caregiver'}</span>
                 </p>

@@ -36,7 +36,7 @@ export default function AuthShell({
         {/* Core clinical messaging */}
         <div className="relative z-10 max-w-lg space-y-4">
           <span className="inline-flex items-center gap-1.5 rounded-md bg-teal-500/15 px-3 py-1 text-xs font-semibold text-teal-300 ring-1 ring-inset ring-teal-400/25">
-            Public Health & Child Welfare Protocol
+            Developmental screening and follow-up support
           </span>
 
           <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl leading-tight">
@@ -50,7 +50,7 @@ export default function AuthShell({
 
           <div className="grid grid-cols-2 gap-4 pt-4 text-xs">
             <div className="rounded-lg border border-white/10 bg-white/5 p-3">
-              <span className="font-bold text-white block">RBSK Compliant</span>
+              <span className="font-bold text-white block">Milestone Screening</span>
               <span className="text-neutral-400 text-[11px]">5 Developmental Domains</span>
             </div>
             <div className="rounded-lg border border-white/10 bg-white/5 p-3">

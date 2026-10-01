@@ -7,11 +7,11 @@ import Icon from '../components/Icon'
 import { authService, readableAuthError } from '../services/auth'
 import { usersApi } from '../services/api'
 import { useApp } from '../context/AppContext'
-import { startDemoMode, demoAvailable } from '../services/demo'
+import { firebaseConfigError } from '../lib/firebase'
 
 export default function LoginScreen({ onBack, onLogin, onRegister }) {
   const { t, i18n } = useTranslation()
-  const { setCurrentWorker, demoWorker } = useApp()
+  const { setCurrentWorker, authError } = useApp()
 
   const [mobile, setMobile] = useState('')
   const [password, setPassword] = useState('')
@@ -62,12 +62,6 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
     }
   }
 
-  function exploreDemo() {
-    startDemoMode()
-    setCurrentWorker(demoWorker)
-    onLogin?.()
-  }
-
   const toggleLang = () => {
     i18n.changeLanguage(i18n.language === 'en' ? 'hi' : 'en')
   }
@@ -104,6 +98,11 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
           <p className="mt-1 text-xs text-neutral-500 sm:text-sm">
             Enter your registered Anganwadi worker mobile number and password.
           </p>
+          {(authError || firebaseConfigError) && (
+            <div className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900" role="status">
+              {authError?.message || firebaseConfigError}
+            </div>
+          )}
         </div>
 
         {/* LOGIN FORM */}
@@ -170,19 +169,6 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
             Sign In to Field Dashboard
           </Button>
 
-          {/* EXPLORE DEMO MODE */}
-          {demoAvailable && (
-            <div className="pt-1 sm:pt-2">
-              <Button
-                type="button"
-                variant="secondary"
-                className="w-full text-xs font-semibold border-teal-200 text-teal-800 bg-teal-50/50 hover:bg-teal-50"
-                onClick={exploreDemo}
-              >
-                <span>Explore as Demo Health Worker (Offline Ready)</span>
-              </Button>
-            </div>
-          )}
         </form>
 
         {/* WORKER ENROLMENT GUIDANCE */}

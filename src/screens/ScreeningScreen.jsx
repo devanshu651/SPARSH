@@ -135,18 +135,20 @@ export default function ScreeningScreen({ onNavigate }) {
   // Cohort state for child selection precondition
   const [cohort, setCohort] = useState([])
   const [loadingCohort, setLoadingCohort] = useState(false)
+  const [cohortError, setCohortError] = useState(null)
   const [cohortSearch, setCohortSearch] = useState('')
 
   useEffect(() => {
     if (!currentChild) {
       setLoadingCohort(true)
+      setCohortError(null)
       const fetchCohort = async () => {
         try {
           const fn = childrenApi.list()
           const res = typeof fn === 'function' ? await fn() : await fn
           setCohort(Array.isArray(res) ? res : [])
-        } catch {
-          setCohort([])
+        } catch (error) {
+          setCohortError(error)
         } finally {
           setLoadingCohort(false)
         }
@@ -286,6 +288,12 @@ export default function ScreeningScreen({ onNavigate }) {
 
             {loadingCohort ? (
               <LoadingState label="Loading registered children cohort..." />
+            ) : cohortError ? (
+              <ErrorState error={cohortError} onRetry={() => {
+                setLoadingCohort(true)
+                setCohortError(null)
+                childrenApi.list().then((items) => setCohort(Array.isArray(items) ? items : [])).catch(setCohortError).finally(() => setLoadingCohort(false))
+              }} />
             ) : cohort.length === 0 ? (
               <EmptyState
                 title="No children registered yet"
@@ -510,7 +518,7 @@ export default function ScreeningScreen({ onNavigate }) {
                   <BadgePill tone="teal">{data.current_age_months} Months</BadgePill>
                 </div>
                 <p className="text-xs text-neutral-500">
-                  ID: {currentChild?.child_identifier || 'AW-04821'} · Protocol: {data.checkpoint_age_months}M Checkpoint
+                  ID: {currentChild?.child_identifier || 'Not recorded'} · {data.checkpoint_age_months} month checkpoint
                 </p>
               </div>
             </div>

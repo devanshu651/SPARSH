@@ -7,16 +7,18 @@ import Card from '../components/Card'
 import Button from '../components/Button'
 import BadgePill from '../components/BadgePill'
 import Icon from '../components/Icon'
-import { LoadingState, EmptyState } from '../components/AsyncState'
+import { ErrorState, LoadingState, EmptyState } from '../components/AsyncState'
 
 export default function AlertsScreen({ onNavigate }) {
   const { setCurrentChild } = useApp()
   const [alerts, setAlerts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [filter, setFilter] = useState('all')
 
   const loadAlerts = async () => {
     setLoading(true)
+    setError(null)
     try {
       const fn = childrenApi.list()
       const raw = typeof fn === 'function' ? await fn() : await fn
@@ -30,7 +32,7 @@ export default function AlertsScreen({ onNavigate }) {
           id: `alert-red-${child.id}`,
           child,
           title: `Urgent DEIC Referral Required: ${child.name}`,
-          detail: `Patient (ID: ${child.child_identifier || '—'}) flagged with High Risk developmental delay. RBSK Form 3A referral docket recommended for specialized pediatric evaluation.`,
+          detail: `Child (ID: ${child.child_identifier || '—'}) has a high risk screening indication and needs follow-up review.`,
           time: 'Action Required Immediately',
           type: 'urgent',
           unread: true,
@@ -60,7 +62,7 @@ export default function AlertsScreen({ onNavigate }) {
           id: `alert-pending-${child.id}`,
           child,
           title: `Developmental Milestone Checkpoint Due: ${child.name}`,
-          detail: `Enrolled child (Age: ${child.age_months ?? '—'} months) has not yet completed age-appropriate RBSK checkpoint observation.`,
+          detail: `Enrolled child (Age: ${child.age_months ?? '—'} months) does not have a saved screening indication.`,
           time: 'Routine Checkpoint',
           type: 'schedule',
           unread: false,
@@ -69,12 +71,12 @@ export default function AlertsScreen({ onNavigate }) {
       })
 
       // 4. Offline sync alert if items in local queue
-      const queue = queuedScreenings()
+      const queue = await queuedScreenings()
       if (queue.length > 0) {
         generated.unshift({
           id: 'alert-sync-offline',
           title: `${queue.length} Screenings Stored Offline Awaiting Sync`,
-          detail: 'Screenings completed without internet connectivity are securely encrypted on this device. They will synchronize automatically when connection resumes.',
+          detail: 'These screening submissions are stored on this device and have not been confirmed by the SPARSH server.',
           time: 'Network Sync',
           type: 'clinical',
           unread: true,
@@ -95,8 +97,8 @@ export default function AlertsScreen({ onNavigate }) {
       }
 
       setAlerts(generated)
-    } catch {
-      // Fallback in case of network issue
+    } catch (loadError) {
+      setError(loadError)
     } finally {
       setLoading(false)
     }
@@ -210,13 +212,15 @@ export default function AlertsScreen({ onNavigate }) {
           </div>
 
           <span className="text-xs text-neutral-400 hidden sm:inline">
-            Real-time RBSK clinical surveillance
+            Follow-up alerts from saved screening records
           </span>
         </div>
 
         {/* ALERTS LIST CONTENT */}
         {loading ? (
           <LoadingState label="Auditing ward child records for clinical alerts..." />
+        ) : error ? (
+          <ErrorState error={error} onRetry={loadAlerts} />
         ) : filteredAlerts.length === 0 ? (
           <EmptyState
             title="No alerts in this category"
@@ -291,7 +295,7 @@ export default function AlertsScreen({ onNavigate }) {
                           )}
                           {isUrgent && (
                             <BadgePill tone="high" dot>
-                              RBSK Red Alert
+                              High risk screening
                             </BadgePill>
                           )}
                         </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { AppProvider } from './context/AppContext'
+import { AppProvider, useApp } from './context/AppContext'
 import ErrorBoundary from './components/ErrorBoundary'
 
 import SplashScreen from './screens/SplashScreen'
@@ -31,13 +31,19 @@ const getInitialScreen = () => {
   return 'splash'
 }
 
-export default function App() {
+function AppContent() {
+  const { currentWorker, authReady } = useApp()
   const [screen, setScreen] = useState(getInitialScreen)
   const currentScreenRef = useRef(screen)
 
   useEffect(() => {
     currentScreenRef.current = screen
   }, [screen])
+
+  useEffect(() => {
+    const publicScreens = ['splash', 'login', 'worker-registration']
+    if (authReady && !currentWorker && !publicScreens.includes(screen)) navigate('login', { replace: true })
+  }, [authReady, currentWorker, screen])
 
   useEffect(() => {
     const currentState = window.history.state
@@ -97,7 +103,6 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      <AppProvider>
 
       {screen === 'splash' && (
         <SplashScreen
@@ -208,7 +213,10 @@ export default function App() {
         />
       )}
 
-      </AppProvider>
     </ErrorBoundary>
   )
+}
+
+export default function App() {
+  return <AppProvider><AppContent /></AppProvider>
 }

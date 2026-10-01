@@ -275,11 +275,11 @@ export default function ReportScreen({ onNavigate }) {
                 <div className="flex items-center gap-2">
                   <h2 className="text-lg font-bold text-neutral-900">{currentChild?.name || 'Screened Child'}</h2>
                   <BadgePill tone="teal">
-                    {screeningResult.checkpoint_age_months || currentChild?.age_months || '18'} Months
+                    {screeningResult.checkpoint_age_months ?? currentChild?.age_months ?? '—'} Months
                   </BadgePill>
                 </div>
                 <p className="text-xs text-neutral-500">
-                  ID: {currentChild?.child_identifier || 'AW-04821'} · Guardian: {currentChild?.guardian_name || 'Guardian'} · Ward 4
+                  ID: {currentChild?.child_identifier || 'Not recorded'} · Guardian: {currentChild?.guardian_name || 'Not recorded'}
                 </p>
               </div>
             </div>
@@ -334,6 +334,10 @@ export default function ReportScreen({ onNavigate }) {
             </div>
           </div>
         </div>
+
+        <p className="text-xs text-neutral-500" role="status">
+          ML risk model is not configured. This report uses the server’s rule based screening result only.
+        </p>
 
         {/* DOMAIN EVALUATION SECTION */}
         <div className="grid gap-6 lg:grid-cols-2">

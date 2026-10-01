@@ -42,7 +42,7 @@ export default function AnalyticsScreen({ onNavigate }) {
     const green = children.filter((c) => c.latest_risk === 'GREEN').length
     const pending = total - screened
 
-    const compliance = total > 0 ? Math.round((screened / total) * 100) : 0
+    const coverage = total > 0 ? Math.round((screened / total) * 100) : 0
     const redPct = screened > 0 ? Math.round((red / screened) * 100) : 0
     const yellowPct = screened > 0 ? Math.round((yellow / screened) * 100) : 0
     const greenPct = screened > 0 ? Math.round((green / screened) * 100) : 0
@@ -54,7 +54,7 @@ export default function AnalyticsScreen({ onNavigate }) {
       yellow,
       green,
       pending,
-      compliance,
+      coverage,
       redPct,
       yellowPct,
       greenPct
@@ -82,7 +82,7 @@ export default function AnalyticsScreen({ onNavigate }) {
     }
   }
 
-  const centreTitle = currentWorker?.centre_ids?.[0] ? `Centre: ${currentWorker.centre_ids[0]}` : 'Ward 4 Sub-centre'
+  const centreTitle = currentWorker?.centre_ids?.[0] ? `Centre: ${currentWorker.centre_ids[0]}` : 'Assigned centre'
 
   return (
     <AppLayout
@@ -90,7 +90,7 @@ export default function AnalyticsScreen({ onNavigate }) {
       onNavigate={onNavigate}
       backTo="dashboard"
       title="Supervisor Population Surveillance & Analytics"
-      subtitle={`${centreTitle} · RBSK Developmental Screening Coverage & Triage`}
+      subtitle={`${centreTitle} · Developmental screening coverage and follow-up`}
       actions={
         <Button
           variant="secondary"
@@ -125,15 +125,15 @@ export default function AnalyticsScreen({ onNavigate }) {
                 <p className="mt-1 text-[11px] text-neutral-500">Under-5 children in assigned ward</p>
               </div>
 
-              {/* Compliance */}
+              {/* Coverage */}
               <div className="rounded-xl border border-neutral-200/80 bg-white p-4 shadow-card">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-neutral-600">Screening Compliance</span>
+                  <span className="text-xs font-semibold text-neutral-600">Screening Coverage</span>
                   <div className="grid h-8 w-8 place-items-center rounded-lg bg-teal-50 text-teal-800">
                     <Icon name="checkCircle" className="h-4 w-4" />
                   </div>
                 </div>
-                <p className="mt-3 text-2xl font-bold text-teal-700">{stats.compliance}%</p>
+                <p className="mt-3 text-2xl font-bold text-teal-700">{stats.coverage}%</p>
                 <p className="mt-1 text-[11px] text-neutral-500">{stats.screened} of {stats.total} evaluated</p>
               </div>
 
@@ -172,7 +172,7 @@ export default function AnalyticsScreen({ onNavigate }) {
               {/* POPULATION RISK DISTRIBUTION */}
               <Card
                 title="Developmental Risk Profile"
-                subtitle="RBSK triage distribution across screened children in this centre"
+                subtitle="Screening indications across children in this centre"
               >
                 <div className="mt-2 flex flex-col sm:flex-row items-center justify-around gap-6 py-4">
                   
@@ -239,12 +239,12 @@ export default function AnalyticsScreen({ onNavigate }) {
                   <div>
                     <div className="flex justify-between font-semibold text-neutral-700 mb-1">
                       <span>Under-5 Cohort Screening Coverage</span>
-                      <span>{stats.compliance}% / 100% Target</span>
+                      <span>{stats.coverage}% screened</span>
                     </div>
                     <div className="h-2.5 w-full overflow-hidden rounded-full bg-neutral-100">
                       <div
                         className="h-full rounded-full bg-teal-600 transition-all duration-500"
-                        style={{ width: `${stats.compliance}%` }}
+                        style={{ width: `${stats.coverage}%` }}
                       />
                     </div>
                   </div>
@@ -259,7 +259,7 @@ export default function AnalyticsScreen({ onNavigate }) {
                       <span className="font-bold text-neutral-900">{currentWorker?.name || 'Healthcare Worker'}</span>
                     </div>
                     <div className="flex justify-between items-center text-[11px]">
-                      <span className="text-neutral-500 font-medium">RBSK Dataset Version:</span>
+                      <span className="text-neutral-500 font-medium">Screening dataset version:</span>
                       <span className="font-bold text-teal-800">Version 2.4 (2025 Standard)</span>
                     </div>
                   </div>

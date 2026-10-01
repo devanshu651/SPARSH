@@ -28,9 +28,10 @@ export default function ChildProfileScreen({ onNavigate }) {
         if (!active) return
         const entries = [...(data?.screenings || [])].sort((a, b) => new Date(a.screened_at) - new Date(b.screened_at))
         setHistory(entries)
-        const referralPairs = await Promise.all(entries.map(async (entry) => {
-          try { return [entry.screening_id, await referralsApi.byScreening(entry.screening_id)] } catch { return [entry.screening_id, null] }
-        }))
+        const referralPairs = await Promise.all(entries.map(async (entry) => [
+          entry.screening_id,
+          await referralsApi.byScreening(entry.screening_id),
+        ]))
         if (active) setReferrals(Object.fromEntries(referralPairs.filter(([, value]) => value)))
       } catch (err) { if (active) setError(err) }
     }

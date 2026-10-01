@@ -77,7 +77,7 @@ export default function AppLayout({
         {/* Footer info */}
         <div className="border-t border-neutral-200 p-4 text-[11px] text-neutral-400">
           <p className="font-semibold text-neutral-600">SPARSH v1.2</p>
-          <p className="mt-0.5">National Health Protocol Compliant</p>
+          <p className="mt-0.5">Developmental Screening &amp; Follow-up Support</p>
         </div>
       </aside>
 

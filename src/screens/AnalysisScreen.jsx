@@ -67,7 +67,7 @@ export default function AnalysisScreen({ onNavigate }) {
         setPendingScreening?.(null)
         sessionStorage.removeItem('sparsh:pending-screening')
         setError(new Error('This screening was already submitted. Open the child history to view it.'))
-      } else if (!navigator.onLine) {
+      } else if (!navigator.onLine || e?.status === 0) {
         try {
           await enqueueScreening(payload)
         } catch {
@@ -76,7 +76,7 @@ export default function AnalysisScreen({ onNavigate }) {
         }
         setPendingScreening?.(null)
         sessionStorage.removeItem('sparsh:pending-screening')
-        setError(new Error('Device is offline. This screening has been securely cached in your local queue and will synchronize automatically when connection resumes.'))
+        setError(new Error('Waiting to sync. This screening is stored on this device and has not been confirmed by the SPARSH server.'))
       } else {
         setError(e)
       }

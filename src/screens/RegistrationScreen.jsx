@@ -95,7 +95,7 @@ export default function RegistrationScreen({ onNavigate }) {
     if (!validate()) return
 
     const centreId = currentWorker?.centre_ids?.[0]
-    if (!centreId && !currentWorker?.isDemo) {
+    if (!centreId) {
       setErrors({ submit: 'Your worker account has no assigned centre. Ask an administrator to assign one.' })
       return
     }
@@ -226,7 +226,7 @@ export default function RegistrationScreen({ onNavigate }) {
                 <Input
                   label="Anganwadi / Village Child ID"
                   required
-                  placeholder="e.g. AWW-CH-04821"
+                placeholder="Enter child identifier"
                   value={form.childIdentifier}
                   onChange={update('childIdentifier')}
                   error={errors.childIdentifier}
@@ -269,7 +269,7 @@ export default function RegistrationScreen({ onNavigate }) {
               <Input
                 label="Village / Ward / Mohalla"
                 required
-                placeholder="e.g. Ward 4, Sub-centre Kasba"
+                placeholder="Enter the centre or ward name"
                 value={form.village}
                 onChange={update('village')}
                 error={errors.village}
@@ -416,7 +416,7 @@ export default function RegistrationScreen({ onNavigate }) {
                   Optional: Attach Patient Photo
                 </span>
                 <span className="mt-0.5 block text-[11px] text-neutral-400">
-                  Encrypted and stored locally for patient identification
+                  The selected photo is not submitted or saved by this form.
                 </span>
                 <input
                   type="file"

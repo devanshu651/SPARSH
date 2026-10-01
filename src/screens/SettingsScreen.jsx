@@ -2,11 +2,9 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useApp } from '../context/AppContext'
 import { authService } from '../services/auth'
-import { stopDemoMode } from '../services/demo'
 import AppLayout from '../components/AppLayout'
 import Card from '../components/Card'
 import Button from '../components/Button'
-import BadgePill from '../components/BadgePill'
 import Icon from '../components/Icon'
 
 export default function SettingsScreen({ onNavigate }) {
@@ -16,12 +14,11 @@ export default function SettingsScreen({ onNavigate }) {
   const [notifications, setNotifications] = useState(true)
   const [syncOnWifi, setSyncOnWifi] = useState(false)
 
-  const workerName = currentWorker?.name || 'Anganwadi Healthcare Worker'
-  const workerRole = currentWorker?.role ? currentWorker.role.toUpperCase() : 'FIELD WORKER'
-  const centreId = currentWorker?.centre_ids?.[0] || 'AWW-MH-2847'
+  const workerName = currentWorker?.name || currentWorker?.uid || 'Authenticated worker'
+  const workerRole = currentWorker?.role ? currentWorker.role.toUpperCase() : 'WORKER'
+  const centreId = currentWorker?.centre_ids?.[0] || 'No centre assigned'
 
   const handleSignOut = async () => {
-    stopDemoMode()
     await authService.signOut()
     setCurrentWorker(null)
     onNavigate('login')
@@ -52,13 +49,10 @@ export default function SettingsScreen({ onNavigate }) {
               <div>
                 <div className="flex items-center gap-2.5">
                   <h2 className="text-base font-bold text-neutral-900">{workerName}</h2>
-                  <BadgePill tone="teal">{workerRole}</BadgePill>
-                  {currentWorker?.isDemo && (
-                    <BadgePill tone="moderate">Demo Mode</BadgePill>
-                  )}
+                  <span className="rounded-full bg-teal-50 px-2 py-1 text-[10px] font-bold text-teal-800">{workerRole}</span>
                 </div>
                 <p className="text-xs text-neutral-500">
-                  Assigned Centre ID: {centreId} · Ward 4 Health Sub-centre
+                  Assigned Centre ID: {centreId}
                 </p>
               </div>
             </div>
@@ -190,22 +184,22 @@ export default function SettingsScreen({ onNavigate }) {
           </div>
         </Card>
 
-        {/* SECURITY & PROTOCOL COMPLIANCE */}
-        <Card title="Compliance & Diagnostic Reference" subtitle="National Health Mission standards">
+        {/* Application settings */}
+        <Card title="Screening and data settings" subtitle="Current application configuration">
           <div className="space-y-3 text-xs text-neutral-600 leading-relaxed">
             <div className="flex items-center justify-between border-b border-neutral-100 pb-2.5">
               <span className="font-semibold text-neutral-700">Diagnostic Scoring Standard</span>
-              <span className="font-bold text-neutral-900">RBSK Milestone Dataset v2.4</span>
+              <span className="font-bold text-neutral-900">Loaded from screening service</span>
             </div>
             <div className="flex items-center justify-between border-b border-neutral-100 pb-2.5">
               <span className="font-semibold text-neutral-700">Data Protection & Privacy</span>
               <span className="font-bold text-emerald-800 inline-flex items-center gap-1">
-                <Icon name="shield" className="h-3.5 w-3.5" /> DISHA / Ayushman Bharat Compliant
+                <Icon name="shield" className="h-3.5 w-3.5" /> Protected by authenticated access controls
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="font-semibold text-neutral-700">Client Build Version</span>
-              <span className="text-neutral-500">SPARSH v1.2.4 (Production Release)</span>
+              <span className="text-neutral-500">SPARSH</span>
             </div>
           </div>
         </Card>

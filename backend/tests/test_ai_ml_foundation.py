@@ -1,9 +1,11 @@
 import unittest
 from datetime import datetime, timezone
+from unittest.mock import Mock, patch
+from fastapi import HTTPException
 
-from app.ai.assistant import respond
 from app.ai.schemas import AssistantRequest
-from app.ai.safety import is_safe_text
+from app.models.auth import CurrentUser, Role
+from app.routers import assistant as assistant_router
 from app.ml.features import extract_features
 from app.ml.evaluation import evaluate_predictions
 from app.ml.predictor import UnavailablePredictor
@@ -74,12 +76,26 @@ class FoundationTests(unittest.TestCase):
         self.assertEqual(current.missed_milestones[0]["text"], "Existing configured question")
         self.assertEqual(old.missed_milestones, [])
 
-    def test_assistant_stays_grounded_and_non_diagnostic_in_english_and_hindi(self):
-        screening = {"risk_level": "YELLOW", "recommendation": "Review affected domains.", "domain_scores": {}}
-        for language in ("en", "hi"):
-            text = respond(AssistantRequest(screening_id="s", action="explain_result", language=language), screening, [])
-            self.assertTrue(is_safe_text(text))
-            self.assertIn("YELLOW", text)
+    def test_assistant_reports_unconfigured_instead_of_generating_a_response(self):
+        screening_snapshot = Mock()
+        screening_snapshot.to_dict.return_value = {"child_id": "child-1"}
+        screening_doc = Mock()
+        screening_doc.get.return_value = screening_snapshot
+        child_snapshot = Mock(id="child-1")
+        child_snapshot.to_dict.return_value = {"centre_id": "centre-1"}
+        child_doc = Mock()
+        child_doc.get.return_value = child_snapshot
+        db = Mock()
+        db.collection.return_value.document.side_effect = [screening_doc, child_doc]
+        user = CurrentUser(uid="worker-1", role=Role.WORKER, centre_ids=["centre-1"])
+        request = AssistantRequest(screening_id="screening-1", action="explain_result")
+
+        with patch.object(assistant_router, "get_firestore_client", return_value=db), patch.object(assistant_router, "audit_log"):
+            with self.assertRaises(HTTPException) as result:
+                assistant_router.assistant_response(request, user)
+
+        self.assertEqual(result.exception.status_code, 503)
+        self.assertIn("not configured", result.exception.detail)
 
 
 if __name__ == "__main__":

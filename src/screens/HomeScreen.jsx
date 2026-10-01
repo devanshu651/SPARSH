@@ -167,7 +167,7 @@ export default function HomeScreen({ onNavigate }) {
             {state === 'loading' ? (
               <LoadingState label="Loading overview…" />
             ) : state === 'error' ? (
-              <ErrorState error={error} onRetry={() => setState('idle')} />
+              <ErrorState error={error} onRetry={() => window.location.reload()} />
             ) : (
               <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
                 <OverviewCard title="Registered children" value={String(summary.total)} />

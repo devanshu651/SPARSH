@@ -7,7 +7,7 @@ import Card from '../components/Card'
 import Select from '../components/Select'
 import BadgePill from '../components/BadgePill'
 import Icon from '../components/Icon'
-import { LoadingState } from '../components/AsyncState'
+import { ErrorState, LoadingState } from '../components/AsyncState'
 
 const facilities = [
   'District Early Intervention Centre (DEIC) — District Civil Hospital',
@@ -17,11 +17,11 @@ const facilities = [
 ]
 
 const referralReasons = [
-  'Severe multi-domain developmental delay identified under RBSK observation',
-  'Gross motor & posture control failure (suspected cerebral palsy / motor delay)',
-  'Suspected speech / auditory impairment requiring specialized audiometry',
-  'Vision tracking deficit / suspected strabismus requiring pediatric ophthalmology',
-  'Severe cognitive / social communication delay requiring developmental pediatrician'
+  'Multiple screening domains require follow-up',
+  'Gross motor or posture observations require follow-up',
+  'Speech or hearing observations require follow-up',
+  'Vision observations require follow-up',
+  'Cognitive or social communication observations require follow-up'
 ]
 
 export default function ReferralScreen({ onNavigate }) {
@@ -35,6 +35,7 @@ export default function ReferralScreen({ onNavigate }) {
   // Direct access support: list of RED flagged children in cohort
   const [atRiskChildren, setAtRiskChildren] = useState([])
   const [loadingCohort, setLoadingCohort] = useState(false)
+  const [cohortError, setCohortError] = useState(null)
   const [selectedChildId, setSelectedChildId] = useState(currentChild?.id || '')
   const [resolvedScreeningId, setResolvedScreeningId] = useState(
     screeningResult?.risk_level === 'RED' ? screeningResult?.screening_id || '' : ''
@@ -51,6 +52,7 @@ export default function ReferralScreen({ onNavigate }) {
     // Otherwise load at-risk children from the cohort
     const loadAtRiskCohort = async () => {
       setLoadingCohort(true)
+      setCohortError(null)
       try {
         const fn = childrenApi.list()
         const raw = typeof fn === 'function' ? await fn() : await fn
@@ -64,8 +66,8 @@ export default function ReferralScreen({ onNavigate }) {
           setCurrentChild(first)
           resolveChildScreening(first.id)
         }
-      } catch {
-        // Fallback gracefully
+      } catch (error) {
+        setCohortError(error)
       } finally {
         setLoadingCohort(false)
       }
@@ -83,8 +85,8 @@ export default function ReferralScreen({ onNavigate }) {
         if (existing) {
           setReferralData(existing)
         }
-      } catch {
-        // Proceed
+      } catch (lookupError) {
+        setError(lookupError?.message || 'Unable to check existing referral records.')
       }
     }
     const sId = (screeningResult?.risk_level === 'RED' && screeningResult?.screening_id) || resolvedScreeningId
@@ -102,10 +104,12 @@ export default function ReferralScreen({ onNavigate }) {
         const target = redScreenings.length > 0 ? redScreenings[redScreenings.length - 1] : history.screenings[history.screenings.length - 1]
         setResolvedScreeningId(target.screening_id)
       } else {
-        setResolvedScreeningId(`SR-${childId.slice(-5).toUpperCase()}`)
+        setResolvedScreeningId('')
+        setError('No screening record exists for this child. Complete a screening before creating a referral.')
       }
-    } catch {
-      setResolvedScreeningId(`SR-${Date.now().toString().slice(-5)}`)
+    } catch (error) {
+      setResolvedScreeningId('')
+      setError(error?.message || 'Unable to load the child’s screening history from SPARSH server.')
     }
   }
 
@@ -124,7 +128,7 @@ export default function ReferralScreen({ onNavigate }) {
   const submitReferral = async () => {
     const targetScreeningId = (screeningResult?.risk_level === 'RED' && screeningResult?.screening_id) || resolvedScreeningId
     if (!targetScreeningId) {
-      setError('A valid RED risk screening ID is required to generate a formal RBSK referral.')
+      setError('A saved high risk screening record is required before creating a referral.')
       return
     }
 
@@ -161,14 +165,18 @@ export default function ReferralScreen({ onNavigate }) {
   const isEligibleRed = (screeningResult?.risk_level === 'RED') || (atRiskChildren.length > 0) || Boolean(resolvedScreeningId)
 
   // Handle case where no RED screening exists and no RED children in cohort
+  if (cohortError && !screeningResult?.screening_id && !loadingCohort) {
+    return <AppLayout active="screening" onNavigate={onNavigate} backTo="dashboard" title="Referral records"><div className="mx-auto max-w-2xl p-6"><ErrorState error={cohortError} /></div></AppLayout>
+  }
+
   if (!isEligibleRed && !loadingCohort) {
     return (
       <AppLayout
         active="screening"
         onNavigate={onNavigate}
         backTo="dashboard"
-        title="DEIC Referral Escalation (RBSK Form 3A)"
-        subtitle="National Health Mission · District Early Intervention Centre Specialized Care"
+        title="Referral records"
+        subtitle="Child referral and follow-up support"
         actions={
           <Button
             variant="secondary"
@@ -192,7 +200,7 @@ export default function ReferralScreen({ onNavigate }) {
                     Specialist Escalation
                   </span>
                   <span className="text-xs text-primary-200">
-                    RBSK Form 3A Protocol
+                    Referral workflow
                   </span>
                 </div>
                 <h1 className="mt-2 text-xl font-bold tracking-tight text-white sm:text-2xl">
@@ -225,7 +233,7 @@ export default function ReferralScreen({ onNavigate }) {
                 No High-Risk (RED) Referrals Pending
               </h3>
               <p className="mt-1 text-xs text-neutral-500 max-w-lg mx-auto leading-relaxed">
-                Referral generation (RBSK Form 3A) is reserved for children categorized with High Risk developmental delays or acute sensory impairments.
+                Referral records can be created for a child with a saved high risk screening result.
                 All screened children in your ward cohort are currently meeting developmental milestones or undergoing routine community watch.
               </p>
 
@@ -255,7 +263,7 @@ export default function ReferralScreen({ onNavigate }) {
           </Card>
 
           {/* REFERRAL PATHWAY SPECIFICATION */}
-          <Card title="National Health Mission DEIC Referral Protocol" subtitle="Mandatory operational guidelines">
+          <Card title="Referral guidance" subtitle="Review local referral procedures with your supervisor">
             <div className="grid gap-4 sm:grid-cols-3 text-xs">
               <div className="rounded-lg border border-neutral-100 bg-neutral-50/70 p-4">
                 <span className="font-bold text-neutral-900 block mb-1">1. Referral Threshold</span>
@@ -290,8 +298,8 @@ export default function ReferralScreen({ onNavigate }) {
       active="screening"
       onNavigate={onNavigate}
       backTo={screeningResult ? 'report' : 'alerts'}
-      title="DEIC Referral Escalation (RBSK Form 3A)"
-      subtitle="National Health Mission Specialized Early Intervention Referral"
+      title="Create referral record"
+      subtitle="Referral and follow-up support"
       actions={
         referralData && (
           <Button
@@ -300,7 +308,7 @@ export default function ReferralScreen({ onNavigate }) {
             onClick={() => window.print()}
           >
             <Icon name="report" className="h-4 w-4 text-neutral-600" />
-            <span>Print Official Slip</span>
+            <span>Print referral record</span>
           </Button>
         )
       }
@@ -323,7 +331,7 @@ export default function ReferralScreen({ onNavigate }) {
                       Urgent DEIC Referral Required
                     </BadgePill>
                     <span className="text-xs font-semibold text-neutral-500">
-                      RBSK Protocol v2.4 · Form 3A
+                      Saved high risk screening
                     </span>
                   </div>
 
@@ -367,24 +375,24 @@ export default function ReferralScreen({ onNavigate }) {
                     <Icon name="checkCircle" className="h-6 w-6" />
                   </div>
 
-                  <h3 className="mt-3 text-lg font-bold text-neutral-900">
-                    Official DEIC Referral Slip Issued
+                    <h3 className="mt-3 text-lg font-bold text-neutral-900">
+                    Referral record saved
                   </h3>
                   <p className="mt-0.5 text-xs text-neutral-500">
                     National Child Health Screening Program · Referral Docket
                   </p>
                 </div>
 
-                {/* Formal RBSK Form 3A Docket */}
+                {/* Referral record */}
                 <div className="mt-6 rounded-xl border border-neutral-200 bg-neutral-50/70 p-5 text-xs space-y-3 font-mono">
                   <div className="flex justify-between border-b border-neutral-200 pb-2">
                     <span className="text-neutral-500 font-sans font-semibold">Docket Number:</span>
-                    <span className="font-bold text-neutral-900">{referralData.referral_id || `REF-${Date.now().toString().slice(-6)}`}</span>
+                    <span className="font-bold text-neutral-900">{referralData.referral_id || 'Reference unavailable'}</span>
                   </div>
 
                   <div className="flex justify-between border-b border-neutral-200 pb-2">
                     <span className="text-neutral-500 font-sans font-semibold">Designated Facility:</span>
-                    <span className="font-bold text-neutral-900 text-right max-w-xs">{facility}</span>
+                    <span className="font-bold text-neutral-900 text-right max-w-xs">{referralData.facility_name || facility}</span>
                   </div>
 
                   <div className="flex justify-between border-b border-neutral-200 pb-2">
@@ -394,7 +402,7 @@ export default function ReferralScreen({ onNavigate }) {
 
                   <div className="flex justify-between border-b border-neutral-200 pb-2">
                     <span className="text-neutral-500 font-sans font-semibold">Child Identifier:</span>
-                    <span className="font-bold text-neutral-900">{activePatient?.child_identifier || 'AWW-CH-2025'}</span>
+                    <span className="font-bold text-neutral-900">{activePatient?.child_identifier || 'Not recorded'}</span>
                   </div>
 
                   <div className="flex justify-between border-b border-neutral-200 pb-2">
@@ -418,7 +426,7 @@ export default function ReferralScreen({ onNavigate }) {
                 <div className="mt-4 rounded-lg bg-teal-50 p-3 text-xs text-teal-800 border border-teal-200">
                   <span className="font-bold">Caregiver Guidance Instructions:</span>
                   <p className="mt-0.5 leading-relaxed">
-                    Advise parent/caregiver to report to the District Early Intervention Centre (DEIC) within 7 business days. All diagnostic scans, occupational therapy, and speech evaluations are provided free of cost under the National Health Mission.
+                    Review the referral details with the caregiver and follow the referral process used by your centre.
                   </p>
                 </div>
 
@@ -501,7 +509,7 @@ export default function ReferralScreen({ onNavigate }) {
                       loading={saving}
                     >
                       <Icon name="hospital" className="h-4 w-4" />
-                      <span>Issue Official RBSK Referral Slip (Form 3A)</span>
+                      <span>Save referral record</span>
                     </Button>
                   </div>
                 </form>
