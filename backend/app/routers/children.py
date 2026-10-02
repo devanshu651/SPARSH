@@ -39,7 +39,7 @@ def _register_child_in_transaction(db, payload: ChildCreate, user: CurrentUser) 
         centre = centre_from_snapshot(centre_snapshot)
         if not centre.get("active", False):
             raise HTTPException(status_code=409, detail="Centre is inactive")
-        data = payload.model_dump() | {
+        data = payload.model_dump(mode="json") | {
             "centre_name": centre["name"],
             "age_months": age_months(payload.date_of_birth),
             "created_at": datetime.now(timezone.utc),
@@ -99,7 +99,7 @@ def get_child(child_id: str, user: CurrentUser = Depends(get_current_user)):
 def record_health_data(child_id: str, payload: HealthDataCreate, user: CurrentUser = Depends(require_roles(Role.WORKER, Role.ADMIN))):
     child = child_from_snapshot(get_firestore_client().collection("children").document(child_id).get())
     ensure_centre_access(user, child["centre_id"])
-    data = payload.model_dump() | {"child_id": child_id, "recorded_by": user.uid, "created_at": datetime.now(timezone.utc)}
+    data = payload.model_dump(mode="json") | {"child_id": child_id, "recorded_by": user.uid, "created_at": datetime.now(timezone.utc)}
     ref = get_firestore_client().collection("children").document(child_id).collection("health_data").document()
     ref.set(data)
     audit_log(user.uid, "health_data_created", child_id, child["centre_id"])
