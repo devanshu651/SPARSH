@@ -1,4 +1,5 @@
 from datetime import date, timedelta
+import logging
 from unittest.mock import Mock, patch
 
 import pytest
@@ -42,6 +43,52 @@ def test_token_failures_are_clean_401(failure):
         with pytest.raises(HTTPException) as error:
             security.get_current_user(credentials())
     assert error.value.status_code == 401
+
+
+@pytest.mark.parametrize(
+    ("stage", "error_code", "error_status"),
+    [
+        ("firebase_init", "INTERNAL", 500),
+        ("token_verification", "auth/id-token-expired", 401),
+        ("profile_lookup", "UNAVAILABLE", 503),
+    ],
+)
+def test_auth_failures_log_only_sanitized_stage_metadata(
+    stage, error_code, error_status, caplog
+):
+    token = "SYNTHETIC_ID_TOKEN_NEVER_LOG"
+    authorization_header = f"Bearer {token}"
+    failure = RuntimeError(f"failed request Authorization: {authorization_header}")
+    failure.code = error_code
+    failure.status_code = error_status
+    db = firestore_for({"role": "worker", "name": "Worker", "centre_ids": ["centre-a"]})
+
+    get_db = patch.object(security, "get_firestore_client", return_value=db)
+    verify = patch.object(security.auth, "verify_id_token", return_value={"uid": "u1"})
+    if stage == "firebase_init":
+        get_db = patch.object(security, "get_firestore_client", side_effect=failure)
+    elif stage == "token_verification":
+        verify = patch.object(security.auth, "verify_id_token", side_effect=failure)
+    else:
+        db.collection.return_value.document.return_value.get.side_effect = failure
+
+    caplog.set_level(logging.WARNING, logger=security.__name__)
+    with get_db, verify:
+        with pytest.raises(HTTPException) as error:
+            security.get_current_user(
+                HTTPAuthorizationCredentials(scheme="Bearer", credentials=token)
+            )
+
+    assert error.value.status_code == 401
+    assert error.value.detail == "Invalid or expired authentication credentials"
+    records = [record for record in caplog.records if hasattr(record, "stage")]
+    assert len(records) == 1
+    assert records[0].stage == stage
+    assert records[0].exception_class == "RuntimeError"
+    assert records[0].firebase_error_code == error_code
+    assert records[0].firebase_error_status == error_status
+    assert token not in caplog.text
+    assert authorization_header not in caplog.text
 
 
 def test_profile_is_authoritative_over_token_claims():
