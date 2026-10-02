@@ -15,7 +15,9 @@ from app.services.milestone_service import load_milestone_config, milestones_for
 router = APIRouter(prefix="/children", tags=["children"])
 
 
-def age_months(dob: date) -> int:
+def age_months(dob: date | str) -> int:
+    if isinstance(dob, str):
+        dob = date.fromisoformat(dob)
     today = date.today()
     return max(0, (today.year - dob.year) * 12 + today.month - dob.month - (today.day < dob.day))
 
