@@ -91,7 +91,15 @@ def _log_auth_failure(stage: str, exc: Exception) -> None:
     if isinstance(error_status, int) and not isinstance(error_status, bool) and 100 <= error_status <= 599:
         diagnostic["firebase_error_status"] = error_status
 
-    logger.warning("Authentication dependency stage failed", extra=diagnostic)
+    logger.warning(
+        "Authentication dependency stage failed stage=%s exception_class=%s "
+        "firebase_error_code=%s firebase_error_status=%s",
+        diagnostic["stage"],
+        diagnostic["exception_class"],
+        diagnostic.get("firebase_error_code", "unavailable"),
+        diagnostic.get("firebase_error_status", "unavailable"),
+        extra=diagnostic,
+    )
 
 
 def get_current_user(

@@ -87,6 +87,10 @@ def test_auth_failures_log_only_sanitized_stage_metadata(
     assert records[0].exception_class == "RuntimeError"
     assert records[0].firebase_error_code == error_code
     assert records[0].firebase_error_status == error_status
+    assert f"stage={stage}" in records[0].getMessage()
+    assert f"exception_class=RuntimeError" in records[0].getMessage()
+    assert f"firebase_error_code={error_code}" in records[0].getMessage()
+    assert f"firebase_error_status={error_status}" in records[0].getMessage()
     assert token not in caplog.text
     assert authorization_header not in caplog.text
 
