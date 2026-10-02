@@ -54,6 +54,53 @@ centre name is sourced from the centre record rather than the client payload.
 Centre codes are trimmed and uppercased before storage and uniqueness checks.
 Creation reserves the normalized code transactionally using `centre_codes`.
 
+## First local administrator
+
+There is no public admin-registration endpoint. When a project has no Admin,
+an operator with access to the backend service credentials can run the
+one-time, local-only CLI bootstrap. It requires explicit local-environment
+confirmation, an exact Firebase project ID match, and refuses to run if an
+Admin profile exists or the Firestore bootstrap marker was already reserved.
+It creates a real Firebase Email/Password account and the corresponding
+`users/{uid}` Admin profile. No Centre is created automatically. The marker is
+kept after success, permanently closing this bootstrap for that Firebase
+project. Do not run it against a production project.
+
+In PowerShell, from the `backend` directory, set the following environment
+variables with your own real values (never commit them):
+
+```powershell
+$env:SPARSH_ENVIRONMENT = 'local'
+$env:SPARSH_LOCAL_ADMIN_BOOTSTRAP = 'I_CONFIRM_LOCAL_FIRST_ADMIN'
+$env:SPARSH_LOCAL_ADMIN_PROJECT_ID = '<same value as FIREBASE_PROJECT_ID>'
+$env:SPARSH_LOCAL_ADMIN_NAME = '<administrator name>'
+$env:SPARSH_LOCAL_ADMIN_MOBILE = '<10-digit mobile number>'
+$securePassword = Read-Host 'New Admin password' -AsSecureString
+$env:SPARSH_LOCAL_ADMIN_PASSWORD = [System.Net.NetworkCredential]::new('', $securePassword).Password
+python -m app.bootstrap_admin
+Remove-Item Env:\SPARSH_ENVIRONMENT, Env:\SPARSH_LOCAL_ADMIN_BOOTSTRAP, Env:\SPARSH_LOCAL_ADMIN_PROJECT_ID, Env:\SPARSH_LOCAL_ADMIN_NAME, Env:\SPARSH_LOCAL_ADMIN_MOBILE, Env:\SPARSH_LOCAL_ADMIN_PASSWORD
+```
+
+To promote an existing worker Auth identity as the first Admin, set the same
+local environment, confirmation, project ID, and mobile variables, then also
+set `SPARSH_LOCAL_ADMIN_PROMOTE_UID` to that existing Auth user's exact UID.
+The promotion path requires the Auth user to be active and to have a complete
+worker profile. It changes only `users/{uid}.role` to `admin`; profile fields
+such as `name` and `centre_ids`, and the Auth identity and password, are kept.
+It uses the same one-time bootstrap marker and refuses to run if an Admin or
+marker already exists. Do not set `SPARSH_LOCAL_ADMIN_NAME` or
+`SPARSH_LOCAL_ADMIN_PASSWORD` for this mode.
+
+The backend must have its normal `.env` Firebase project and service-account
+configuration. Sign in in the app with the Admin mobile number and password;
+the mobile is mapped to the same `<10-digit-mobile>@sparsh.local` Firebase
+email used by worker provisioning. From the dashboard, open **Admin Console**.
+In **Centres**, create an active Anganwadi Centre. In **Users**, edit the
+existing Worker and select the Centre, then save. Newly provisioned workers
+and supervisors must also be assigned at least one active Centre. Have the
+Worker sign out and back in to refresh their profile; the worker can then
+register children only for an assigned, active Centre.
+
 ## Inactive-centre policy
 
 Current implementation blocks new child registration at inactive centres.
