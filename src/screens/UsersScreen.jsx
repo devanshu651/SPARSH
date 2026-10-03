@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { usersApi } from '../services/api'
 import { LoadingState, ErrorState, EmptyState } from '../components/AsyncState'
 import Button from '../components/Button'
@@ -36,6 +36,8 @@ export default function UsersScreen({ onNavigate }) {
       setLoading(false)
     }
   }
+
+  useEffect(() => { load() }, [])
 
   async function loadCentres() {
     try {
