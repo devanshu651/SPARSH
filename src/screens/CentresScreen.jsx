@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { centresApi } from '../services/api'
 import { LoadingState, ErrorState, EmptyState } from '../components/AsyncState'
 import Button from '../components/Button'
@@ -30,6 +30,8 @@ export default function CentresScreen({ onNavigate }) {
       setLoading(false)
     }
   }
+
+  useEffect(() => { load() }, [])
 
   function resetForm() {
     setForm(initialForm)
