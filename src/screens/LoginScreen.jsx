@@ -5,13 +5,12 @@ import Button from '../components/Button'
 import Input from '../components/Input'
 import Icon from '../components/Icon'
 import { authService, readableAuthError } from '../services/auth'
-import { usersApi } from '../services/api'
 import { useApp } from '../context/AppContext'
 import { firebaseConfigError } from '../lib/firebase'
 
 export default function LoginScreen({ onBack, onLogin, onRegister }) {
   const { t, i18n } = useTranslation()
-  const { setCurrentWorker, authError } = useApp()
+  const { loadCurrentWorker, authError } = useApp()
 
   const [mobile, setMobile] = useState('')
   const [password, setPassword] = useState('')
@@ -42,13 +41,7 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
         password
       )
 
-      const meCall = usersApi.getMe()
-      const profile = typeof meCall === 'function' ? await meCall() : await meCall
-
-      setCurrentWorker({
-        ...profile,
-        email: credential.user.email
-      })
+      await loadCurrentWorker(credential.user)
 
       onLogin?.()
     } catch (err) {
