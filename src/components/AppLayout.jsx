@@ -4,7 +4,7 @@ import BottomNav from './BottomNav'
 import SyncStatus from './SyncStatus'
 import Icon from './Icon'
 
-const navLinks = [
+const workerNavLinks = [
   { id: 'dashboard', label: 'Dashboard', icon: 'home' },
   { id: 'children', label: 'Child Cohort', icon: 'children' },
   { id: 'register', label: 'Child Registration', icon: 'userPlus' },
@@ -24,6 +24,9 @@ export default function AppLayout({
   children
 }) {
   const { currentWorker } = useApp()
+  const navLinks = currentWorker?.role === 'admin'
+    ? [{ id: 'admin-console', label: 'Administration', icon: 'settings' }]
+    : workerNavLinks
   const workerName = currentWorker?.name || 'Healthcare Worker'
   const centreName = currentWorker?.centre_ids?.[0] ? `Centre: ${currentWorker.centre_ids[0]}` : 'Assigned Anganwadi'
 
@@ -48,7 +51,7 @@ export default function AppLayout({
             </div>
           </div>
           <div className="mt-3">
-            <SyncStatus className="w-full justify-center" />
+            {currentWorker?.role !== 'admin' && <SyncStatus className="w-full justify-center" />}
           </div>
         </div>
 
@@ -105,23 +108,23 @@ export default function AppLayout({
             )}
           </div>
           <div className="flex items-center gap-2">
-            <SyncStatus compact />
-            <button
+            {currentWorker?.role !== 'admin' && <SyncStatus compact />}
+            {currentWorker?.role !== 'admin' && <button
               type="button"
               onClick={() => onNavigate?.('alerts')}
               className="grid h-8 w-8 place-items-center rounded-lg text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900"
               aria-label="Clinical Alerts"
             >
               <Icon name="alerts" className="h-4 w-4" />
-            </button>
-            <button
+            </button>}
+            {currentWorker?.role !== 'admin' && <button
               type="button"
               onClick={() => onNavigate?.('settings')}
               className="grid h-8 w-8 place-items-center rounded-lg text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900"
               aria-label="Settings"
             >
               <Icon name="settings" className="h-4 w-4" />
-            </button>
+            </button>}
           </div>
         </header>
 
@@ -157,7 +160,7 @@ export default function AppLayout({
       </div>
 
       {/* MOBILE BOTTOM NAVIGATION */}
-      <BottomNav active={active} onChange={onNavigate} />
+      {currentWorker?.role !== 'admin' && <BottomNav active={active} onChange={onNavigate} />}
     </div>
   )
 }

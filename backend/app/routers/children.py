@@ -5,7 +5,7 @@ from firebase_admin import firestore
 
 from app.core.firebase import get_firestore_client
 from app.core.audit import audit_log
-from app.core.security import ensure_centre_access, get_current_user, require_roles
+from app.core.security import ensure_centre_access, require_roles
 from app.models.auth import CurrentUser, Role
 from app.models.child import ChildCreate, ChildResponse, HealthDataCreate, HealthDataResponse
 from app.routers.centres import centre_from_snapshot
@@ -54,7 +54,7 @@ def _register_child_in_transaction(db, payload: ChildCreate, user: CurrentUser) 
 
 
 @router.post("", response_model=ChildResponse, status_code=status.HTTP_201_CREATED)
-def register_child(payload: ChildCreate, user: CurrentUser = Depends(require_roles(Role.WORKER, Role.ADMIN))):
+def register_child(payload: ChildCreate, user: CurrentUser = Depends(require_roles(Role.WORKER))):
     ensure_centre_access(user, payload.centre_id)
     child_id, data = _register_child_in_transaction(get_firestore_client(), payload, user)
     audit_log(user.uid, "child_created", child_id, payload.centre_id)
@@ -62,7 +62,7 @@ def register_child(payload: ChildCreate, user: CurrentUser = Depends(require_rol
 
 
 @router.get("", response_model=list[ChildResponse])
-def list_children(user: CurrentUser = Depends(get_current_user)):
+def list_children(user: CurrentUser = Depends(require_roles(Role.WORKER, Role.SUPERVISOR))):
     """Return only records visible to the signed-in worker or administrator."""
     children = []
     for doc in get_firestore_client().collection("children").stream():
@@ -77,7 +77,7 @@ def list_children(user: CurrentUser = Depends(get_current_user)):
 
 
 @router.get("/{child_id}/milestones")
-def child_milestones(child_id: str, user: CurrentUser = Depends(get_current_user)):
+def child_milestones(child_id: str, user: CurrentUser = Depends(require_roles(Role.WORKER, Role.SUPERVISOR))):
     child = child_from_snapshot(get_firestore_client().collection("children").document(child_id).get())
     ensure_centre_access(user, child["centre_id"])
     current_age = age_months(child["date_of_birth"])
@@ -91,14 +91,14 @@ def child_milestones(child_id: str, user: CurrentUser = Depends(get_current_user
 
 
 @router.get("/{child_id}", response_model=ChildResponse)
-def get_child(child_id: str, user: CurrentUser = Depends(get_current_user)):
+def get_child(child_id: str, user: CurrentUser = Depends(require_roles(Role.WORKER, Role.SUPERVISOR))):
     child = child_from_snapshot(get_firestore_client().collection("children").document(child_id).get())
     ensure_centre_access(user, child["centre_id"])
     return ChildResponse(**child)
 
 
 @router.post("/{child_id}/health-data", response_model=HealthDataResponse, status_code=status.HTTP_201_CREATED)
-def record_health_data(child_id: str, payload: HealthDataCreate, user: CurrentUser = Depends(require_roles(Role.WORKER, Role.ADMIN))):
+def record_health_data(child_id: str, payload: HealthDataCreate, user: CurrentUser = Depends(require_roles(Role.WORKER))):
     child = child_from_snapshot(get_firestore_client().collection("children").document(child_id).get())
     ensure_centre_access(user, child["centre_id"])
     data = payload.model_dump(mode="json") | {"child_id": child_id, "recorded_by": user.uid, "created_at": datetime.now(timezone.utc)}
@@ -109,7 +109,7 @@ def record_health_data(child_id: str, payload: HealthDataCreate, user: CurrentUs
 
 
 @router.get("/{child_id}/health-data", response_model=list[HealthDataResponse])
-def health_history(child_id: str, user: CurrentUser = Depends(get_current_user)):
+def health_history(child_id: str, user: CurrentUser = Depends(require_roles(Role.WORKER, Role.SUPERVISOR))):
     child = child_from_snapshot(get_firestore_client().collection("children").document(child_id).get())
     ensure_centre_access(user, child["centre_id"])
     docs = get_firestore_client().collection("children").document(child_id).collection("health_data").order_by("measured_on").stream()

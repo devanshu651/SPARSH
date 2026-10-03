@@ -43,6 +43,12 @@ function AppContent() {
   useEffect(() => {
     const publicScreens = ['splash', 'login', 'worker-registration']
     if (authReady && !currentWorker && !publicScreens.includes(screen)) navigate('login', { replace: true })
+    if (authReady && currentWorker?.role === 'admin' && !publicScreens.includes(screen) && screen !== 'admin-console') {
+      navigate('admin-console', { replace: true })
+    }
+    if (authReady && currentWorker && currentWorker.role !== 'admin' && screen === 'admin-console') {
+      navigate('dashboard', { replace: true })
+    }
   }, [authReady, currentWorker, screen])
 
   useEffect(() => {
@@ -101,6 +107,10 @@ function AppContent() {
     }
   }, [])
 
+  if (authReady && currentWorker?.role === 'admin' && screen !== 'admin-console') {
+    return <AdminConsoleScreen onNavigate={navigate} />
+  }
+
   return (
     <ErrorBoundary>
 
@@ -113,7 +123,7 @@ function AppContent() {
       {screen === 'login' && (
         <LoginScreen
           onBack={() => navigate('splash', { isBack: true })}
-          onLogin={() => navigate('dashboard', { replace: true })}
+          onLogin={() => navigate(currentWorker?.role === 'admin' ? 'admin-console' : 'dashboard', { replace: true })}
           onRegister={() => navigate('worker-registration')}
         />
       )}

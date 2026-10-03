@@ -2,7 +2,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.core.firebase import get_firestore_client
 from app.core.audit import audit_log
-from app.core.security import ensure_centre_access, get_current_user, require_roles
+from app.core.security import ensure_centre_access, require_roles
 from app.models.auth import CurrentUser, Role
 from app.models.screening import ChildHistoryResponse, RiskScoreResponse, ScreeningHistoryItem, ScreeningSubmit
 from app.ml.features import extract_features
@@ -23,11 +23,11 @@ def history_item_from_data(screening_id: str, data: dict, current_version: str, 
 
 
 @router.get("/milestones")
-def get_milestones(age_months: int, user: CurrentUser = Depends(get_current_user)):
+def get_milestones(age_months: int, user: CurrentUser = Depends(require_roles(Role.WORKER, Role.SUPERVISOR))):
     checkpoint, milestones = milestones_for_age(age_months)
     return {"dataset_version": load_milestone_config()["version"], "requested_age_months": age_months, "checkpoint_age_months": checkpoint, "milestones": milestones}
 @router.post("/screenings", response_model=RiskScoreResponse, status_code=status.HTTP_201_CREATED)
-def submit_screening(payload: ScreeningSubmit, user: CurrentUser = Depends(require_roles(Role.WORKER, Role.ADMIN))):
+def submit_screening(payload: ScreeningSubmit, user: CurrentUser = Depends(require_roles(Role.WORKER))):
     db = get_firestore_client(); child = child_from_snapshot(db.collection("children").document(payload.child_id).get()); ensure_centre_access(user, child["centre_id"])
     current_age = age_months(child["date_of_birth"])
     expected_age, expected = milestones_for_age(current_age)
@@ -67,13 +67,13 @@ def submit_screening(payload: ScreeningSubmit, user: CurrentUser = Depends(requi
     audit_log(user.uid, "screening_submitted", ref.id, child["centre_id"])
     return RiskScoreResponse(screening_id=ref.id, child_id=payload.child_id, screened_at=payload.screened_at, ml_assessment=screening["ml_assessment"], **result, milestone_dataset_version=screening["milestone_dataset_version"])
 @router.get("/screenings/{screening_id}/risk", response_model=RiskScoreResponse)
-def get_risk_score(screening_id: str, user: CurrentUser = Depends(get_current_user)):
+def get_risk_score(screening_id: str, user: CurrentUser = Depends(require_roles(Role.WORKER, Role.SUPERVISOR))):
     data = get_firestore_client().collection("screenings").document(screening_id).get().to_dict()
     if not data: raise HTTPException(status_code=404, detail="Screening not found")
     child = child_from_snapshot(get_firestore_client().collection("children").document(data["child_id"]).get()); ensure_centre_access(user, child["centre_id"])
     return RiskScoreResponse(screening_id=screening_id, child_id=data["child_id"], risk_level=data["risk_level"], risk_label=data["risk_label"], total_missed_weight=data["total_missed_weight"], domain_scores=data["domain_scores"], recommendation=data["recommendation"], milestone_dataset_version=data["milestone_dataset_version"], screened_at=data["screened_at"], rule_findings=data.get("rule_findings", []), red_flag_ids=data.get("red_flag_ids", []), risk_factor_ids=data.get("risk_factor_ids", []), ml_assessment=data.get("ml_assessment", {"status": "unavailable", "reason": "No validated model is configured."}))
 @router.get("/children/{child_id}/history", response_model=ChildHistoryResponse)
-def child_history(child_id: str, user: CurrentUser = Depends(get_current_user)):
+def child_history(child_id: str, user: CurrentUser = Depends(require_roles(Role.WORKER, Role.SUPERVISOR))):
     db=get_firestore_client(); child=child_from_snapshot(db.collection("children").document(child_id).get()); ensure_centre_access(user, child["centre_id"])
     docs=db.collection("screenings").where("child_id", "==", child_id).stream()
     entries=[]

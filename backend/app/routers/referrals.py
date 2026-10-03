@@ -2,7 +2,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.core.firebase import get_firestore_client
 from app.core.audit import audit_log
-from app.core.security import ensure_centre_access, get_current_user, require_roles
+from app.core.security import ensure_centre_access, require_roles
 from app.models.auth import CurrentUser, Role
 from app.models.referral import ReferralCreate, ReferralResponse
 from app.routers.children import age_months, child_from_snapshot
@@ -10,7 +10,7 @@ from app.routers.children import age_months, child_from_snapshot
 router = APIRouter(prefix="/referrals", tags=["referrals"])
 
 @router.post("", response_model=ReferralResponse, status_code=status.HTTP_201_CREATED)
-def generate_referral(payload: ReferralCreate, user: CurrentUser = Depends(require_roles(Role.WORKER, Role.ADMIN))):
+def generate_referral(payload: ReferralCreate, user: CurrentUser = Depends(require_roles(Role.WORKER))):
     db = get_firestore_client()
     screening = db.collection("screenings").document(payload.screening_id).get().to_dict()
     if not screening:
@@ -38,7 +38,7 @@ def generate_referral(payload: ReferralCreate, user: CurrentUser = Depends(requi
     return ReferralResponse(referral_id=ref.id, **result)
 
 @router.get("/{referral_id}", response_model=ReferralResponse)
-def get_referral(referral_id: str, user: CurrentUser = Depends(get_current_user)):
+def get_referral(referral_id: str, user: CurrentUser = Depends(require_roles(Role.WORKER, Role.SUPERVISOR))):
     db = get_firestore_client()
     doc = db.collection("referrals").document(referral_id).get()
     data = doc.to_dict()
@@ -49,7 +49,7 @@ def get_referral(referral_id: str, user: CurrentUser = Depends(get_current_user)
     return ReferralResponse(referral_id=doc.id, **data)
 
 @router.get("/screening/{screening_id}")
-def get_referral_by_screening(screening_id: str, user: CurrentUser = Depends(get_current_user)):
+def get_referral_by_screening(screening_id: str, user: CurrentUser = Depends(require_roles(Role.WORKER, Role.SUPERVISOR))):
     db = get_firestore_client()
     screening = db.collection("screenings").document(screening_id).get().to_dict()
     if not screening:
