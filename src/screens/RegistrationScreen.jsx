@@ -32,13 +32,7 @@ const steps = [
 export default function RegistrationScreen({ onNavigate }) {
   const { currentWorker, setCurrentChild } = useApp()
   const [step, setStep] = useState(1)
-  const [form, setForm] = useState(() => {
-    try {
-      return { ...initial, ...JSON.parse(localStorage.getItem('sparsh:registration-draft') || '{}') }
-    } catch {
-      return initial
-    }
-  })
+  const [form, setForm] = useState(initial)
   const [errors, setErrors] = useState({})
   const [saving, setSaving] = useState(false)
   const [savedChild, setSavedChild] = useState(null)
@@ -47,7 +41,6 @@ export default function RegistrationScreen({ onNavigate }) {
     const value = e.target.type === 'file' ? e.target.files?.[0] || null : e.target.value
     const next = { ...form, [key]: value }
     setForm(next)
-    localStorage.setItem('sparsh:registration-draft', JSON.stringify({ ...next, photo: null }))
     setErrors((p) => ({ ...p, [key]: '' }))
   }
 
@@ -147,7 +140,6 @@ export default function RegistrationScreen({ onNavigate }) {
         }
       }
 
-      localStorage.removeItem('sparsh:registration-draft')
       onNavigate('screening')
     } catch (error) {
       setErrors({ submit: error.message || 'Registration failed. Please try again.' })

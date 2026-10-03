@@ -3,10 +3,11 @@ import { authService } from './auth'
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api/v1').replace(/\/$/, '')
 
 export class ApiError extends Error {
-  constructor(message, status = 0) {
+  constructor(message, status = 0, code = null) {
     super(message)
     this.name = 'ApiError'
     this.status = status
+    this.code = code
   }
 }
 
@@ -47,7 +48,11 @@ export async function apiRequest(path, options = {}) {
   if (response.status >= 500) {
     throw new ApiError(typeof detail === 'string' ? detail : 'SPARSH server is unavailable. Please try again shortly.', response.status)
   }
-  throw new ApiError(typeof detail === 'object' ? detail.message || `Request failed (${response.status})` : detail || `Request failed (${response.status})`, response.status)
+  throw new ApiError(
+    typeof detail === 'object' ? detail.message || `Request failed (${response.status})` : detail || `Request failed (${response.status})`,
+    response.status,
+    typeof detail === 'object' ? detail.code || null : null,
+  )
 }
 
 export const usersApi = {

@@ -1,5 +1,8 @@
 ﻿from datetime import datetime, timezone
+import hashlib
+
 from fastapi import APIRouter, Depends, HTTPException, status
+from google.api_core.exceptions import AlreadyExists
 from app.core.firebase import get_firestore_client
 from app.core.audit import audit_log
 from app.core.security import ensure_centre_access, require_roles
@@ -16,9 +19,12 @@ def generate_referral(payload: ReferralCreate, user: CurrentUser = Depends(requi
     if not screening:
         raise HTTPException(status_code=404, detail="Screening not found")
     if screening["risk_level"] != "RED":
-        raise HTTPException(status_code=409, detail="Referrals are only generated for RED risk screenings")
+        raise HTTPException(status_code=409, detail={"code": "referral_requires_red_screening", "message": "Referrals are only generated for RED risk screenings"})
     child = child_from_snapshot(db.collection("children").document(screening["child_id"]).get())
     ensure_centre_access(user, child["centre_id"])
+    existing = list(db.collection("referrals").where("screening_id", "==", payload.screening_id).limit(1).stream())
+    if existing:
+        raise HTTPException(status_code=409, detail={"code": "duplicate_referral", "message": "A referral already exists for this screening."})
     now = datetime.now(timezone.utc)
     result = {
         "child_name": child["name"],
@@ -32,8 +38,13 @@ def generate_referral(payload: ReferralCreate, user: CurrentUser = Depends(requi
         "worker_id": user.uid,
         "generated_at": now,
     }
-    ref = db.collection("referrals").document()
-    db.collection("referrals").document(ref.id).set(result | {"screening_id": payload.screening_id})
+    ref = db.collection("referrals").document(
+        hashlib.sha256(payload.screening_id.encode("utf-8")).hexdigest()
+    )
+    try:
+        ref.create(result | {"screening_id": payload.screening_id})
+    except AlreadyExists as exc:
+        raise HTTPException(status_code=409, detail={"code": "duplicate_referral", "message": "A referral already exists for this screening."}) from exc
     audit_log(user.uid, "referral_created", ref.id, child["centre_id"])
     return ReferralResponse(referral_id=ref.id, **result)
 

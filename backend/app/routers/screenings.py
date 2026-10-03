@@ -1,5 +1,9 @@
 ﻿from datetime import datetime, timezone
+import hashlib
+
 from fastapi import APIRouter, Depends, HTTPException, status
+from firebase_admin import firestore
+from google.api_core.exceptions import AlreadyExists
 from app.core.firebase import get_firestore_client
 from app.core.audit import audit_log
 from app.core.security import ensure_centre_access, require_roles
@@ -33,16 +37,16 @@ def submit_screening(payload: ScreeningSubmit, user: CurrentUser = Depends(requi
     expected_age, expected = milestones_for_age(current_age)
     dataset_version = load_milestone_config()["version"]
     if payload.checkpoint_age_months != expected_age or payload.milestone_dataset_version != dataset_version:
-        raise HTTPException(status_code=409, detail={"message": "The child's screening checkpoint has changed. Reload the screening to use the current questions.", "current_age_months": current_age, "checkpoint_age_months": expected_age, "dataset_version": dataset_version})
+        raise HTTPException(status_code=409, detail={"code": "screening_checkpoint_changed", "message": "The child's screening checkpoint has changed. Reload the screening to use the current questions.", "current_age_months": current_age, "checkpoint_age_months": expected_age, "dataset_version": dataset_version})
     milestones = milestones_by_id()
     submitted_ids = [item.milestone_id for item in payload.answers]
     try:
         validate_checkpoint_answers(expected, submitted_ids)
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
-    existing = list(db.collection("screenings").where("client_submission_id", "==", payload.client_submission_id).stream())
+    existing = list(db.collection("screenings").where("client_submission_id", "==", payload.client_submission_id).limit(1).stream())
     if existing:
-        raise HTTPException(status_code=409, detail="This screening was already submitted. Open the child's history to view it.")
+        raise HTTPException(status_code=409, detail={"code": "duplicate_submission", "message": "This screening was already submitted. Open the child's history to view it."})
     answer_data = [item.model_dump(mode="json") for item in payload.answers]; result = calculate_risk(answer_data, milestones)
     previous_screenings = [doc.to_dict() for doc in db.collection("screenings").where("child_id", "==", payload.child_id).stream()]
     features = extract_features(
@@ -63,7 +67,23 @@ def submit_screening(payload: ScreeningSubmit, user: CurrentUser = Depends(requi
     }
     milestone_snapshot = [{"id": item["id"], "domain": item.get("domain", "unknown"), "text": item.get("question", item.get("description", ""))} for item in expected]
     screening = payload.model_dump(mode="json") | {"answers": answer_data, "milestone_snapshot": milestone_snapshot, **serialized, "checkpoint_age_months": expected_age, "milestone_dataset_version": dataset_version, "created_by": user.uid, "created_at": now, "ml_assessment": ml_assessment}
-    ref = db.collection("screenings").document(); db.collection("screenings").document(ref.id).set(screening)
+    ref = db.collection("screenings").document()
+    submission_ref = db.collection("screening_submissions").document(
+        hashlib.sha256(payload.client_submission_id.encode("utf-8")).hexdigest()
+    )
+    transaction = db.transaction()
+
+    @firestore.transactional
+    def write_submission(transaction):
+        if submission_ref.get(transaction=transaction).exists:
+            raise HTTPException(status_code=409, detail={"code": "duplicate_submission", "message": "This screening was already submitted. Open the child's history to view it."})
+        transaction.create(submission_ref, {"screening_id": ref.id})
+        transaction.set(ref, screening)
+
+    try:
+        write_submission(transaction)
+    except AlreadyExists as exc:
+        raise HTTPException(status_code=409, detail={"code": "duplicate_submission", "message": "This screening was already submitted. Open the child's history to view it."}) from exc
     audit_log(user.uid, "screening_submitted", ref.id, child["centre_id"])
     return RiskScoreResponse(screening_id=ref.id, child_id=payload.child_id, screened_at=payload.screened_at, ml_assessment=screening["ml_assessment"], **result, milestone_dataset_version=screening["milestone_dataset_version"])
 @router.get("/screenings/{screening_id}/risk", response_model=RiskScoreResponse)

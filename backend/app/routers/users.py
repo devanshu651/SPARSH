@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, status
 from firebase_admin import auth, firestore
 
+from app.core.audit import audit_log
 from app.core.firebase import get_firestore_client
 from app.core.security import get_current_user, require_roles
 from app.models.auth import (
@@ -165,6 +166,7 @@ def provision_user(payload: UserProvision, user: CurrentUser = Depends(require_r
             # no Firestore profile and is rejected by API authorization.
             pass
         raise HTTPException(status_code=500, detail="Unable to create user profile") from exc
+    audit_log(user.uid, "user_provisioned", firebase_user.uid)
     return _user_response({"uid": firebase_user.uid, **profile}, firebase_user)
 
 
@@ -203,6 +205,7 @@ def update_user(uid: str, payload: UserUpdate, user: CurrentUser = Depends(requi
     _ensure_not_removing_last_active_admin(db, uid, profile, new_role=updates.get("role"))
 
     updated_profile = _write_profile_with_active_centres(db, uid, updates, create=False)
+    audit_log(user.uid, "user_updated", uid)
     firebase_user = auth.get_user(uid)
     return _user_response({"uid": uid, **updated_profile}, firebase_user)
 
@@ -224,4 +227,5 @@ def set_user_activation(uid: str, payload: UserActivationUpdate, user: CurrentUs
         raise HTTPException(status_code=404, detail="Authentication account not found") from exc
     except Exception as exc:
         raise HTTPException(status_code=404, detail="Authentication account not found") from exc
+    audit_log(user.uid, "user_activation_changed", uid)
     return _user_response(profile, firebase_user)

@@ -8,9 +8,10 @@ from firebase_admin import firestore
 from app.core import audit
 from app.models.auth import CurrentUser, Role
 from app.models.child import ChildCreate, HealthDataCreate
+from app.models.centre import CentreCreate, CentreUpdate
 from app.models.referral import ReferralCreate
 from app.models.screening import DomainScore, ResponseChoice, RiskLevel, ScreeningAnswer, ScreeningSubmit
-from app.routers import children, referrals, screenings
+from app.routers import centres, children, referrals, screenings
 
 
 def _user():
@@ -64,6 +65,49 @@ def test_no_pii_or_payload_written():
     assert not any(k in record for k in ("name", "dob", "answers", "notes", "payload", "token", "password"))
 
 
+@pytest.mark.parametrize("action", [
+    "user_provisioned", "user_updated", "user_activation_changed",
+    "centre_created", "centre_updated",
+])
+def test_admin_operation_audit_actions_keep_metadata_only(action):
+    db = Mock()
+    with _with_audit_db(db):
+        audit.audit_log("admin-1", action, "resource-1", "centre-a")
+    record = db.collection("audit_logs").add.call_args.args[0]
+    assert record == {
+        "uid": "admin-1",
+        "action": action,
+        "resource_id": "resource-1",
+        "centre_id": "centre-a",
+        "timestamp": firestore.SERVER_TIMESTAMP,
+    }
+
+
+def test_centre_create_and_update_emit_audit_events():
+    centre_payload = CentreCreate(code="AWC-1", name="Centre", district="District", state="State", address="Address")
+    centre_data = centre_payload.model_dump() | {
+        "active": True,
+        "created_at": datetime.now(timezone.utc),
+        "created_by": "admin-1",
+    }
+    with patch.object(centres, "get_firestore_client", return_value=Mock()), \
+         patch.object(centres, "_create_centre_in_transaction", return_value="centre-1"), \
+         patch.object(centres, "audit_log") as audit_event:
+        created = centres.create_centre(centre_payload, CurrentUser(uid="admin-1", role=Role.ADMIN))
+    assert created.id == "centre-1"
+    audit_event.assert_called_once_with("admin-1", "centre_created", "centre-1", "centre-1")
+
+    db = Mock()
+    snapshot = Mock(to_dict=lambda: centre_data, id="centre-1")
+    db.collection.return_value.document.return_value.get.return_value = snapshot
+    db.collection.return_value.document.return_value.update.return_value = None
+    with patch.object(centres, "get_firestore_client", return_value=db), \
+         patch.object(centres, "audit_log") as audit_event:
+        updated = centres.update_centre("centre-1", CentreUpdate(active=False), CurrentUser(uid="admin-1", role=Role.ADMIN))
+    assert updated.id == "centre-1"
+    audit_event.assert_called_once_with("admin-1", "centre_updated", "centre-1", "centre-1")
+
+
 def test_disallowed_action_raises():
     db = Mock()
     with _with_audit_db(db):
@@ -82,11 +126,13 @@ def test_invalid_uid_or_resource_id_raises():
     db.collection.assert_not_called()
 
 
-def test_write_failure_does_not_raise():
+def test_write_failure_does_not_raise_or_log_exception_details(caplog):
     db = Mock()
-    db.collection("audit_logs").add.side_effect = RuntimeError("firestore down")
+    db.collection("audit_logs").add.side_effect = RuntimeError("private child details")
     with _with_audit_db(db):
         audit.audit_log("u1", "child_created", "child-1", "centre-a")
+    assert "private child details" not in caplog.text
+    assert "resource_id=child-1" not in caplog.text
 
 
 def test_client_failure_does_not_raise():
@@ -173,11 +219,17 @@ def test_screening_invokes_audit_after_write():
     screening_ref = Mock(id="screening-1")
     screenings_collection = Mock()
     screenings_collection.document.return_value = screening_ref
+    screenings_collection.where.return_value.limit.return_value.stream.return_value = []
     screenings_collection.where.return_value.stream.return_value = []
+    submission_ref = Mock()
+    submission_ref.get.return_value.exists = False
+    submissions_collection = Mock()
+    submissions_collection.document.return_value = submission_ref
     data_db = Mock()
-    data_db.collection.side_effect = lambda name: {"children": children_collection, "screenings": screenings_collection}[name]
+    data_db.collection.side_effect = lambda name: {"children": children_collection, "screenings": screenings_collection, "screening_submissions": submissions_collection}[name]
     audit_db = Mock()
-    with patch.object(screenings, "get_firestore_client", return_value=data_db), \
+    with patch.object(screenings.firestore, "transactional", side_effect=lambda function: function), \
+         patch.object(screenings, "get_firestore_client", return_value=data_db), \
          patch.object(screenings, "milestones_for_age", return_value=(12, [{"id": "m1"}])), \
          patch.object(screenings, "milestones_by_id", return_value={"m1": Mock(weight=1)}), \
          patch.object(screenings, "validate_checkpoint_answers", return_value=None), \
@@ -194,6 +246,8 @@ def test_screening_invokes_audit_after_write():
         )
         result = screenings.submit_screening(payload, _user())
     assert result.screening_id == "screening-1"
+    data_db.transaction.return_value.create.assert_called_once()
+    data_db.transaction.return_value.set.assert_called_once()
     record = audit_db.collection("audit_logs").add.call_args[0][0]
     assert record["action"] == "screening_submitted"
     assert record["resource_id"] == "screening-1"
@@ -207,9 +261,13 @@ def test_duplicate_screening_409_no_audit():
     snap.to_dict.return_value = child
     snap.id = "child-1"
     data_db.collection("children").document("child-1").get.return_value = snap
-    data_db.collection("screenings").where.return_value.stream.return_value = [Mock()]
+    data_db.collection("screenings").where.return_value.limit.return_value.stream.return_value = [Mock()]
     audit_db = Mock()
     with patch.object(screenings, "get_firestore_client", return_value=data_db), \
+         patch.object(screenings, "age_months", return_value=12), \
+         patch.object(screenings, "milestones_for_age", return_value=(12, [])), \
+         patch.object(screenings, "validate_checkpoint_answers", return_value=None), \
+         patch.object(screenings, "load_milestone_config", return_value={"version": "draft-1"}), \
          _with_audit_db(audit_db):
         with pytest.raises(HTTPException) as exc:
             screenings.submit_screening(
@@ -224,7 +282,29 @@ def test_duplicate_screening_409_no_audit():
                 _user(),
             )
     assert exc.value.status_code == 409
+    assert exc.value.detail["code"] == "duplicate_submission"
     audit_db.collection("audit_logs").add.assert_not_called()
+
+
+def test_checkpoint_conflict_has_distinct_code_from_duplicate_submission():
+    child = {"id": "child-1", "centre_id": "centre-a", "date_of_birth": date(2024, 1, 1)}
+    data_db = Mock()
+    data_db.collection("children").document.return_value.get.return_value = Mock(to_dict=lambda: child, id="child-1")
+    payload = ScreeningSubmit(
+        child_id="child-1",
+        answers=[ScreeningAnswer(milestone_id="m1", response=ResponseChoice.YES)],
+        checkpoint_age_months=12,
+        milestone_dataset_version="draft-1",
+        client_submission_id="cs-1",
+    )
+    with patch.object(screenings, "get_firestore_client", return_value=data_db), \
+         patch.object(screenings, "age_months", return_value=13), \
+         patch.object(screenings, "milestones_for_age", return_value=(18, [])), \
+         patch.object(screenings, "load_milestone_config", return_value={"version": "draft-1"}):
+        with pytest.raises(HTTPException) as error:
+            screenings.submit_screening(payload, _user())
+    assert error.value.status_code == 409
+    assert error.value.detail["code"] == "screening_checkpoint_changed"
 
 
 def test_referral_invokes_audit_after_write():
@@ -239,6 +319,7 @@ def test_referral_invokes_audit_after_write():
     referral_ref.id = "referral-1"
     referrals_collection = Mock()
     referrals_collection.document.return_value = referral_ref
+    referrals_collection.where.return_value.limit.return_value.stream.return_value = []
     data_db = Mock()
     data_db.collection.side_effect = lambda name: {"screenings": screenings_collection, "children": children_collection, "referrals": referrals_collection}[name]
     audit_db = Mock()
@@ -249,6 +330,7 @@ def test_referral_invokes_audit_after_write():
             _user(),
         )
     assert result.referral_id == "referral-1"
+    referral_ref.create.assert_called_once()
     record = audit_db.collection("audit_logs").add.call_args[0][0]
     assert record["action"] == "referral_created"
     assert record["resource_id"] == "referral-1"
@@ -269,4 +351,33 @@ def test_non_red_referral_409_no_audit():
                 _user(),
             )
     assert exc.value.status_code == 409
+    assert exc.value.detail["code"] == "referral_requires_red_screening"
+    audit_db.collection("audit_logs").add.assert_not_called()
+
+
+def test_duplicate_referral_is_rejected_without_audit():
+    child = {"id": "child-1", "centre_id": "centre-a", "date_of_birth": date(2024, 1, 1)}
+    screening = {"risk_level": "RED", "child_id": "child-1", "domain_scores": {}}
+    data_db = Mock()
+    screenings_collection = Mock()
+    screenings_collection.document.return_value.get.return_value = Mock(to_dict=lambda: screening)
+    children_collection = Mock()
+    children_collection.document.return_value.get.return_value = Mock(to_dict=lambda: child, id="child-1")
+    referrals_collection = Mock()
+    referrals_collection.where.return_value.limit.return_value.stream.return_value = [Mock()]
+    data_db.collection.side_effect = lambda name: {
+        "screenings": screenings_collection,
+        "children": children_collection,
+        "referrals": referrals_collection,
+    }[name]
+    audit_db = Mock()
+    with patch.object(referrals, "get_firestore_client", return_value=data_db), \
+         _with_audit_db(audit_db):
+        with pytest.raises(HTTPException) as error:
+            referrals.generate_referral(
+                ReferralCreate(screening_id="screening-1", facility_name="City Hospital"),
+                _user(),
+            )
+    assert error.value.status_code == 409
+    assert error.value.detail["code"] == "duplicate_referral"
     audit_db.collection("audit_logs").add.assert_not_called()

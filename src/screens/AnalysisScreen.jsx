@@ -63,7 +63,7 @@ export default function AnalysisScreen({ onNavigate }) {
       await new Promise((r) => setTimeout(r, 400))
       onNavigate('report')
     } catch (e) {
-      if (e?.status === 409) {
+      if (e?.status === 409 && e?.code === 'duplicate_submission') {
         setPendingScreening?.(null)
         sessionStorage.removeItem('sparsh:pending-screening')
         setError(new Error('This screening was already submitted. Open the child history to view it.'))
