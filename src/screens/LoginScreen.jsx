@@ -35,18 +35,19 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
     setLoading(true)
     setError('')
 
+    let firebaseSignInSucceeded = false
     try {
       const credential = await authService.signInWithEmailPassword(
         `${cleanMobile}@sparsh.local`,
         password
       )
+      firebaseSignInSucceeded = true
 
       await loadCurrentWorker(credential.user)
-
       onLogin?.()
     } catch (err) {
-      if (err?.status === 401) {
-        setError('Login failed. Please check your credentials or contact administrator.')
+      if (firebaseSignInSucceeded && err?.status) {
+        setError(`Firebase sign-in succeeded, but SPARSH rejected the session (HTTP ${err.status}): ${err.message}`)
       } else {
         setError(readableAuthError(err))
       }

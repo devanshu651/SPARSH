@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { usersApi } from '../services/api'
+import { centresApi, usersApi } from '../services/api'
 import { LoadingState, ErrorState, EmptyState } from '../components/AsyncState'
 import Button from '../components/Button'
 import Input from '../components/Input'
@@ -23,6 +23,8 @@ export default function UsersScreen({ onNavigate }) {
   const [editingId, setEditingId] = useState(null)
   const [showForm, setShowForm] = useState(false)
   const [centreOptions, setCentreOptions] = useState([])
+  const [centresLoading, setCentresLoading] = useState(false)
+  const [centreLoadError, setCentreLoadError] = useState(null)
 
   async function load() {
     setLoading(true)
@@ -40,12 +42,15 @@ export default function UsersScreen({ onNavigate }) {
   useEffect(() => { load() }, [])
 
   async function loadCentres() {
+    setCentresLoading(true)
+    setCentreLoadError(null)
     try {
-      const { centresApi } = await import('../services/api')
       const data = await centresApi.list()
       setCentreOptions(data.filter(c => c.active))
-    } catch {
-      // ignore
+    } catch (error) {
+      setCentreLoadError(error)
+    } finally {
+      setCentresLoading(false)
     }
   }
 
@@ -65,6 +70,7 @@ export default function UsersScreen({ onNavigate }) {
       if (!form.password || form.password.length < 6) e.password = 'Password must be at least 6 characters.'
     }
     if (!form.role) e.role = 'Select a role.'
+    if (!form.centre_ids.length) e.centre_ids = 'Assign at least one active centre.'
     setFormErrors(e)
     return Object.keys(e).length === 0
   }
@@ -110,6 +116,13 @@ export default function UsersScreen({ onNavigate }) {
     })
     setEditingId(user.uid)
     setShowForm(true)
+    loadCentres()
+  }
+
+  function createUser() {
+    resetForm()
+    setShowForm(true)
+    loadCentres()
   }
 
   async function toggleActivation(user) {
@@ -146,7 +159,7 @@ export default function UsersScreen({ onNavigate }) {
           </div>
           <button
             type="button"
-            onClick={() => { resetForm(); loadCentres(); setShowForm(true); }}
+            onClick={createUser}
             className="grid h-10 w-10 place-items-center rounded-full bg-primary-600 text-xl font-medium text-white shadow-md transition hover:bg-primary-700"
             aria-label="Create user"
           >
@@ -182,7 +195,14 @@ export default function UsersScreen({ onNavigate }) {
               <label className="block">
                 <span className="mb-1.5 block text-sm font-medium text-neutral-700">Assigned Centres</span>
                 <div className="mt-1.5 space-y-2 max-h-48 overflow-y-auto border border-neutral-200 rounded-xl p-3">
-                  {centreOptions.length === 0 ? (
+                  {centresLoading ? (
+                    <p className="text-xs text-neutral-500">Loading active centres…</p>
+                  ) : centreLoadError ? (
+                    <div className="space-y-2" role="alert">
+                      <p className="text-xs text-red-700">Unable to load active centres: {centreLoadError.message}</p>
+                      <Button type="button" size="sm" variant="secondary" onClick={loadCentres}>Retry</Button>
+                    </div>
+                  ) : centreOptions.length === 0 ? (
                     <p className="text-xs text-neutral-400">No active centres available. Create centres first.</p>
                   ) : (
                     centreOptions.map(c => (
@@ -198,10 +218,11 @@ export default function UsersScreen({ onNavigate }) {
                     ))
                   )}
                 </div>
+                {formErrors.centre_ids && <span className="mt-1.5 block text-xs text-risk-high">{formErrors.centre_ids}</span>}
               </label>
               {formErrors.submit && <p className="text-xs text-risk-high">{formErrors.submit}</p>}
               <div className="flex gap-3 pt-2">
-                <Button type="submit" disabled={saving}>{saving ? 'Saving…' : (editingId ? 'Update' : 'Create')}</Button>
+                <Button type="submit" disabled={saving || centresLoading || Boolean(centreLoadError) || centreOptions.length === 0}>{saving ? 'Saving…' : (editingId ? 'Update' : 'Create')}</Button>
                 <Button type="button" variant="secondary" onClick={resetForm}>Cancel</Button>
               </div>
             </form>
@@ -209,7 +230,7 @@ export default function UsersScreen({ onNavigate }) {
         )}
 
         {users.length === 0 && !showForm && (
-          <EmptyState title="No users yet" detail="Provision your first Anganwadi worker or supervisor." action={<Button className="mt-4" onClick={() => { resetForm(); loadCentres(); setShowForm(true); }}>Create User</Button>} />
+          <EmptyState title="No users yet" detail="Provision your first Anganwadi worker or supervisor." action={<Button className="mt-4" onClick={createUser}>Create User</Button>} />
         )}
 
         <div className="overflow-hidden rounded-2xl border border-neutral-100 bg-white shadow-sm">

@@ -5,7 +5,7 @@ import pytest
 from fastapi import HTTPException
 from pydantic import ValidationError
 
-from app.models.auth import CurrentUser, Role, UserProvision, UserUpdate
+from app.models.auth import CurrentUser, Role, UserProfile, UserProvision, UserUpdate
 from app.routers import users
 
 
@@ -66,6 +66,16 @@ def test_admin_can_provision_supervisor():
     provision = payload(role=Role.SUPERVISOR)
     with patch.object(users, "get_firestore_client", return_value=db), patch.object(users.auth, "create_user", return_value=firebase_user):
         assert users.provision_user(provision, ADMIN).role is Role.SUPERVISOR
+
+
+def test_admin_profiles_can_have_no_centres_but_provisioned_users_require_one():
+    admin_profile = UserProfile(uid="admin-2", name="Admin Two", role=Role.ADMIN, centre_ids=[])
+    assert admin_profile.centre_ids == []
+    admin_session = CurrentUser(uid="admin-2", role=Role.ADMIN, centre_ids=[])
+    assert admin_session.centre_ids == []
+    for role in (Role.WORKER, Role.SUPERVISOR):
+        with pytest.raises(ValidationError, match="require at least one centre assignment"):
+            payload(role=role, centre_ids=[])
 
 
 @pytest.mark.parametrize("caller", [WORKER, SUPERVISOR])

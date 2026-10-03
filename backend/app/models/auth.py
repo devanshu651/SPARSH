@@ -78,6 +78,8 @@ class UserProvision(BaseModel):
     def restrict_provisioned_roles(self) -> "UserProvision":
         if self.role is Role.ADMIN:
             raise ValueError("admin accounts cannot be provisioned through this endpoint")
+        if not self.centre_ids:
+            raise ValueError("worker and supervisor accounts require at least one centre assignment")
         return self
 
 
