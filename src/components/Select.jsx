@@ -13,14 +13,14 @@ export default function Select({
   return (
     <label className={`block ${className}`}>
       {label && (
-        <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-neutral-600">
+        <span className="mb-1.5 block text-xs font-bold text-neutral-900">
           {label} {required && <span className="text-red-600">*</span>}
         </span>
       )}
       <div className="relative flex items-center">
         <select
           id={id}
-          className={`min-h-11 w-full appearance-none rounded-lg border bg-white pl-3.5 pr-10 text-sm text-neutral-900 outline-none transition focus:border-primary-700 focus:ring-2 focus:ring-primary-100 ${
+          className={`min-h-12 w-full appearance-none rounded-xl border bg-white pl-3.5 pr-10 text-sm text-neutral-900 outline-none transition focus:border-primary-700 focus:ring-2 focus:ring-primary-100 ${
             error ? 'border-red-500 focus:border-red-600 focus:ring-red-100' : 'border-neutral-300'
           }`}
           {...props}

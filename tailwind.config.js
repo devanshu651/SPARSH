@@ -4,52 +4,45 @@ export default {
   theme: {
     extend: {
       colors: {
+        forest: {
+          50: '#F2F7F4', 100: '#E8F0EC', 200: '#D2E3D8', 300: '#A9C7B5',
+          400: '#6FA384', 500: '#3D7D5E', 600: '#2B6F5B', 700: '#235E4D',
+          800: '#1B4D3E', 900: '#143D31', 950: '#0C2820'
+        },
+        sage: {
+          50: '#F5F8F6', 100: '#EBF2EE', 200: '#D5E3DB', 300: '#B6CEC0',
+          400: '#8FA89B', 500: '#729082', 600: '#52796F', 700: '#3D5E56',
+          800: '#29433D', 900: '#1B2E2A'
+        },
+        terracotta: {
+          50: '#FDF4F0', 100: '#FDF0EB', 200: '#F8D8CB', 300: '#F1B59F',
+          400: '#E78E6E', 500: '#D96B43', 600: '#C85A32', 700: '#A64421',
+          800: '#833418', 900: '#5F2410'
+        },
         primary: {
-          50: '#f0f5fa',
-          100: '#e0ecf6',
-          200: '#b9d5ec',
-          300: '#82b3dc',
-          400: '#468cc7',
-          500: '#236fac',
-          600: '#18568e',
-          700: '#163e65',
-          800: '#0f2942',
-          900: '#0a1e34',
-          950: '#071526'
+          50: '#F2F7F4', 100: '#E8F0EC', 200: '#D2E3D8', 300: '#A9C7B5',
+          400: '#6FA384', 500: '#3D7D5E', 600: '#2B6F5B', 700: '#235E4D',
+          800: '#1B4D3E', 900: '#143D31', 950: '#0C2820'
         },
         teal: {
-          50: '#f0fdfa',
-          100: '#ccfbf1',
-          200: '#99f6e4',
-          500: '#14b8a6',
-          600: '#0d9488',
-          700: '#0f766e',
-          800: '#115e59',
-          900: '#134e4a'
+          50: '#F5F8F6', 100: '#EBF2EE', 200: '#D5E3DB', 500: '#729082',
+          600: '#52796F', 700: '#3D5E56', 800: '#29433D', 900: '#1B2E2A'
         },
         risk: {
-          normal: '#166534',
-          'normal-bg': '#f0fdf4',
-          'normal-border': '#bbf7d0',
-          moderate: '#9a3412',
-          'moderate-bg': '#fffbeb',
-          'moderate-border': '#fed7aa',
-          high: '#991b1b',
-          'high-bg': '#fef2f2',
-          'high-border': '#fecaca'
+          normal: '#2D7A58',
+          'normal-bg': '#E8F5EE',
+          'normal-border': '#C6E7D5',
+          moderate: '#C85A32',
+          'moderate-bg': '#FDF0EB',
+          'moderate-border': '#F7D4C8',
+          high: '#D32F2F',
+          'high-bg': '#FDE8E8',
+          'high-border': '#F8C4C4'
         },
         neutral: {
-          25: '#fcfcfd',
-          50: '#f8fafc',
-          100: '#f1f5f9',
-          200: '#e2e8f0',
-          300: '#cbd5e1',
-          400: '#94a3b8',
-          500: '#64748b',
-          600: '#475569',
-          700: '#334155',
-          800: '#1e293b',
-          900: '#0f172a'
+          25: '#FFFFFF', 50: '#FAFCFA', 100: '#F3F6F4', 200: '#E5EBE7',
+          300: '#D0D7D2', 400: '#9CA6A0', 500: '#6E7A74', 600: '#5A6660',
+          700: '#3E4742', 800: '#28302C', 900: '#1A201E'
         }
       },
       fontFamily: {
@@ -58,16 +51,18 @@ export default {
         body: ['Noto Sans', 'Inter', 'ui-sans-serif', 'system-ui', 'sans-serif']
       },
       boxShadow: {
-        card: '0 1px 3px rgba(15, 23, 42, 0.05)',
-        elevation: '0 4px 14px rgba(15, 23, 42, 0.07)',
-        floating: '0 8px 24px rgba(15, 23, 42, 0.1)'
+        card: '0 1px 3px rgba(26, 32, 30, 0.04)',
+        elevation: '0 4px 14px rgba(26, 32, 30, 0.06)',
+        floating: '0 8px 24px rgba(26, 32, 30, 0.09)'
       },
       borderRadius: {
-        card: '0.75rem'
+        xl: '1rem',
+        card: '1rem',
+        pill: '9999px'
       },
       backgroundImage: {
-        'health-gradient': 'linear-gradient(135deg, #0f2942 0%, #0d9488 100%)',
-        'health-subtle': 'linear-gradient(180deg, #f0f5fa 0%, #ffffff 100%)'
+        'health-gradient': 'linear-gradient(135deg, #1B4D3E 0%, #52796F 100%)',
+        'health-subtle': 'linear-gradient(180deg, #F2F7F4 0%, #ffffff 100%)'
       }
     }
   },

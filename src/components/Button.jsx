@@ -1,7 +1,9 @@
 const variants = {
   primary: 'bg-primary-800 text-white hover:bg-primary-900 border border-primary-900/10 shadow-sm focus:ring-primary-700',
-  secondary: 'bg-white text-neutral-800 border border-neutral-300 hover:bg-neutral-50 shadow-sm focus:ring-primary-700',
+  secondary: 'bg-white text-neutral-800 border border-neutral-200 hover:bg-neutral-50 shadow-sm focus:ring-primary-700',
   teal: 'bg-teal-700 text-white hover:bg-teal-800 border border-teal-800/20 shadow-sm focus:ring-teal-600',
+  sage: 'bg-teal-100 text-primary-800 border border-teal-200 hover:bg-teal-200 shadow-sm focus:ring-primary-700',
+  terracotta: 'bg-terracotta-500 text-white hover:bg-terracotta-600 border border-terracotta-600/20 shadow-sm focus:ring-terracotta-500',
   outline: 'bg-transparent text-primary-800 border border-primary-300 hover:bg-primary-50 focus:ring-primary-700',
   danger: 'bg-red-700 text-white hover:bg-red-800 border border-red-800/20 shadow-sm focus:ring-red-600',
   destructive: 'bg-red-700 text-white hover:bg-red-800 border border-red-800/20 shadow-sm focus:ring-red-600',
@@ -11,7 +13,7 @@ const variants = {
 const sizes = {
   sm: 'min-h-9 px-3 py-1.5 text-xs',
   md: 'min-h-11 px-4 py-2.5 text-sm',
-  lg: 'min-h-12 px-5 py-3 text-base'
+  lg: 'min-h-[50px] px-5 py-3 text-base'
 }
 
 export default function Button({
@@ -28,7 +30,7 @@ export default function Button({
     <button
       type={type}
       disabled={disabled || loading}
-      className={`inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${variants[variant] || variants.primary} ${sizes[size] || sizes.md} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-xl font-bold transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${variants[variant] || variants.primary} ${sizes[size] || sizes.md} ${className}`}
       {...props}
     >
       {loading && (

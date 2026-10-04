@@ -11,7 +11,7 @@ export default function Card({
 
   return (
     <section
-      className={`rounded-xl border border-neutral-200/85 bg-white shadow-card ${className}`}
+      className={`rounded-2xl border border-neutral-200 bg-white shadow-card ${className}`}
       {...props}
     >
       {hasHeader && (

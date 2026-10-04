@@ -1,9 +1,9 @@
 const tones = {
-  normal: 'bg-emerald-50 text-emerald-800 border border-emerald-200',
-  moderate: 'bg-amber-50 text-amber-800 border border-amber-200',
-  high: 'bg-red-50 text-red-800 border border-red-200',
+  normal: 'bg-risk-normal-bg text-risk-normal border border-risk-normal-border',
+  moderate: 'bg-risk-moderate-bg text-risk-moderate border border-risk-moderate-border',
+  high: 'bg-risk-high-bg text-risk-high border border-risk-high-border',
   info: 'bg-primary-50 text-primary-800 border border-primary-200',
-  teal: 'bg-teal-50 text-teal-800 border border-teal-200',
+  teal: 'bg-teal-50 text-primary-800 border border-teal-200',
   neutral: 'bg-neutral-100 text-neutral-700 border border-neutral-200'
 }
 

@@ -27,8 +27,8 @@ export default function SyncStatus({ compact = true, className = '' }) {
 
   if (!compact && queueCount === 0 && online) return null
   return (
-    <div className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-medium ${online ? 'border-sky-200 bg-sky-50 text-sky-900' : 'border-amber-300 bg-amber-50 text-amber-900'} ${className}`}>
-      <span className={`h-2 w-2 rounded-full ${online ? 'bg-sky-500' : 'bg-amber-500'}`} aria-hidden="true" />
+    <div className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium ${online ? 'border-risk-normal-border bg-risk-normal-bg text-risk-normal' : 'border-risk-moderate-border bg-risk-moderate-bg text-risk-moderate'} ${className}`}>
+      <span className={`h-1.5 w-1.5 rounded-full ${online ? 'bg-risk-normal' : 'bg-risk-moderate'}`} aria-hidden="true" />
       <span>{label}</span>
     </div>
   )

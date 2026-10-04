@@ -6,7 +6,7 @@ export default function AuthShell({
   showBackground = false
 }) {
   return (
-    <main className="grid min-h-screen bg-neutral-100 lg:grid-cols-12">
+    <main className="grid min-h-screen bg-neutral-50 lg:grid-cols-12">
       {/* LEFT SIDE INSTITUTIONAL BRAND PANEL */}
       <section
         className={`relative hidden overflow-hidden text-white lg:col-span-6 lg:flex lg:flex-col lg:justify-between lg:p-12 xl:col-span-7 xl:p-16 ${
@@ -21,10 +21,10 @@ export default function AuthShell({
             <img
               src="/mother-child.png"
               alt=""
-              className="h-full w-full object-cover object-center opacity-65"
+              className="h-full w-full object-cover object-center opacity-45 mix-blend-luminosity"
             />
             {/* Dark navy overlay: heavier on the left for maximum text contrast, lighter on the right to keep mother and child clearly visible */}
-            <div className="absolute inset-0 bg-gradient-to-r from-primary-950/95 via-primary-950/80 to-primary-950/45" />
+            <div className="absolute inset-0 bg-gradient-to-r from-primary-950/95 via-primary-950/85 to-primary-950/60" />
           </div>
         )}
 
@@ -35,44 +35,44 @@ export default function AuthShell({
 
         {/* Core clinical messaging */}
         <div className="relative z-10 max-w-lg space-y-4">
-          <span className="inline-flex items-center gap-1.5 rounded-md bg-teal-500/15 px-3 py-1 text-xs font-semibold text-teal-300 ring-1 ring-inset ring-teal-400/25">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1 text-xs font-semibold text-teal-200 ring-1 ring-inset ring-white/15">
             Developmental screening and follow-up support
           </span>
 
-          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl leading-tight">
+          <h2 className="font-heading text-3xl font-extrabold tracking-tight text-white sm:text-4xl leading-tight">
             Early detection for every child. Brighter developmental futures.
           </h2>
 
-          <p className="text-sm leading-relaxed text-neutral-300">
+          <p className="text-sm leading-relaxed text-teal-100">
             SPARSH equips Anganwadi and community healthcare workers with standardized milestone screening,
             growth monitoring, and timely DEIC clinical referral pathways.
           </p>
 
           <div className="grid grid-cols-2 gap-4 pt-4 text-xs">
-            <div className="rounded-lg border border-white/10 bg-white/5 p-3">
+            <div className="rounded-xl border border-white/15 bg-white/10 p-3.5">
               <span className="font-bold text-white block">Milestone Screening</span>
-              <span className="text-neutral-400 text-[11px]">5 Developmental Domains</span>
+              <span className="text-teal-100 text-[11px]">5 Developmental Domains</span>
             </div>
-            <div className="rounded-lg border border-white/10 bg-white/5 p-3">
+            <div className="rounded-xl border border-white/15 bg-white/10 p-3.5">
               <span className="font-bold text-white block">Offline First</span>
-              <span className="text-neutral-400 text-[11px]">Syncs in Remote Sub-centres</span>
+              <span className="text-teal-100 text-[11px]">Syncs in Remote Sub-centres</span>
             </div>
           </div>
         </div>
 
         {/* Bottom footer credit */}
-        <div className="relative z-10 text-xs text-neutral-400 border-t border-white/10 pt-6">
-          <p className="font-semibold text-neutral-300">
+        <div className="relative z-10 text-xs text-teal-100 border-t border-white/15 pt-6">
+          <p className="font-semibold text-white">
             Smart Platform for Assessment of Response, Screening & Holistic Development
           </p>
-          <p className="mt-1 text-[11px] text-neutral-500">
+          <p className="mt-1 text-[11px] text-teal-100/80">
             Supporting community health workers across India
           </p>
         </div>
       </section>
 
       {/* RIGHT SIDE INTERACTIVE FORM PANEL */}
-      <section className={`flex flex-col justify-center bg-white p-4 py-6 sm:p-10 lg:col-span-6 lg:p-12 xl:col-span-5 ${className}`}>
+      <section className={`relative flex flex-col justify-center bg-white p-4 py-6 sm:p-10 lg:col-span-6 lg:p-12 xl:col-span-5 ${className}`}>
         <div className="mx-auto w-full max-w-md">
           {children}
         </div>

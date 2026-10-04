@@ -112,7 +112,7 @@ export default function BottomNav({ active = 'dashboard', onChange }) {
             role="dialog"
             aria-label="More Clinical Navigation"
             aria-modal="true"
-            className="fixed inset-x-3 bottom-[72px] z-50 mx-auto max-w-md rounded-xl border border-neutral-200 bg-white p-4 shadow-elevation"
+            className="fixed inset-x-3 bottom-[72px] z-50 mx-auto max-w-md rounded-2xl border border-neutral-200 bg-white p-4 shadow-elevation"
           >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-neutral-100 pb-3">

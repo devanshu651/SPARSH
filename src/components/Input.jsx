@@ -11,7 +11,7 @@ export default function Input({
   return (
     <label className={`block ${className}`}>
       {label && (
-        <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-neutral-600">
+        <span className="mb-1.5 block text-xs font-bold text-neutral-900">
           {label} {required && <span className="text-red-600">*</span>}
         </span>
       )}
@@ -23,7 +23,7 @@ export default function Input({
         )}
         <input
           id={id}
-          className={`min-h-11 w-full rounded-lg border bg-white text-sm text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-primary-700 focus:ring-2 focus:ring-primary-100 ${
+          className={`min-h-12 w-full rounded-xl border bg-white text-sm text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-primary-700 focus:ring-2 focus:ring-primary-100 ${
             leftIcon ? 'pl-10 pr-3.5' : 'px-3.5'
           } ${
             error ? 'border-red-500 focus:border-red-600 focus:ring-red-100' : 'border-neutral-300'

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import AppLayout from '../components/AppLayout'
 import Button from '../components/Button'
+import Icon from '../components/Icon'
 import { ErrorState, LoadingState, EmptyState } from '../components/AsyncState'
 import { centresApi, childrenApi } from '../services/api'
 import { useApp } from '../context/AppContext'
@@ -10,11 +11,11 @@ const riskLabel = (risk) =>
 
 const riskBadge = (risk) =>
   risk === 'RED'
-    ? 'bg-red-50 text-red-600 ring-red-100'
+    ? 'bg-risk-high-bg text-risk-high ring-risk-high-border'
     : risk === 'YELLOW'
-    ? 'bg-amber-50 text-amber-600 ring-amber-100'
+    ? 'bg-risk-moderate-bg text-risk-moderate ring-risk-moderate-border'
     : risk === 'GREEN'
-    ? 'bg-emerald-50 text-emerald-600 ring-emerald-100'
+    ? 'bg-risk-normal-bg text-risk-normal ring-risk-normal-border'
     : 'bg-neutral-100 text-neutral-500'
 
 const initials = (name) =>
@@ -101,14 +102,14 @@ export default function HomeScreen({ onNavigate }) {
 
   return (
     <AppLayout active="dashboard" onNavigate={onNavigate}>
-      <div className="bg-neutral-50 pb-12 text-slate-900">
-        <header className="bg-gradient-to-r from-primary-700 to-teal-600 text-white">
-          <div className="mx-auto max-w-7xl px-5 py-5 sm:px-8 lg:px-10">
+      <div className="mx-auto max-w-7xl space-y-5 bg-neutral-50 px-4 py-5 pb-12 text-neutral-900 sm:px-6 lg:px-8">
+        <header className="rounded-2xl border border-neutral-200 bg-white p-5 text-neutral-900 shadow-card sm:p-6">
+          <div className="max-w-7xl">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-white/70">{timeOfDay()}</p>
-                <h1 className="mt-1 text-xl font-bold sm:text-2xl">{workerName}</h1>
-                <p className="mt-0.5 text-xs text-white/70">
+                <p className="text-xs font-semibold uppercase tracking-wider text-neutral-600">{timeOfDay()}</p>
+                <h1 className="mt-1 font-heading text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl">{workerName}</h1>
+                <p className="mt-1 text-sm text-neutral-600">
                   {assignedCentre ? `${assignedCentre.name}, ${assignedCentre.district || ''}`.trim().replace(/,\s*$/, '') : isAdmin ? 'Administrator' : 'Assigned Anganwadi Centre'}
                 </p>
               </div>
@@ -117,52 +118,55 @@ export default function HomeScreen({ onNavigate }) {
                 <button
                   type="button"
                   onClick={() => navigate('alerts')}
-                  className="grid h-10 w-10 place-items-center rounded-full bg-white/10 text-sm ring-1 ring-white/20 hover:bg-white/20"
+                  className="grid h-10 w-10 place-items-center rounded-xl bg-teal-50 text-primary-800 transition hover:bg-teal-100"
                   aria-label="Alerts"
                 >
-                  🔔
+                  <Icon name="alerts" className="h-5 w-5" />
                 </button>
                 <button
                   type="button"
                   onClick={() => navigate('settings')}
-                  className="grid h-10 w-10 place-items-center rounded-full bg-white/10 text-sm ring-1 ring-white/20 hover:bg-white/20"
+                  className="grid h-10 w-10 place-items-center rounded-xl bg-terracotta-50 text-terracotta-600 transition hover:bg-terracotta-100"
                   aria-label="Settings"
                 >
-                  ⚙️
+                  <Icon name="settings" className="h-5 w-5" />
                 </button>
               </div>
             </div>
           </div>
         </header>
 
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-          <section className="mt-6 flex flex-col gap-3 sm:flex-row">
+        <div className="space-y-7">
+          <section className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <Button
-              className="w-full flex-1 justify-center"
+              className="order-2 min-h-[112px] w-full flex-1 flex-col !items-start !justify-between rounded-2xl p-4 text-left shadow-card sm:order-2 sm:min-h-[132px]"
+              variant="secondary"
               onClick={() => navigate('register')}
               aria-label="Register a new child"
             >
-              + Register Child
+              <span className="grid h-10 w-10 place-items-center rounded-xl bg-terracotta-50 text-terracotta-600"><Icon name="userPlus" className="h-5 w-5" /></span>
+              <span className="text-base font-bold">Register Child</span>
             </Button>
             <Button
-              className="w-full flex-1 justify-center"
+              className="order-3 min-h-[112px] w-full flex-1 flex-col !items-start !justify-between rounded-2xl p-4 text-left shadow-card sm:order-3 sm:min-h-[132px]"
               variant="secondary"
               onClick={() => navigate('children')}
               aria-label="View registered children"
             >
-              Children
+              <span className="grid h-10 w-10 place-items-center rounded-xl bg-teal-50 text-primary-800"><Icon name="children" className="h-5 w-5" /></span>
+              <span className="text-base font-bold">View Children</span>
             </Button>
             <Button
-              className="w-full flex-1 justify-center"
-              variant="secondary"
+              className="order-1 min-h-[112px] w-full flex-1 flex-col !items-start !justify-between rounded-2xl p-4 text-left shadow-card sm:order-1 sm:min-h-[132px]"
               onClick={() => navigate('screening')}
               aria-label="Start a screening"
             >
-              Start Screening
+              <span className="grid h-10 w-10 place-items-center rounded-xl bg-white/15"><Icon name="screening" className="h-5 w-5" /></span>
+              <span className="text-base font-bold">Start Screening</span>
             </Button>
           </section>
 
-          <section className="mt-8">
+          <section>
             <h2 className="text-sm font-bold uppercase tracking-wider text-primary-700">Today's overview</h2>
             {state === 'loading' ? (
               <LoadingState label="Loading overview…" />
@@ -187,7 +191,7 @@ export default function HomeScreen({ onNavigate }) {
             )}
           </section>
 
-          <section className="mt-8">
+          <section>
             <div className="flex items-baseline justify-between">
               <h2 className="text-sm font-bold uppercase tracking-wider text-primary-700">Recent children</h2>
               {children.length > 0 && (
@@ -213,7 +217,7 @@ export default function HomeScreen({ onNavigate }) {
                 }
               />
             ) : (
-              <ul className="mt-4 divide-y divide-neutral-100 rounded-2xl border border-neutral-200 bg-white">
+              <ul className="mt-4 divide-y divide-neutral-100 rounded-2xl border border-neutral-200 bg-white shadow-card">
                 {recentChildren.map((child) => (
                   <li key={child.id}>
                     <button
@@ -224,7 +228,7 @@ export default function HomeScreen({ onNavigate }) {
                       }}
                       className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-neutral-50"
                     >
-                      <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-teal-50 text-xs font-bold text-teal-700">
+                      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-teal-200 bg-teal-50 text-xs font-bold text-primary-800">
                         {initials(child.name)}
                       </div>
                       <div className="min-w-0 flex-1">
@@ -247,7 +251,7 @@ export default function HomeScreen({ onNavigate }) {
           </section>
 
           {isAdmin && (
-            <section className="mt-8">
+            <section>
               <div className="flex items-baseline justify-between">
                 <h2 className="text-sm font-bold uppercase tracking-wider text-primary-700">Admin tools</h2>
               </div>
@@ -269,7 +273,7 @@ function OverviewCard({ title, value, sub, variant }) {
   const valueColor = variant === 'attention' ? 'text-red-700' : 'text-primary-800'
 
   return (
-    <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-neutral-100">
+    <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-card">
       <p className={`text-xs font-semibold ${titleColor}`}>{title}</p>
       <p className={`mt-2 text-3xl font-extrabold ${valueColor}`}>{value}</p>
       {sub && <p className="mt-0.5 text-[10px] text-neutral-400">{sub}</p>}

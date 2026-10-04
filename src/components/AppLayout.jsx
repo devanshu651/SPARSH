@@ -42,7 +42,7 @@ export default function AppLayout({
         {/* Worker Badge */}
         <div className="border-b border-neutral-100 bg-neutral-50/70 p-4">
           <div className="flex items-center gap-3">
-            <div className="grid h-9 w-9 place-items-center rounded-lg bg-primary-800 text-xs font-bold text-white shadow-xs">
+            <div className="grid h-10 w-10 place-items-center rounded-full border border-terracotta-200 bg-terracotta-100 text-xs font-bold text-terracotta-600 shadow-xs">
               {workerName.charAt(0)}
             </div>
             <div className="min-w-0 flex-1">
@@ -64,7 +64,7 @@ export default function AppLayout({
                 key={item.id}
                 type="button"
                 onClick={() => onNavigate?.(item.id)}
-                className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-semibold transition-colors ${
+                className={`flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-xs font-bold transition-colors ${
                   isActive
                     ? 'bg-primary-50 text-primary-800'
                     : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
@@ -93,7 +93,7 @@ export default function AppLayout({
               <button
                 type="button"
                 onClick={() => onNavigate?.(backTo)}
-                className="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900"
+                className="grid h-9 w-9 shrink-0 place-items-center rounded-xl text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900"
                 aria-label="Back"
               >
                 <Icon name="arrowLeft" className="h-4 w-4" />
@@ -102,7 +102,7 @@ export default function AppLayout({
               <BrandLogo className="h-7 w-7 shrink-0" showWordmark={!title} />
             )}
             {title && (
-              <span className="font-bold text-sm text-neutral-900 truncate max-w-[170px] sm:max-w-xs">
+              <span className="font-heading font-bold text-sm text-neutral-900 truncate max-w-[170px] sm:max-w-xs">
                 {title}
               </span>
             )}
