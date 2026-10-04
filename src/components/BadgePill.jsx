@@ -1,32 +1,36 @@
 const tones = {
-  normal: 'bg-emerald-50 text-emerald-800 border border-emerald-200',
-  moderate: 'bg-amber-50 text-amber-800 border border-amber-200',
-  high: 'bg-red-50 text-red-800 border border-red-200',
-  info: 'bg-primary-50 text-primary-800 border border-primary-200',
-  teal: 'bg-teal-50 text-teal-800 border border-teal-200',
-  neutral: 'bg-neutral-100 text-neutral-700 border border-neutral-200'
+  normal: 'bg-[#E8F5EE] text-[#2D7A58] border border-[#C6E7D5]',
+  moderate: 'bg-[#FDF0EB] text-[#C85A32] border border-[#F7D4C8]',
+  high: 'bg-[#FDE8E8] text-[#D32F2F] border border-[#F8C4C4]',
+  info: 'bg-[#EBF2EE] text-[#1B4D3E] border border-[#D5E3DB]',
+  teal: 'bg-[#E8F5EE] text-[#1B4D3E] border border-[#C6E7D5]',
+  terracotta: 'bg-[#FDF0EB] text-[#C85A32] border border-[#F7D4C8]',
+  neutral: 'bg-[#F3F6F4] text-[#5A6660] border border-[#E5EBE7]'
 }
 
 const dots = {
-  normal: 'bg-emerald-500',
-  moderate: 'bg-amber-500',
-  high: 'bg-red-500',
-  info: 'bg-primary-500',
-  teal: 'bg-teal-500',
-  neutral: 'bg-neutral-400'
+  normal: 'bg-[#2D7A58]',
+  moderate: 'bg-[#D96B43]',
+  high: 'bg-[#D32F2F]',
+  info: 'bg-[#1B4D3E]',
+  teal: 'bg-[#1B4D3E]',
+  terracotta: 'bg-[#D96B43]',
+  neutral: 'bg-[#8E9C95]'
 }
 
 export default function BadgePill({
-  tone = 'info',
+  tone = 'normal',
   dot = false,
   className = '',
   children
 }) {
-  const currentTone = tones[tone] || tones.info
-  const currentDot = dots[tone] || dots.info
+  const currentTone = tones[tone] || tones.normal
+  const currentDot = dots[tone] || dots.normal
 
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${currentTone} ${className}`}>
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${currentTone} ${className}`}
+    >
       {dot && <span className={`h-1.5 w-1.5 rounded-full ${currentDot}`} aria-hidden="true" />}
       {children}
     </span>

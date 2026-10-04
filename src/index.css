@@ -4,13 +4,13 @@
 
 @layer base {
   * {
-    @apply border-neutral-200;
+    @apply border-[#E5EBE7];
   }
   html {
     -webkit-tap-highlight-color: transparent;
   }
   body {
-    @apply min-h-screen bg-neutral-50 font-sans text-neutral-900 antialiased selection:bg-teal-100 selection:text-teal-900;
+    @apply min-h-screen bg-white font-sans text-[#1A201E] antialiased selection:bg-[#E8F0EC] selection:text-[#1B4D3E];
   }
   button, input, select, textarea {
     font: inherit;
@@ -20,5 +20,13 @@
 @layer utilities {
   .safe-bottom {
     padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+  /* Custom thin scrollbar */
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }

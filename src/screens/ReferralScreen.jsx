@@ -3,11 +3,11 @@ import { referralsApi, childrenApi } from '../services/api'
 import { useApp } from '../context/AppContext'
 import AppLayout from '../components/AppLayout'
 import Button from '../components/Button'
-import Card from '../components/Card'
 import Select from '../components/Select'
 import BadgePill from '../components/BadgePill'
 import Icon from '../components/Icon'
-import { LoadingState, EmptyState } from '../components/AsyncState'
+import { SparshBotanicalCorner } from '../components/SparshBotanical'
+import { LoadingState } from '../components/AsyncState'
 
 const facilities = [
   'District Early Intervention Centre (DEIC) — District Civil Hospital',
@@ -32,21 +32,18 @@ export default function ReferralScreen({ onNavigate }) {
   const [saving, setSaving] = useState(false)
   const [referralData, setReferralData] = useState(null)
 
-  // Direct access support: list of RED flagged children in cohort
   const [atRiskChildren, setAtRiskChildren] = useState([])
   const [loadingCohort, setLoadingCohort] = useState(false)
   const [selectedChildId, setSelectedChildId] = useState(currentChild?.id || '')
   const [resolvedScreeningId, setResolvedScreeningId] = useState(screeningResult?.screening_id || '')
 
   useEffect(() => {
-    // If we already have a screeningResult in context, use it directly
     if (screeningResult?.screening_id) {
       setResolvedScreeningId(screeningResult.screening_id)
       if (currentChild?.id) setSelectedChildId(currentChild.id)
       return
     }
 
-    // Otherwise load at-risk children from the cohort
     const loadAtRiskCohort = async () => {
       setLoadingCohort(true)
       try {
@@ -60,11 +57,10 @@ export default function ReferralScreen({ onNavigate }) {
           const first = currentChild?.latest_risk === 'RED' ? currentChild : redList[0]
           setSelectedChildId(first.id)
           setCurrentChild(first)
-          // Resolve child's latest screening ID
           resolveChildScreening(first.id)
         }
       } catch {
-        // Fallback gracefully
+        // Fallback
       } finally {
         setLoadingCohort(false)
       }
@@ -97,7 +93,6 @@ export default function ReferralScreen({ onNavigate }) {
       const hCall = childrenApi.history(childId)
       const history = typeof hCall === 'function' ? await hCall(childId) : await hCall
       if (history?.screenings?.length > 0) {
-        // Latest screening
         const latest = history.screenings[history.screenings.length - 1]
         setResolvedScreeningId(latest.screening_id)
       } else {
@@ -164,119 +159,28 @@ export default function ReferralScreen({ onNavigate }) {
         active="screening"
         onNavigate={onNavigate}
         backTo="dashboard"
-        title="DEIC Referral Escalation (RBSK Form 3A)"
-        subtitle="National Health Mission · District Early Intervention Centre Specialized Care"
-        actions={
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => onNavigate?.('screening')}
-          >
-            <Icon name="screening" className="h-4 w-4" />
-            <span>Screening</span>
-          </Button>
-        }
+        title="DEIC Referral"
+        subtitle="National Health Mission · District Early Intervention Centre"
       >
-        <div className="mx-auto max-w-4xl space-y-6 p-4 sm:p-6 lg:p-8">
-
-          {/* REFERRAL PROTOCOL HEADER BANNER */}
-          <section className="rounded-xl border border-primary-900/10 bg-gradient-to-r from-primary-900 via-primary-800 to-primary-900 p-5 text-white shadow-card sm:p-6">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 rounded-md bg-teal-500/20 px-2.5 py-0.5 text-xs font-semibold text-teal-200 ring-1 ring-inset ring-teal-400/30">
-                    <Icon name="hospital" className="h-3.5 w-3.5" />
-                    Specialist Escalation
-                  </span>
-                  <span className="text-xs text-primary-200">
-                    RBSK Form 3A Protocol
-                  </span>
-                </div>
-                <h1 className="mt-2 text-xl font-bold tracking-tight text-white sm:text-2xl">
-                  DEIC Referral Escalation
-                </h1>
-                <p className="mt-1 text-xs text-primary-100/90 sm:text-sm max-w-2xl leading-relaxed">
-                  Formal medical handover to District Early Intervention Centres (DEIC) for specialized pediatric,
-                  audiometric, and neuromotor evaluation of infants flagged with severe developmental delay.
-                </p>
-              </div>
-
-              <Button
-                variant="teal"
-                onClick={() => onNavigate?.('screening')}
-                className="shrink-0"
-              >
-                <Icon name="screening" className="h-4 w-4" />
-                <span>+ Start Screening</span>
-              </Button>
-            </div>
-          </section>
-
-          {/* EMPTY ELIGIBLE CASES STATE */}
-          <Card title="Referral Case Triage" subtitle="Active ward high-risk surveillance">
-            <div className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50/60 p-8 text-center">
-              <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-emerald-100 text-emerald-700">
-                <Icon name="checkCircle" className="h-6 w-6" />
-              </div>
-              <h3 className="mt-3 text-base font-bold text-neutral-900">
-                No High-Risk (RED) Referrals Pending
-              </h3>
-              <p className="mt-1 text-xs text-neutral-500 max-w-lg mx-auto leading-relaxed">
-                Referral generation (RBSK Form 3A) is reserved for children categorized with High Risk developmental delays or acute sensory impairments.
-                All screened children in your ward cohort are currently meeting developmental milestones or undergoing routine community watch.
-              </p>
-
-              <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-                <Button
-                  variant="primary"
-                  onClick={() => onNavigate?.('screening')}
-                >
-                  <Icon name="screening" className="h-4 w-4" />
-                  <span>Screen Another Child</span>
-                </Button>
-                <Button
-                  variant="secondary"
-                  onClick={() => onNavigate?.('children')}
-                >
-                  <Icon name="children" className="h-4 w-4" />
-                  <span>Browse Cohort Directory</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => onNavigate?.('dashboard')}
-                >
-                  Return to Dashboard
-                </Button>
-              </div>
-            </div>
-          </Card>
-
-          {/* REFERRAL PATHWAY SPECIFICATION */}
-          <Card title="National Health Mission DEIC Referral Protocol" subtitle="Mandatory operational guidelines">
-            <div className="grid gap-4 sm:grid-cols-3 text-xs">
-              <div className="rounded-lg border border-neutral-100 bg-neutral-50/70 p-4">
-                <span className="font-bold text-neutral-900 block mb-1">1. Referral Threshold</span>
-                <p className="text-neutral-600 leading-relaxed">
-                  Infants failing 3 or more milestones across Gross Motor, Fine Motor, Language, or Cognitive domains, or failing sensory tests.
-                </p>
-              </div>
-
-              <div className="rounded-lg border border-neutral-100 bg-neutral-50/70 p-4">
-                <span className="font-bold text-neutral-900 block mb-1">2. Target Facilities</span>
-                <p className="text-neutral-600 leading-relaxed">
-                  District Civil Hospital DEIC, Pediatric Neurology clinics, or Government Medical College Early Intervention Units.
-                </p>
-              </div>
-
-              <div className="rounded-lg border border-neutral-100 bg-neutral-50/70 p-4">
-                <span className="font-bold text-neutral-900 block mb-1">3. Caregiver Handover</span>
-                <p className="text-neutral-600 leading-relaxed">
-                  Printed Form 3A slip contains unique screening reference, domain breakdown, and Anganwadi worker endorsement.
-                </p>
-              </div>
-            </div>
-          </Card>
-
+        <div className="relative mx-auto max-w-xl p-8 text-center space-y-4">
+          <SparshBotanicalCorner position="top-right" className="opacity-30" />
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#EBF2EE] text-[#1B4D3E]">
+            <Icon name="checkCircle" className="h-7 w-7" />
+          </div>
+          <h2 className="text-lg font-semibold text-[#1A201E]">No High-Risk Referrals Pending</h2>
+          <p className="text-xs text-[#5A6660] max-w-md mx-auto">
+            Referral generation (RBSK Form 3A) is reserved for children categorized with High Risk developmental delays.
+            All screened children in your active cohort are currently meeting developmental milestones.
+          </p>
+          <div className="pt-2 flex justify-center gap-3">
+            <Button variant="primary" onClick={() => onNavigate?.('screening')}>
+              <Icon name="screening" className="h-4 w-4 mr-1.5" />
+              <span>Start Screening</span>
+            </Button>
+            <Button variant="secondary" onClick={() => onNavigate?.('children')}>
+              <span>View Children</span>
+            </Button>
+          </div>
         </div>
       </AppLayout>
     )
@@ -287,61 +191,48 @@ export default function ReferralScreen({ onNavigate }) {
       active="screening"
       onNavigate={onNavigate}
       backTo={screeningResult ? 'report' : 'alerts'}
-      title="DEIC Referral Escalation (RBSK Form 3A)"
-      subtitle="National Health Mission Specialized Early Intervention Referral"
+      title="DEIC Referral"
+      subtitle="RBSK Form 3A Specialized Early Intervention Referral"
       actions={
         referralData && (
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => window.print()}
-          >
-            <Icon name="report" className="h-4 w-4 text-neutral-600" />
-            <span>Print Official Slip</span>
+          <Button variant="secondary" size="sm" onClick={() => window.print()}>
+            <Icon name="report" className="h-4 w-4 text-[#1B4D3E]" />
+            <span>Print Slip</span>
           </Button>
         )
       }
     >
-      <div className="mx-auto max-w-2xl space-y-6 p-4 sm:p-6 lg:p-8">
+      <div className="relative mx-auto max-w-2xl p-4 sm:p-6 lg:p-8 space-y-6">
+        <SparshBotanicalCorner position="top-right" className="opacity-25" />
 
         {loadingCohort ? (
-          <LoadingState label="Verifying high-risk screening triage records..." />
+          <LoadingState label="Verifying high-risk referral records..." />
         ) : (
           <>
-            {/* CLINICAL TRIAGE NOTICE */}
-            <div className="rounded-xl border border-red-200 bg-red-50/80 p-4 sm:p-5 shadow-xs">
-              <div className="flex items-start gap-3.5">
-                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-red-100 text-red-700">
-                  <Icon name="hospital" className="h-5 w-5" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <BadgePill tone="high" dot>
-                      Urgent DEIC Referral Required
-                    </BadgePill>
-                    <span className="text-xs font-semibold text-neutral-500">
-                      RBSK Protocol v2.4 · Form 3A
-                    </span>
-                  </div>
-
-                  <h2 className="mt-1.5 text-base font-bold text-neutral-900">
-                    Patient: {activePatient?.name || 'Screened Child'}
-                  </h2>
-
-                  <p className="text-xs text-neutral-600 mt-0.5">
-                    Age: {activePatient?.age_months ?? '—'} months · ID: {activePatient?.child_identifier || '—'} · Guardian: {activePatient?.guardian_name || '—'}
-                  </p>
-
-                  <p className="mt-1 text-xs text-red-700 font-semibold">
-                    Screening Reference: {resolvedScreeningId || screeningResult?.screening_id || 'Pending Triage'}
-                  </p>
-                </div>
+            {/* Clinical Triage Notice */}
+            <div className="rounded-2xl border border-[#F7D4C8] bg-[#FDF0EB] p-4 sm:p-5 shadow-2xs space-y-2">
+              <div className="flex items-center gap-2">
+                <BadgePill tone="risk">
+                  Urgent DEIC Referral Required
+                </BadgePill>
+                <span className="text-xs text-[#5A6660]">
+                  RBSK Form 3A
+                </span>
               </div>
+              <h2 className="text-base font-semibold text-[#1A201E]">
+                Patient: {activePatient?.name || 'Screened Child'}
+              </h2>
+              <p className="text-xs text-[#5A6660]">
+                Age: {activePatient?.age_months ?? '—'} months · ID: {activePatient?.child_identifier || '—'} · Guardian: {activePatient?.guardian_name || '—'}
+              </p>
+              <p className="text-xs text-[#D96B43] font-medium pt-1">
+                Screening Ref: {resolvedScreeningId || screeningResult?.screening_id || 'Pending Triage'}
+              </p>
             </div>
 
-            {/* CHILD SELECTOR IF NAVIGATED DIRECTLY */}
+            {/* Child Selector if multiple at risk */}
             {!screeningResult && atRiskChildren.length > 1 && !referralData && (
-              <Card title="Select Patient for Referral" subtitle="Children categorized as High Risk (RED) in this ward">
+              <div className="rounded-2xl border border-[#E5EBE7] bg-white p-4 shadow-2xs">
                 <Select
                   label="Select Flagged Child"
                   value={selectedChildId}
@@ -353,96 +244,62 @@ export default function ReferralScreen({ onNavigate }) {
                     </option>
                   ))}
                 </Select>
-              </Card>
+              </div>
             )}
 
-            {/* REFERRAL CONFIRMATION SLIP OR ISSUANCE FORM */}
+            {/* Issued Docket or Form */}
             {referralData ? (
-              <Card className="p-6">
-                <div className="text-center">
-                  <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-emerald-100 text-emerald-700">
+              <div className="rounded-2xl border border-[#E5EBE7] bg-white p-5 sm:p-6 shadow-2xs space-y-5">
+                <div className="text-center space-y-1">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#EBF2EE] text-[#1B4D3E]">
                     <Icon name="checkCircle" className="h-6 w-6" />
                   </div>
-
-                  <h3 className="mt-3 text-lg font-bold text-neutral-900">
-                    Official DEIC Referral Slip Issued
-                  </h3>
-                  <p className="mt-0.5 text-xs text-neutral-500">
-                    National Child Health Screening Program · Referral Docket
-                  </p>
+                  <h3 className="text-base font-semibold text-[#1A201E]">Official DEIC Referral Slip Issued</h3>
+                  <p className="text-xs text-[#5A6660]">National Child Health Screening Program · Referral Docket</p>
                 </div>
 
-                {/* Formal RBSK Form 3A Docket */}
-                <div className="mt-6 rounded-xl border border-neutral-200 bg-neutral-50/70 p-5 text-xs space-y-3 font-mono">
-                  <div className="flex justify-between border-b border-neutral-200 pb-2">
-                    <span className="text-neutral-500 font-sans font-semibold">Docket Number:</span>
-                    <span className="font-bold text-neutral-900">{referralData.referral_id || `REF-${Date.now().toString().slice(-6)}`}</span>
+                <div className="rounded-xl border border-[#E5EBE7] bg-[#F9FBFA] p-4 text-xs space-y-2.5">
+                  <div className="flex justify-between border-b border-[#E5EBE7] pb-2">
+                    <span className="text-[#5A6660]">Docket Number:</span>
+                    <span className="font-bold text-[#1A201E]">{referralData.referral_id || `REF-${Date.now().toString().slice(-6)}`}</span>
                   </div>
-
-                  <div className="flex justify-between border-b border-neutral-200 pb-2">
-                    <span className="text-neutral-500 font-sans font-semibold">Designated Facility:</span>
-                    <span className="font-bold text-neutral-900 text-right max-w-xs">{facility}</span>
+                  <div className="flex justify-between border-b border-[#E5EBE7] pb-2">
+                    <span className="text-[#5A6660]">Designated Facility:</span>
+                    <span className="font-semibold text-[#1A201E] text-right max-w-xs">{facility}</span>
                   </div>
-
-                  <div className="flex justify-between border-b border-neutral-200 pb-2">
-                    <span className="text-neutral-500 font-sans font-semibold">Patient Name:</span>
-                    <span className="font-bold text-neutral-900">{activePatient?.name}</span>
+                  <div className="flex justify-between border-b border-[#E5EBE7] pb-2">
+                    <span className="text-[#5A6660]">Patient Name:</span>
+                    <span className="font-bold text-[#1A201E]">{activePatient?.name}</span>
                   </div>
-
-                  <div className="flex justify-between border-b border-neutral-200 pb-2">
-                    <span className="text-neutral-500 font-sans font-semibold">Child Identifier:</span>
-                    <span className="font-bold text-neutral-900">{activePatient?.child_identifier || 'AWW-CH-2025'}</span>
+                  <div className="flex justify-between border-b border-[#E5EBE7] pb-2">
+                    <span className="text-[#5A6660]">Primary Justification:</span>
+                    <span className="font-semibold text-[#1A201E] text-right max-w-xs">{reason}</span>
                   </div>
-
-                  <div className="flex justify-between border-b border-neutral-200 pb-2">
-                    <span className="text-neutral-500 font-sans font-semibold">Primary Justification:</span>
-                    <span className="font-semibold text-neutral-800 text-right max-w-xs">{reason}</span>
-                  </div>
-
-                  <div className="flex justify-between border-b border-neutral-200 pb-2">
-                    <span className="text-neutral-500 font-sans font-semibold">Referring Worker:</span>
-                    <span className="font-semibold text-neutral-800">{currentWorker?.name || 'Healthcare Worker'} (Centre: {currentWorker?.centre_ids?.[0] || 'Ward Sub-centre'})</span>
-                  </div>
-
                   <div className="flex justify-between">
-                    <span className="text-neutral-500 font-sans font-semibold">Issuance Date:</span>
-                    <span className="font-semibold text-neutral-800">
-                      {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
-                    </span>
+                    <span className="text-[#5A6660]">Referring Worker:</span>
+                    <span className="font-semibold text-[#1A201E]">{currentWorker?.name || 'Anita'}</span>
                   </div>
                 </div>
 
-                <div className="mt-4 rounded-lg bg-teal-50 p-3 text-xs text-teal-800 border border-teal-200">
-                  <span className="font-bold">Caregiver Guidance Instructions:</span>
-                  <p className="mt-0.5 leading-relaxed">
-                    Advise parent/caregiver to report to the District Early Intervention Centre (DEIC) within 7 business days. All diagnostic scans, occupational therapy, and speech evaluations are provided free of cost under the National Health Mission.
-                  </p>
-                </div>
-
-                <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-end">
-                  <Button
-                    variant="secondary"
-                    onClick={() => onNavigate?.('history')}
-                  >
-                    <span>View Child Medical Record</span>
+                <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                  <Button variant="secondary" onClick={() => onNavigate?.('history')} className="flex-1">
+                    Child Record
                   </Button>
-                  <Button
-                    variant="primary"
-                    onClick={() => onNavigate?.('dashboard')}
-                  >
-                    <span>Return to Centre Dashboard</span>
+                  <Button variant="primary" onClick={() => onNavigate?.('dashboard')} className="flex-1">
+                    Return to Dashboard
                   </Button>
                 </div>
-              </Card>
+              </div>
             ) : (
-              <Card title="DEIC Facility Routing & Justification" subtitle="Select designated public intervention center and clinical findings">
+              <div className="rounded-2xl border border-[#E5EBE7] bg-white p-5 sm:p-6 shadow-2xs space-y-4">
+                <h3 className="text-sm font-semibold text-[#1A201E]">DEIC Facility Routing</h3>
+
                 <form onSubmit={(e) => { e.preventDefault(); submitReferral(); }} className="space-y-4">
                   <Select
                     label="Designated Referral Facility"
                     required
                     value={facility}
                     onChange={(e) => setFacility(e.target.value)}
-                    helperText="Select the nearest DEIC with pediatric multi-disciplinary unit"
                   >
                     {facilities.map((f) => (
                       <option key={f} value={f}>{f}</option>
@@ -454,7 +311,6 @@ export default function ReferralScreen({ onNavigate }) {
                     required
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
-                    helperText="Diagnostic delay reason from developmental screening"
                   >
                     {referralReasons.map((r) => (
                       <option key={r} value={r}>{r}</option>
@@ -462,43 +318,34 @@ export default function ReferralScreen({ onNavigate }) {
                   </Select>
 
                   {error && (
-                    <div className="rounded-lg bg-red-50 p-3 text-xs text-red-700 border border-red-200" role="alert">
+                    <div className="rounded-xl bg-[#FDF0EB] p-3 text-xs text-[#D96B43] border border-[#F7D4C8]">
                       {error}
                     </div>
                   )}
 
-                  <div className="rounded-lg bg-neutral-50 p-3 text-xs text-neutral-600 border border-neutral-200">
-                    <span className="font-bold text-neutral-800">Caregiver Advisory Notice:</span>
-                    <p className="mt-0.5">
-                      DEIC evaluations, audiology tests, physical therapy, and early sensory stimulation are covered under government health programs at zero cost to families.
-                    </p>
-                  </div>
-
-                  <div className="flex gap-3 pt-4 border-t border-neutral-100">
+                  <div className="flex gap-3 pt-3 border-t border-[#E5EBE7]">
                     <Button
                       type="button"
                       variant="secondary"
                       onClick={() => onNavigate?.(screeningResult ? 'report' : 'dashboard')}
                     >
-                      <span>Cancel</span>
+                      Cancel
                     </Button>
                     <Button
                       type="submit"
-                      variant="destructive"
-                      className="flex-1"
+                      variant="primary"
+                      className="flex-1 bg-[#1B4D3E]"
                       disabled={saving}
                       loading={saving}
                     >
-                      <Icon name="hospital" className="h-4 w-4" />
-                      <span>Issue Official RBSK Referral Slip (Form 3A)</span>
+                      Issue Official RBSK Referral (Form 3A)
                     </Button>
                   </div>
                 </form>
-              </Card>
+              </div>
             )}
           </>
         )}
-
       </div>
     </AppLayout>
   )

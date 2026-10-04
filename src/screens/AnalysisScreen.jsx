@@ -3,25 +3,24 @@ import { screeningsApi } from '../services/api'
 import { enqueueScreening } from '../services/offline'
 import { useApp } from '../context/AppContext'
 import AppLayout from '../components/AppLayout'
-import Card from '../components/Card'
 import Button from '../components/Button'
+import BadgePill from '../components/BadgePill'
 import Icon from '../components/Icon'
-import { ErrorState, EmptyState } from '../components/AsyncState'
+import { SparshBotanicalCorner } from '../components/SparshBotanical'
+import { ErrorState, LoadingState } from '../components/AsyncState'
 
-const steps = [
-  'Verifying recorded milestone responses',
-  'Transmitting clinical screening data',
-  'Applying RBSK developmental risk evaluation rules',
-  'Generating comprehensive developmental report'
+const domainConfig = [
+  { key: 'gross_motor', label: 'Gross Motor', icon: 'activity' },
+  { key: 'fine_motor', label: 'Fine Motor', icon: 'sparkles' },
+  { key: 'language', label: 'Language', icon: 'speech' },
+  { key: 'social_emotional', label: 'Social-Emotional', icon: 'heart' },
+  { key: 'cognitive', label: 'Cognitive', icon: 'lightbulb' }
 ]
 
 export default function AnalysisScreen({ onNavigate }) {
-  const { setScreeningResult, currentChild, pendingScreening, setPendingScreening } = useApp()
+  const { screeningResult, setScreeningResult, currentChild, pendingScreening, setPendingScreening } = useApp()
   const [error, setError] = useState(null)
-  const [currentStep, setCurrentStep] = useState(0)
-  const [hasPendingData, setHasPendingData] = useState(() => {
-    return Boolean(pendingScreening || sessionStorage.getItem('sparsh:pending-screening'))
-  })
+  const [analyzing, setAnalyzing] = useState(false)
   const submitting = useRef(false)
 
   const runAnalysis = async () => {
@@ -41,32 +40,23 @@ export default function AnalysisScreen({ onNavigate }) {
     }
 
     if (!payload) {
-      setHasPendingData(false)
       return
     }
 
-    setHasPendingData(true)
     submitting.current = true
+    setAnalyzing(true)
 
     try {
-      setCurrentStep(1)
-      await new Promise((r) => setTimeout(r, 400))
-      setCurrentStep(2)
-
       const subCall = screeningsApi.submit(payload)
       const result = typeof subCall === 'function' ? await subCall(payload) : await subCall
-      setCurrentStep(3)
       setScreeningResult(result)
       setPendingScreening?.(null)
       sessionStorage.removeItem('sparsh:pending-screening')
-
-      await new Promise((r) => setTimeout(r, 400))
-      onNavigate('report')
     } catch (e) {
       if (e?.status === 409) {
         setPendingScreening?.(null)
         sessionStorage.removeItem('sparsh:pending-screening')
-        setError(new Error('This screening was already submitted. Open the child history to view it.'))
+        setError(new Error('This screening was already submitted. Open child history to view it.'))
       } else if (!navigator.onLine) {
         try {
           await enqueueScreening(payload)
@@ -76,12 +66,13 @@ export default function AnalysisScreen({ onNavigate }) {
         }
         setPendingScreening?.(null)
         sessionStorage.removeItem('sparsh:pending-screening')
-        setError(new Error('Device is offline. This screening has been securely cached in your local queue and will synchronize automatically when connection resumes.'))
+        setError(new Error('Device is offline. Screening cached locally and will synchronize automatically.'))
       } else {
         setError(e)
       }
     } finally {
       submitting.current = false
+      setAnalyzing(false)
     }
   }
 
@@ -91,223 +82,153 @@ export default function AnalysisScreen({ onNavigate }) {
     }
   }, [pendingScreening])
 
-  // PRECONDITION STATE: When opened without an active pending screening session
-  if (!hasPendingData && !error) {
+  // PRECONDITION: No active or past screening result and not analyzing
+  if (!screeningResult && !analyzing && !error) {
     return (
       <AppLayout
         active="screening"
         onNavigate={onNavigate}
         backTo="screening"
-        title="Developmental Diagnostic Analysis"
+        title="Analysis"
         subtitle="RBSK Algorithmic Risk Evaluation Engine"
-        actions={
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => onNavigate?.('screening')}
-          >
-            <Icon name="screening" className="h-4 w-4" />
-            <span>Start Screening</span>
-          </Button>
-        }
       >
-        <div className="mx-auto max-w-4xl space-y-6 p-4 sm:p-6 lg:p-8">
-
-          {/* ENGINE HEADER BANNER */}
-          <section className="rounded-xl border border-primary-900/10 bg-gradient-to-r from-primary-900 via-primary-800 to-primary-900 p-5 text-white shadow-card sm:p-6">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 rounded-md bg-teal-500/20 px-2.5 py-0.5 text-xs font-semibold text-teal-200 ring-1 ring-inset ring-teal-400/30">
-                    <Icon name="analytics" className="h-3.5 w-3.5" />
-                    Clinical Engine
-                  </span>
-                  <span className="text-xs text-primary-200">
-                    RBSK Standard Version 2025
-                  </span>
-                </div>
-                <h1 className="mt-2 text-xl font-bold tracking-tight text-white sm:text-2xl">
-                  Developmental Diagnostic Engine
-                </h1>
-                <p className="mt-1 text-xs text-primary-100/90 sm:text-sm max-w-2xl leading-relaxed">
-                  Automated rule-based evaluation of early childhood developmental milestones.
-                  Translates frontline questionnaire responses into clinical delay indices and referral actions.
-                </p>
-              </div>
-
-              <Button
-                variant="teal"
-                onClick={() => onNavigate?.('screening')}
-                className="shrink-0"
-              >
-                <Icon name="screening" className="h-4 w-4" />
-                <span>Begin Screening Session</span>
-              </Button>
-            </div>
-          </section>
-
-          {/* PRECONDITION NOTICE CARD */}
-          <Card title="Screening Precondition Required" subtitle="Analysis engine inputs">
-            <div className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50/60 p-8 text-center">
-              <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-primary-100 text-primary-800">
-                <Icon name="screening" className="h-6 w-6" />
-              </div>
-              <h3 className="mt-3 text-base font-bold text-neutral-900">
-                No Pending Milestone Screening Found
-              </h3>
-              <p className="mt-1 text-xs text-neutral-500 max-w-md mx-auto leading-relaxed">
-                The diagnostic engine evaluates child responses recorded during an active screening session.
-                To run an analysis, select a child from the cohort and complete their age-appropriate milestone questions.
-              </p>
-
-              <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-                <Button
-                  variant="primary"
-                  onClick={() => onNavigate?.('screening')}
-                >
-                  <Icon name="screening" className="h-4 w-4" />
-                  <span>Go to Screening Workflow</span>
-                </Button>
-                <Button
-                  variant="secondary"
-                  onClick={() => onNavigate?.('children')}
-                >
-                  <Icon name="children" className="h-4 w-4" />
-                  <span>Select Child from Cohort</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => onNavigate?.('dashboard')}
-                >
-                  Return to Dashboard
-                </Button>
-              </div>
-            </div>
-          </Card>
-
-          {/* ALGORITHMIC RULES & ARCHITECTURE SPECIFICATION */}
-          <section className="grid gap-4 sm:grid-cols-3">
-            <div className="rounded-xl border border-neutral-200/80 bg-white p-4 shadow-card">
-              <div className="flex items-center gap-2">
-                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-950">On Track (GREEN)</h4>
-              </div>
-              <p className="mt-2 text-xs text-neutral-600 leading-relaxed">
-                Child achieves all critical developmental milestones for their age checkpoint. Routine monitoring continues at next scheduled Anganwadi visit.
-              </p>
-            </div>
-
-            <div className="rounded-xl border border-neutral-200/80 bg-white p-4 shadow-card">
-              <div className="flex items-center gap-2">
-                <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />
-                <h4 className="text-xs font-bold uppercase tracking-wider text-amber-950">Moderate Delay (YELLOW)</h4>
-              </div>
-              <p className="mt-2 text-xs text-neutral-600 leading-relaxed">
-                1–2 milestone delays identified. Caseworker assigns targeted home stimulation exercises and schedules a re-screening checkpoint in 4 weeks.
-              </p>
-            </div>
-
-            <div className="rounded-xl border border-neutral-200/80 bg-white p-4 shadow-card">
-              <div className="flex items-center gap-2">
-                <span className="h-2.5 w-2.5 rounded-full bg-red-600" />
-                <h4 className="text-xs font-bold uppercase tracking-wider text-red-950">High Risk (RED)</h4>
-              </div>
-              <p className="mt-2 text-xs text-neutral-600 leading-relaxed">
-                3 or more milestone failures or covert sensory impairment. Automatically triggers formal RBSK Form 3A referral to District Early Intervention Centre (DEIC).
-              </p>
-            </div>
-          </section>
-
+        <div className="relative mx-auto max-w-xl p-6 text-center space-y-4">
+          <SparshBotanicalCorner position="top-right" className="opacity-30" />
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#EBF2EE] text-[#1B4D3E]">
+            <Icon name="analytics" className="h-7 w-7" />
+          </div>
+          <h2 className="text-lg font-semibold text-[#1A201E]">No Active Screening to Analyze</h2>
+          <p className="text-xs text-[#5A6660] max-w-md mx-auto">
+            Developmental analysis requires completing a milestone screening observation first.
+          </p>
+          <div className="pt-2">
+            <Button variant="primary" onClick={() => onNavigate?.('screening')}>
+              <Icon name="screening" className="h-4 w-4 mr-1.5" />
+              <span>Go to Screening</span>
+            </Button>
+          </div>
         </div>
       </AppLayout>
     )
   }
 
-  // ACTIVE ANALYSIS / PROCESSING OR ERROR STATE
+  if (analyzing) {
+    return (
+      <AppLayout active="screening" onNavigate={onNavigate} backTo="screening" title="Analysis">
+        <div className="mx-auto max-w-md p-10 text-center space-y-4">
+          <LoadingState label="Evaluating developmental milestone responses..." />
+        </div>
+      </AppLayout>
+    )
+  }
+
+  if (error && !screeningResult) {
+    return (
+      <AppLayout active="screening" onNavigate={onNavigate} backTo="screening" title="Analysis">
+        <div className="mx-auto max-w-md p-6">
+          <ErrorState error={error} onRetry={runAnalysis} />
+        </div>
+      </AppLayout>
+    )
+  }
+
+  // Exact Match to Screen 7 (Analysis)
+  const childName = currentChild?.name || 'Aarav Sharma'
+  const ageDisplay = currentChild?.age_months !== null && currentChild?.age_months !== undefined
+    ? `${Math.floor(currentChild.age_months / 12)} years ${currentChild.age_months % 12} months`
+    : '3 years 2 months'
+  const childSex = currentChild?.sex || 'Male'
+  const screenedDate = screeningResult?.screened_at
+    ? new Date(screeningResult.screened_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+    : '12 Apr 2024'
+
+  const domainScores = screeningResult?.domain_scores || {}
+
   return (
     <AppLayout
       active="screening"
       onNavigate={onNavigate}
       backTo="screening"
-      title="Developmental Diagnostic Analysis"
-      subtitle="Applying RBSK Clinical Evaluation Rules"
+      title="Analysis"
+      actions={
+        <Button variant="primary" size="sm" onClick={() => onNavigate?.('report')}>
+          <span>View Report →</span>
+        </Button>
+      }
     >
-      <div className="mx-auto max-w-xl p-4 sm:p-8">
-        {error ? (
-          <div className="space-y-4">
-            <ErrorState error={error} onRetry={runAnalysis} />
-            <div className="flex gap-2">
-              <Button
-                variant="primary"
-                className="flex-1"
-                onClick={() => onNavigate('screening')}
-              >
-                Return to Screening
-              </Button>
-              <Button
-                variant="secondary"
-                className="flex-1"
-                onClick={() => onNavigate('dashboard')}
-              >
-                Dashboard
-              </Button>
-            </div>
+      <div className="relative mx-auto max-w-xl p-4 sm:p-6 lg:p-8 space-y-6">
+        <SparshBotanicalCorner position="top-right" className="opacity-25" />
+
+        {/* Child Profile Card (Matches Screen 7) */}
+        <div className="flex items-center gap-3.5 rounded-2xl border border-[#E5EBE7] bg-white p-4 shadow-2xs">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#FDF0EB] text-[#D96B43] font-bold text-base">
+            {childName.charAt(0)}
           </div>
-        ) : (
-          <div className="rounded-xl border border-neutral-200/90 bg-white p-8 shadow-card text-center">
-            {/* Clinical spinner */}
-            <div className="relative mx-auto flex h-14 w-14 items-center justify-center">
-              <div className="h-14 w-14 animate-spin rounded-full border-3 border-teal-600 border-t-transparent" />
-              <Icon name="screening" className="absolute h-6 w-6 text-primary-800" />
-            </div>
+          <div>
+            <h2 className="text-base font-semibold text-[#1A201E]">{childName}</h2>
+            <p className="text-xs text-[#5A6660]">{ageDisplay} · {childSex}</p>
+            <p className="text-[11px] text-[#8E9C95] mt-0.5">Screened on {screenedDate}</p>
+          </div>
+        </div>
 
-            <h1 className="mt-5 text-lg font-bold text-neutral-900">
-              Evaluating Developmental Milestones
-            </h1>
-            <p className="mt-1 text-xs text-neutral-500">
-              Patient: {currentChild?.name || 'Selected Child'} · Applying RBSK Scoring Rules
-            </p>
+        {/* Developmental Domains Section (Matches Screen 7) */}
+        <div className="space-y-3">
+          <h3 className="text-sm font-semibold text-[#1A201E] px-1">
+            Developmental Domains
+          </h3>
 
-            {/* Step checklist */}
-            <div className="mt-6 space-y-3 rounded-lg bg-neutral-50 p-4 text-left border border-neutral-100">
-              {steps.map((text, idx) => {
-                const isDone = idx < currentStep
-                const isActive = idx === currentStep
+          <div className="space-y-2.5">
+            {domainConfig.map((dom) => {
+              const score = domainScores[dom.key]
+              const isFlagged = score?.missed_count > 0 || score?.missed_weight > 0
+              const badgeTone = isFlagged ? 'followup' : 'normal'
+              const badgeLabel = isFlagged ? 'Needs Attention' : 'Normal'
 
-                return (
-                  <div key={text} className="flex items-center gap-3">
-                    <div className="grid h-5 w-5 shrink-0 place-items-center">
-                      {isDone ? (
-                        <div className="grid h-4 w-4 place-items-center rounded-full bg-teal-600 text-white">
-                          <Icon name="check" className="h-2.5 w-2.5" />
-                        </div>
-                      ) : isActive ? (
-                        <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-primary-800 border-t-transparent" />
-                      ) : (
-                        <div className="h-2 w-2 rounded-full bg-neutral-300" />
-                      )}
-                    </div>
+              return (
+                <div
+                  key={dom.key}
+                  className="flex items-center justify-between rounded-xl border border-[#E5EBE7] bg-white p-3.5 shadow-2xs transition hover:border-[#1B4D3E]/20"
+                >
+                  <div className="flex items-center gap-3">
                     <span
-                      className={`text-xs ${
-                        isDone
-                          ? 'font-medium text-neutral-800'
-                          : isActive
-                          ? 'font-bold text-primary-900'
-                          : 'text-neutral-400'
+                      className={`flex h-8 w-8 items-center justify-center rounded-lg ${
+                        isFlagged ? 'bg-[#FDF0EB] text-[#D96B43]' : 'bg-[#EBF2EE] text-[#1B4D3E]'
                       }`}
                     >
-                      {text}
+                      <Icon name={dom.icon} className="h-4 w-4" />
                     </span>
+                    <span className="text-sm font-medium text-[#1A201E]">{dom.label}</span>
                   </div>
-                )
-              })}
-            </div>
 
-            <p className="mt-6 text-[11px] text-neutral-400">
-              SPARSH Diagnostic Rule Engine · RBSK Standard
-            </p>
+                  <BadgePill tone={badgeTone}>
+                    {badgeLabel}
+                  </BadgePill>
+                </div>
+              )
+            })}
           </div>
-        )}
+        </div>
+
+        {/* Informational Callout (Matches Screen 7) */}
+        <div className="flex items-start gap-3 rounded-2xl border border-[#E5EBE7] bg-[#F9FBFA] p-4 text-xs text-[#5A6660] shadow-2xs">
+          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#EBF2EE] text-[#1B4D3E] font-bold text-[11px] mt-0.5">
+            i
+          </span>
+          <p className="leading-relaxed">
+            This analysis is based on the screening responses. Please follow recommended actions for areas needing attention.
+          </p>
+        </div>
+
+        {/* Action Button */}
+        <div className="pt-2">
+          <Button
+            variant="primary"
+            onClick={() => onNavigate?.('report')}
+            className="w-full text-sm font-semibold py-3"
+          >
+            Continue to Full Report →
+          </Button>
+        </div>
       </div>
     </AppLayout>
   )

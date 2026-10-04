@@ -2,10 +2,12 @@ import { useState } from 'react'
 import { useApp } from '../context/AppContext'
 import CentresScreen from './CentresScreen'
 import UsersScreen from './UsersScreen'
+import Icon from '../components/Icon'
+import Button from '../components/Button'
 
 const TABS = [
-  { id: 'centres', label: 'Centres', icon: '⌂' },
-  { id: 'users', label: 'Users', icon: '♙' },
+  { id: 'centres', label: 'Centres' },
+  { id: 'users', label: 'Users' },
 ]
 
 export default function AdminConsoleScreen({ onNavigate }) {
@@ -14,67 +16,72 @@ export default function AdminConsoleScreen({ onNavigate }) {
 
   if (!currentWorker || currentWorker.role !== 'admin') {
     return (
-      <main className="grid min-h-screen place-items-center bg-neutral-50 px-6">
-        <div className="text-center">
-          <p className="text-4xl mb-4">🔒</p>
-          <h1 className="text-xl font-bold text-neutral-900">Admin Access Required</h1>
-          <p className="mt-2 text-neutral-500">This section is only accessible to administrators.</p>
-          <button
-            type="button"
-            onClick={() => onNavigate?.('dashboard')}
-            className="mt-6 min-h-11 rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-primary-700"
-          >
-            Back to Dashboard
-          </button>
+      <main className="grid min-h-screen place-items-center bg-white px-6">
+        <div className="text-center max-w-sm">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#FDF0EB] text-[#D96B43] mb-4">
+            <Icon name="lock" className="h-6 w-6" />
+          </div>
+          <h1 className="text-lg font-bold text-[#1A201E]">Admin Access Required</h1>
+          <p className="mt-1 text-xs text-[#5A6660]">This section is only accessible to administrative accounts.</p>
+          <div className="mt-5">
+            <Button
+              variant="primary"
+              onClick={() => onNavigate?.('dashboard')}
+            >
+              Back to Dashboard
+            </Button>
+          </div>
         </div>
       </main>
     )
   }
 
   return (
-    <main className="min-h-screen bg-neutral-50 pb-24 lg:pb-8">
-      <header className="border-b border-neutral-100 bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-10">
+    <main className="min-h-screen bg-white pb-24 lg:pb-8">
+      <header className="border-b border-[#E5EBE7] bg-white sticky top-0 z-20">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => onNavigate?.('dashboard')}
-              className="grid h-10 w-10 place-items-center rounded-full bg-primary-50 text-lg font-bold text-primary-700 transition hover:bg-primary-100"
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#E5EBE7] text-[#5A6660] hover:bg-[#F9FBFA] transition"
             >
-              ←
+              <Icon name="arrowLeft" className="h-4 w-4" />
             </button>
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.15em] text-primary-600">ADMIN CONSOLE</p>
-              <h1 className="text-xl font-bold text-neutral-900">Administration</h1>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-[#1B4D3E]">ADMIN CONSOLE</p>
+              <h1 className="text-base font-bold text-[#1A201E]">Administration</h1>
             </div>
           </div>
-          <span className="hidden text-xs text-neutral-400 lg:block">
-            Signed in as {currentWorker.name}
+          <span className="hidden text-xs text-[#5A6660] sm:block">
+            Signed in as <strong className="text-[#1A201E]">{currentWorker.name}</strong>
           </span>
         </div>
 
-        <nav className="mx-auto max-w-7xl border-b border-neutral-100 px-5 lg:px-10" aria-label="Admin console sections">
-          <div className="flex gap-1 overflow-x-auto pb-1">
-            {TABS.map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setActiveTab(tab.id)}
-                className={`shrink-0 flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition ${
-                  activeTab === tab.id
-                    ? 'bg-primary-50 text-primary-700 border-b-2 border-primary-600'
-                    : 'text-neutral-500 hover:text-neutral-700 hover:bg-neutral-50'
-                }`}
-              >
-                <span aria-hidden="true">{tab.icon}</span>
-                {tab.label}
-              </button>
-            ))}
+        <nav className="mx-auto max-w-6xl px-5" aria-label="Admin console sections">
+          <div className="flex gap-2 pb-2">
+            {TABS.map((tab) => {
+              const isActive = activeTab === tab.id
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`rounded-xl px-4 py-2 text-xs font-semibold transition ${
+                    isActive
+                      ? 'bg-[#1B4D3E] text-white shadow-2xs'
+                      : 'border border-[#E5EBE7] bg-white text-[#5A6660] hover:text-[#1A201E]'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              )
+            })}
           </div>
         </nav>
       </header>
 
-      <div className="mx-auto max-w-7xl px-4 py-5 lg:px-10 lg:py-8">
+      <div className="mx-auto max-w-6xl px-4 py-5 sm:px-6">
         {activeTab === 'centres' && <CentresScreen onNavigate={onNavigate} />}
         {activeTab === 'users' && <UsersScreen onNavigate={onNavigate} />}
       </div>

@@ -1,10 +1,11 @@
-import { useState } from 'react'
-import { usersApi } from '../services/api'
+import { useState, useEffect } from 'react'
+import { usersApi, centresApi } from '../services/api'
 import { LoadingState, ErrorState, EmptyState } from '../components/AsyncState'
 import Button from '../components/Button'
 import Input from '../components/Input'
-import Card from '../components/Card'
+import Select from '../components/Select'
 import BadgePill from '../components/BadgePill'
+import Icon from '../components/Icon'
 
 const ROLE_OPTIONS = [
   { value: 'worker', label: 'Anganwadi Worker' },
@@ -29,7 +30,7 @@ export default function UsersScreen({ onNavigate }) {
     setError(null)
     try {
       const data = await usersApi.list()
-      setUsers(data)
+      setUsers(Array.isArray(data) ? data : [])
     } catch (e) {
       setError(e)
     } finally {
@@ -39,13 +40,17 @@ export default function UsersScreen({ onNavigate }) {
 
   async function loadCentres() {
     try {
-      const { centresApi } = await import('../services/api')
       const data = await centresApi.list()
-      setCentreOptions(data.filter(c => c.active))
+      setCentreOptions(Array.isArray(data) ? data.filter(c => c.active) : [])
     } catch {
       // ignore
     }
   }
+
+  useEffect(() => {
+    load()
+    loadCentres()
+  }, [])
 
   function resetForm() {
     setForm(initialForm)
@@ -90,9 +95,7 @@ export default function UsersScreen({ onNavigate }) {
       resetForm()
       await load()
     } catch (e) {
-      if (e.status === 409) setFormErrors({ submit: e.message })
-      else if (e.status === 422) setFormErrors({ form: e.message })
-      else setFormErrors({ submit: e.message })
+      setFormErrors({ submit: e.message || 'Failed to save user.' })
     } finally {
       setSaving(false)
     }
@@ -111,7 +114,7 @@ export default function UsersScreen({ onNavigate }) {
   }
 
   async function toggleActivation(user) {
-    const confirmMsg = user.disabled ? 'Enable this user account?' : 'Disable this user account? They will no longer be able to sign in.'
+    const confirmMsg = user.disabled ? 'Enable this user account?' : 'Disable this user account?'
     if (!window.confirm(confirmMsg)) return
 
     try {
@@ -126,126 +129,124 @@ export default function UsersScreen({ onNavigate }) {
   if (error) return <ErrorState error={error} onRetry={load} />
 
   return (
-    <main className="min-h-screen bg-neutral-50 pb-24 lg:pb-8">
-      <header className="border-b border-neutral-100 bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-10">
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => onNavigate?.('dashboard')}
-              className="grid h-10 w-10 place-items-center rounded-full bg-primary-50 text-lg font-bold text-primary-700 transition hover:bg-primary-100"
-            >
-              ←
-            </button>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.15em] text-primary-600">ADMIN CONSOLE</p>
-              <h1 className="text-xl font-bold text-neutral-900">Users</h1>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => { resetForm(); loadCentres(); setShowForm(true); }}
-            className="grid h-10 w-10 place-items-center rounded-full bg-primary-600 text-xl font-medium text-white shadow-md transition hover:bg-primary-700"
-            aria-label="Create user"
-          >
-            +
-          </button>
+    <div className="space-y-5">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-base font-semibold text-[#1A201E]">User Accounts</h2>
+          <p className="text-xs text-[#5A6660]">Manage Anganwadi health workers and supervisors</p>
         </div>
-      </header>
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={() => { resetForm(); setShowForm(true); }}
+        >
+          <Icon name="plus" className="h-4 w-4 mr-1" />
+          <span>Add User</span>
+        </Button>
+      </div>
 
-      <div className="mx-auto max-w-7xl px-4 py-5 lg:px-10 lg:py-8">
-        {showForm && (
-          <Card className="mb-5">
-            <h2 className="mb-4 font-bold text-neutral-900">{editingId ? 'Edit User' : 'Create Worker / Supervisor'}</h2>
-            <form onSubmit={submit} className="space-y-4 max-w-2xl">
-              <Input label="Full Name *" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} error={formErrors.name} maxLength={120} />
-              {editingId === null && (
-                <>
-                  <Input label="Mobile Number (10 digits) *" value={form.mobile} onChange={e => setForm({ ...form, mobile: e.target.value.replace(/[^\d\s]/g, '') })} error={formErrors.mobile} inputMode="tel" maxLength={12} placeholder="98765 43210" />
-                  <Input label="Password *" type="password" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} error={formErrors.password} autoComplete="new-password" />
-                </>
-              )}
-              <label className="block">
-                <span className="mb-1.5 block text-sm font-medium text-neutral-700">Role *</span>
-                <select
-                  value={form.role}
-                  onChange={e => setForm({ ...form, role: e.target.value })}
-                  className="mt-1.5 min-h-11 w-full rounded-xl border border-neutral-200 bg-white px-3.5 text-sm text-neutral-900 outline-none focus:border-primary-700 focus:ring-2 focus:ring-primary-100"
-                  disabled={editingId !== null && form.role === 'admin'}
-                >
-                  {ROLE_OPTIONS.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
-                </select>
-                {formErrors.role && <span className="mt-1.5 block text-xs text-risk-high">{formErrors.role}</span>}
-              </label>
-              <label className="block">
-                <span className="mb-1.5 block text-sm font-medium text-neutral-700">Assigned Centres</span>
-                <div className="mt-1.5 space-y-2 max-h-48 overflow-y-auto border border-neutral-200 rounded-xl p-3">
-                  {centreOptions.length === 0 ? (
-                    <p className="text-xs text-neutral-400">No active centres available. Create centres first.</p>
-                  ) : (
-                    centreOptions.map(c => (
-                      <label key={c.id} className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={form.centre_ids.includes(c.id)}
-                          onChange={e => setForm({ ...form, centre_ids: e.target.checked ? [...form.centre_ids, c.id] : form.centre_ids.filter(id => id !== c.id) })}
-                          className="h-4 w-4 rounded border-neutral-300 text-primary-700 focus:ring-primary-500"
-                        />
-                        <span className="text-sm text-neutral-700">{c.name} ({c.code})</span>
-                      </label>
-                    ))
-                  )}
-                </div>
-              </label>
-              {formErrors.submit && <p className="text-xs text-risk-high">{formErrors.submit}</p>}
-              <div className="flex gap-3 pt-2">
-                <Button type="submit" disabled={saving}>{saving ? 'Saving…' : (editingId ? 'Update' : 'Create')}</Button>
-                <Button type="button" variant="secondary" onClick={resetForm}>Cancel</Button>
-              </div>
-            </form>
-          </Card>
-        )}
+      {showForm && (
+        <div className="rounded-2xl border border-[#E5EBE7] bg-white p-5 shadow-2xs">
+          <h3 className="text-sm font-semibold text-[#1A201E] mb-4">
+            {editingId ? 'Edit User' : 'Create New User Account'}
+          </h3>
+          <form onSubmit={submit} className="space-y-4 max-w-2xl">
+            <Input
+              label="Full Name *"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              error={formErrors.name}
+              maxLength={120}
+            />
 
-        {users.length === 0 && !showForm && (
-          <EmptyState title="No users yet" detail="Provision your first Anganwadi worker or supervisor." action={<Button className="mt-4" onClick={() => { resetForm(); loadCentres(); setShowForm(true); }}>Create User</Button>} />
-        )}
+            {editingId === null && (
+              <>
+                <Input
+                  label="Mobile Number *"
+                  type="tel"
+                  value={form.mobile}
+                  onChange={(e) => setForm({ ...form, mobile: e.target.value })}
+                  error={formErrors.mobile}
+                  maxLength={10}
+                  placeholder="10-digit mobile number"
+                />
+                <Input
+                  label="Initial Password *"
+                  type="password"
+                  value={form.password}
+                  onChange={(e) => setForm({ ...form, password: e.target.value })}
+                  error={formErrors.password}
+                />
+              </>
+            )}
 
-        <div className="overflow-hidden rounded-2xl border border-neutral-100 bg-white shadow-sm">
-          <table className="w-full" role="grid">
+            <Select
+              label="Role *"
+              value={form.role}
+              onChange={(e) => setForm({ ...form, role: e.target.value })}
+            >
+              {ROLE_OPTIONS.map((r) => (
+                <option key={r.value} value={r.value}>{r.label}</option>
+              ))}
+            </Select>
+
+            {formErrors.submit && <p className="text-xs text-[#D32F2F]">{formErrors.submit}</p>}
+
+            <div className="flex gap-2 pt-2">
+              <Button type="submit" variant="primary" disabled={saving}>
+                {saving ? 'Saving…' : (editingId ? 'Update' : 'Create')}
+              </Button>
+              <Button type="button" variant="secondary" onClick={resetForm}>
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {users.length === 0 && !showForm ? (
+        <EmptyState
+          title="No users found"
+          detail="Create your first healthcare worker account."
+          action={
+            <Button variant="primary" className="mt-4" onClick={() => { resetForm(); setShowForm(true); }}>
+              Add User
+            </Button>
+          }
+        />
+      ) : (
+        <div className="overflow-hidden rounded-2xl border border-[#E5EBE7] bg-white shadow-2xs">
+          <table className="w-full text-left" role="grid">
             <thead>
-              <tr className="border-b border-neutral-100 bg-neutral-50">
-                <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-neutral-400">Name</th>
-                <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-neutral-400">Role</th>
-                <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-neutral-400">Centres</th>
-                <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-neutral-400">Status</th>
-                <th className="px-4 py-3 text-right text-[10px] font-bold uppercase tracking-wider text-neutral-400">Actions</th>
+              <tr className="border-b border-[#E5EBE7] bg-[#F9FBFA]">
+                <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-[#5A6660]">Name</th>
+                <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-[#5A6660]">Role</th>
+                <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-[#5A6660]">Status</th>
+                <th className="px-4 py-3 text-right text-[11px] font-bold uppercase tracking-wider text-[#5A6660]">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-[#E5EBE7]">
               {users.map((user) => (
-                <tr key={user.uid} className="border-b border-neutral-100 last:border-b-0 hover:bg-neutral-50">
-                  <td className="px-4 py-3 font-medium text-neutral-900">{user.name}</td>
+                <tr key={user.uid} className="hover:bg-[#F9FBFA] transition">
+                  <td className="px-4 py-3 text-xs font-semibold text-[#1A201E]">{user.name}</td>
+                  <td className="px-4 py-3 text-xs text-[#5A6660] capitalize">{user.role}</td>
                   <td className="px-4 py-3">
-                    <BadgePill tone={user.role === 'admin' ? 'info' : user.role === 'supervisor' ? 'moderate' : 'normal'}>
-                      {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                    <BadgePill tone={user.disabled ? 'risk' : 'normal'}>
+                      {user.disabled ? 'Disabled' : 'Active'}
                     </BadgePill>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-neutral-500">
-                    {user.centre_ids && user.centre_ids.length > 0 ? user.centre_ids.join(', ') : '—'}
-                  </td>
-                  <td className="px-4 py-3">
-                    <BadgePill tone={user.disabled ? 'moderate' : 'normal'}>{user.disabled ? 'Disabled' : 'Active'}</BadgePill>
                   </td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-2">
-                      {user.role !== 'admin' && (
-                        <Button variant="secondary" className="min-w-0" onClick={() => edit(user)}>Edit</Button>
-                      )}
-                      {user.role !== 'admin' && (
-                        <Button variant={user.disabled ? 'secondary' : 'danger'} className="min-w-0" onClick={() => toggleActivation(user)}>
-                          {user.disabled ? 'Enable' : 'Disable'}
-                        </Button>
-                      )}
+                      <Button variant="outline" size="sm" onClick={() => edit(user)}>
+                        Edit
+                      </Button>
+                      <Button
+                        variant={user.disabled ? 'outline' : 'secondary'}
+                        size="sm"
+                        onClick={() => toggleActivation(user)}
+                      >
+                        {user.disabled ? 'Enable' : 'Disable'}
+                      </Button>
                     </div>
                   </td>
                 </tr>
@@ -253,7 +254,7 @@ export default function UsersScreen({ onNavigate }) {
             </tbody>
           </table>
         </div>
-      </div>
-    </main>
+      )}
+    </div>
   )
 }

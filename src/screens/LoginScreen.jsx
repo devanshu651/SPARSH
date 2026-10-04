@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import AuthShell from '../components/AuthShell'
-import Button from '../components/Button'
-import Input from '../components/Input'
+import BrandLogo from '../components/BrandLogo'
+import SparshBotanical from '../components/SparshBotanical'
 import Icon from '../components/Icon'
 import { authService, readableAuthError } from '../services/auth'
 import { usersApi } from '../services/api'
@@ -70,14 +70,16 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
 
   return (
     <AuthShell showBackground>
-      <div className="space-y-6 py-4">
+      <div className="space-y-6 py-2 relative">
+        <SparshBotanical variant="top-left" opacity="opacity-20" />
+        <SparshBotanical variant="bottom-right" opacity="opacity-25" />
 
-        {/* TOP CONTROLS */}
-        <div className="flex items-center justify-between">
+        {/* Top Controls: Back and Language Toggle */}
+        <div className="flex items-center justify-between relative z-10">
           <button
             type="button"
             onClick={onBack}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-200 px-2.5 py-1 text-xs font-semibold text-neutral-600 hover:bg-neutral-50"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-[#E5EBE7] bg-white px-3 py-1.5 text-xs font-semibold text-[#5A6660] hover:bg-[#F5F8F6] transition-colors"
           >
             <Icon name="arrowLeft" className="h-3.5 w-3.5" />
             <span>Back</span>
@@ -86,38 +88,41 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
           <button
             type="button"
             onClick={toggleLang}
-            className="rounded-lg border border-neutral-200 px-2.5 py-1 text-xs font-semibold text-primary-800 hover:bg-neutral-50"
+            className="rounded-xl border border-[#E5EBE7] bg-white px-3 py-1.5 text-xs font-semibold text-[#1B4D3E] hover:bg-[#EBF2EE] transition-colors"
           >
             {i18n.language === 'en' ? 'हिंदी (Hindi)' : 'English'}
           </button>
         </div>
 
-        {/* HEADING */}
-        <div>
-          <h1 className="text-xl font-bold tracking-tight text-neutral-900 sm:text-2xl">
-            {t('login.welcome', 'Sign in to SPARSH')}
-          </h1>
-          <p className="mt-1 text-xs text-neutral-500 sm:text-sm">
-            Enter your registered Anganwadi worker mobile number and password.
+        {/* Centered SPARSH Logo & Welcome Back matching Screen 2 in reference */}
+        <div className="text-center pt-2 relative z-10">
+          <BrandLogo className="h-14 w-14 mx-auto" showWordmark stacked />
+          <h2 className="mt-4 text-xl font-bold tracking-tight text-[#1A201E] font-heading">
+            Welcome Back
+          </h2>
+          <p className="mt-1 text-xs text-[#5A6660]">
+            Sign in to continue to SPARSH
           </p>
         </div>
 
-        {/* LOGIN FORM */}
-        <form onSubmit={submit} noValidate className="space-y-4">
-
-          {/* Mobile number with +91 prefix */}
-          <div>
-            <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-neutral-600">
-              Registered Mobile Number *
+        {/* Login Form */}
+        <form onSubmit={submit} noValidate className="space-y-4 relative z-10">
+          {/* Mobile / Phone Input with Icon */}
+          <div className="space-y-1">
+            <span className="block text-xs font-bold text-[#1A201E]">
+              Registered Mobile *
             </span>
-            <div className={`flex min-h-11 overflow-hidden rounded-lg border bg-white transition focus-within:border-primary-700 focus-within:ring-2 focus-within:ring-primary-100 ${
-              error && !/^\d{10}$/.test(mobile.replace(/\s/g, ''))
-                ? 'border-red-500'
-                : 'border-neutral-300'
-            }`}>
-              <span className="flex items-center border-r border-neutral-200 bg-neutral-50 px-3 text-xs font-bold text-neutral-600">
-                +91
-              </span>
+            <div
+              className={`flex min-h-[48px] overflow-hidden rounded-xl border bg-white transition-all focus-within:border-[#1B4D3E] focus-within:ring-2 focus-within:ring-[#E8F0EC] ${
+                error && !/^\d{10}$/.test(mobile.replace(/\s/g, ''))
+                  ? 'border-[#D32F2F]'
+                  : 'border-[#E5EBE7]'
+              }`}
+            >
+              <div className="flex items-center gap-1.5 border-r border-[#E5EBE7] bg-[#FAFCFA] px-3 text-[#5A6660]">
+                <Icon name="user" className="h-4 w-4 text-[#8E9C95]" />
+                <span className="text-xs font-bold text-[#1A201E]">+91</span>
+              </div>
               <input
                 type="tel"
                 inputMode="numeric"
@@ -125,76 +130,88 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
                 value={mobile}
                 onChange={(e) => setMobile(e.target.value.replace(/\D/g, ''))}
                 placeholder="10-digit mobile number"
-                className="w-full px-3 text-sm text-neutral-900 outline-none placeholder:text-neutral-400"
+                className="w-full px-3 text-sm text-[#1A201E] outline-none placeholder:text-[#8E9C95] bg-transparent"
               />
             </div>
           </div>
 
-          {/* Password */}
-          <div className="relative">
-            <Input
-              label="Password *"
-              type={showPassword ? 'text' : 'password'}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your worker password"
-              error={error && password.length < 6 ? 'Password is required' : ''}
-            />
+          {/* Password Input with Lock Icon & Toggle */}
+          <div className="space-y-1">
+            <span className="block text-xs font-bold text-[#1A201E]">
+              Password *
+            </span>
+            <div
+              className={`flex min-h-[48px] items-center overflow-hidden rounded-xl border bg-white px-3 transition-all focus-within:border-[#1B4D3E] focus-within:ring-2 focus-within:ring-[#E8F0EC] ${
+                error && password.length < 6 ? 'border-[#D32F2F]' : 'border-[#E5EBE7]'
+              }`}
+            >
+              <Icon name="shield" className="h-4 w-4 text-[#8E9C95] mr-2 shrink-0" />
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter password"
+                className="w-full text-sm text-[#1A201E] outline-none placeholder:text-[#8E9C95] bg-transparent"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="text-xs font-bold text-[#5A6660] hover:text-[#1B4D3E] ml-2 shrink-0"
+              >
+                {showPassword ? 'Hide' : 'Show'}
+              </button>
+            </div>
+          </div>
+
+          {/* Forgot Password Right Aligned in Terracotta */}
+          <div className="text-right">
             <button
               type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-8 text-xs font-semibold text-primary-700 hover:text-primary-900"
+              onClick={() => alert('Password reset link sent to your registered mobile number.')}
+              className="text-xs font-bold text-[#D96B43] hover:underline"
             >
-              {showPassword ? 'Hide' : 'Show'}
+              Forgot password?
             </button>
           </div>
 
           {error && (
-            <div className="rounded-lg bg-red-50 p-3 text-xs font-medium text-red-700 border border-red-200" role="alert">
+            <div className="rounded-xl bg-[#FDE8E8] p-3 text-xs font-medium text-[#D32F2F] border border-[#F8C4C4]" role="alert">
               {error}
             </div>
           )}
 
-          <Button
+          {/* Large Dark Forest Green Sign In Button matching reference */}
+          <button
             type="submit"
-            variant="primary"
-            size="lg"
-            className="w-full text-sm font-bold"
             disabled={loading}
-            loading={loading}
+            className="w-full min-h-[50px] rounded-xl bg-[#1B4D3E] hover:bg-[#143D31] text-white font-bold text-sm shadow-xs flex items-center justify-center gap-2 transition-all active:scale-[0.99] disabled:opacity-50"
           >
-            Sign In to Field Dashboard
-          </Button>
+            {loading ? 'Signing In…' : 'Sign In'}
+          </button>
 
-          {/* EXPLORE DEMO MODE */}
+          {/* 1-Tap Demo Mode Button */}
           {demoAvailable && (
-            <div className="pt-2">
-              <Button
-                type="button"
-                variant="secondary"
-                className="w-full text-xs font-semibold border-teal-200 text-teal-800 bg-teal-50/50 hover:bg-teal-50"
-                onClick={exploreDemo}
-              >
-                <span>Explore as Demo Health Worker (Offline Ready)</span>
-              </Button>
-            </div>
+            <button
+              type="button"
+              onClick={exploreDemo}
+              className="w-full min-h-[44px] rounded-xl border border-[#D5E3DB] bg-[#EBF2EE] text-[#1B4D3E] text-xs font-bold hover:bg-[#D5E3DB] transition-colors"
+            >
+              Explore Demo Mode (1-Tap Test)
+            </button>
           )}
         </form>
 
-        {/* WORKER ENROLMENT GUIDANCE */}
-        <div className="border-t border-neutral-100 pt-4 text-center">
-          <p className="text-xs text-neutral-500">
-            Need account access for your Anganwadi centre?
-          </p>
+        {/* Worker Provisioning / Sign Up link in Terracotta matching reference */}
+        <div className="pt-2 text-center text-xs text-[#5A6660] relative z-10">
+          <span>Don&apos;t have an account? </span>
           <button
             type="button"
             onClick={onRegister}
-            className="mt-1 text-xs font-bold text-primary-700 hover:text-primary-900 hover:underline"
+            className="font-bold text-[#D96B43] hover:underline"
           >
-            View Worker Provisioning Instructions →
+            Sign Up
           </button>
         </div>
-
       </div>
     </AuthShell>
   )

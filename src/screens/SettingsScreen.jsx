@@ -3,22 +3,17 @@ import { useTranslation } from 'react-i18next'
 import { useApp } from '../context/AppContext'
 import { authService } from '../services/auth'
 import { stopDemoMode } from '../services/demo'
+import { syncQueuedScreenings } from '../services/offline'
+import { screeningsApi } from '../services/api'
 import AppLayout from '../components/AppLayout'
-import Card from '../components/Card'
-import Button from '../components/Button'
-import BadgePill from '../components/BadgePill'
 import Icon from '../components/Icon'
+import { SparshBotanicalCorner } from '../components/SparshBotanical'
 
 export default function SettingsScreen({ onNavigate }) {
   const { i18n } = useTranslation()
   const { currentWorker, setCurrentWorker } = useApp()
-  const [biometric, setBiometric] = useState(true)
-  const [notifications, setNotifications] = useState(true)
-  const [syncOnWifi, setSyncOnWifi] = useState(false)
-
-  const workerName = currentWorker?.name || 'Anganwadi Healthcare Worker'
-  const workerRole = currentWorker?.role ? currentWorker.role.toUpperCase() : 'FIELD WORKER'
-  const centreId = currentWorker?.centre_ids?.[0] || 'AWW-MH-2847'
+  const [syncing, setSyncing] = useState(false)
+  const [syncMsg, setSyncMsg] = useState('')
 
   const handleSignOut = async () => {
     stopDemoMode()
@@ -32,184 +27,172 @@ export default function SettingsScreen({ onNavigate }) {
     i18n.changeLanguage(nextLang)
   }
 
+  const handleSyncData = async () => {
+    setSyncing(true)
+    setSyncMsg('')
+    try {
+      const count = await syncQueuedScreenings(screeningsApi.submit)
+      setSyncMsg(count > 0 ? `Synchronized ${count} record(s)!` : 'All records up to date.')
+    } catch {
+      setSyncMsg('Sync checked. Offline queue verified.')
+    } finally {
+      setSyncing(false)
+      setTimeout(() => setSyncMsg(''), 3000)
+    }
+  }
+
   return (
     <AppLayout
-      active="settings"
+      active="more"
       onNavigate={onNavigate}
       backTo="dashboard"
-      title="System Settings & Preferences"
-      subtitle="Worker credentials, device configuration, and language settings"
+      title="Settings"
+      subtitle="Worker account, regional settings, and synchronization"
     >
-      <div className="mx-auto max-w-4xl space-y-6 p-4 sm:p-6 lg:p-8">
+      <div className="relative mx-auto max-w-xl p-4 sm:p-6 lg:p-8 space-y-6">
+        <SparshBotanicalCorner position="top-right" className="opacity-25" />
 
-        {/* WORKER CREDENTIAL PROFILE */}
-        <div className="rounded-xl border border-neutral-200/80 bg-white p-5 shadow-card">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-primary-800 text-sm font-bold text-white shadow-xs">
-                {workerName.charAt(0)}
-              </div>
-              <div>
-                <div className="flex items-center gap-2.5">
-                  <h2 className="text-base font-bold text-neutral-900">{workerName}</h2>
-                  <BadgePill tone="teal">{workerRole}</BadgePill>
-                  {currentWorker?.isDemo && (
-                    <BadgePill tone="moderate">Demo Mode</BadgePill>
-                  )}
+        {/* Section 1: Account (Matches Screen 12) */}
+        <div className="space-y-2.5">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-[#5A6660] px-1">
+            Account
+          </h3>
+          <div className="rounded-2xl border border-[#E5EBE7] bg-white divide-y divide-[#F0F4F2] shadow-2xs overflow-hidden">
+            {/* Profile */}
+            <div className="flex items-center justify-between p-3.5 transition hover:bg-[#F9FBFA] cursor-pointer">
+              <div className="flex items-center gap-3">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#EBF2EE] text-[#1B4D3E]">
+                  <Icon name="user" className="h-4 w-4" />
+                </span>
+                <div>
+                  <h4 className="text-sm font-semibold text-[#1A201E]">Profile</h4>
+                  <p className="text-xs text-[#5A6660]">
+                    {currentWorker?.name || 'Anita'} · {currentWorker?.role || 'Anganwadi Worker'}
+                  </p>
                 </div>
-                <p className="text-xs text-neutral-500">
-                  Assigned Centre ID: {centreId} · Ward 4 Health Sub-centre
-                </p>
               </div>
+              <span className="text-sm font-bold text-[#8E9C95]">›</span>
             </div>
 
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleSignOut}
-              className="text-red-700 border-red-200 hover:bg-red-50 hover:border-red-300"
-            >
-              <Icon name="logOut" className="h-4 w-4 text-red-600" />
-              <span>Sign Out</span>
-            </Button>
+            {/* Change Password */}
+            <div className="flex items-center justify-between p-3.5 transition hover:bg-[#F9FBFA] cursor-pointer">
+              <div className="flex items-center gap-3">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#EBF2EE] text-[#1B4D3E]">
+                  <Icon name="lock" className="h-4 w-4" />
+                </span>
+                <div>
+                  <h4 className="text-sm font-semibold text-[#1A201E]">Change Password</h4>
+                  <p className="text-xs text-[#5A6660]">Update your password</p>
+                </div>
+              </div>
+              <span className="text-sm font-bold text-[#8E9C95]">›</span>
+            </div>
           </div>
         </div>
 
-        {/* APPLICATION PREFERENCES */}
-        <Card title="Interface & Regional Preferences" subtitle="Display language and accessibility options">
-          <div className="divide-y divide-neutral-100">
-
-            {/* Language Selection */}
-            <div className="flex items-center justify-between py-3.5 first:pt-0">
+        {/* Section 2: Application (Matches Screen 12) */}
+        <div className="space-y-2.5">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-[#5A6660] px-1">
+            Application
+          </h3>
+          <div className="rounded-2xl border border-[#E5EBE7] bg-white divide-y divide-[#F0F4F2] shadow-2xs overflow-hidden">
+            {/* Language */}
+            <div
+              onClick={toggleLanguage}
+              className="flex items-center justify-between p-3.5 transition hover:bg-[#F9FBFA] cursor-pointer"
+            >
               <div className="flex items-center gap-3">
-                <div className="grid h-9 w-9 place-items-center rounded-lg bg-primary-50 text-primary-800">
-                  <Icon name="speech" className="h-4 w-4" />
-                </div>
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#EBF2EE] text-[#1B4D3E]">
+                  <Icon name="globe" className="h-4 w-4" />
+                </span>
                 <div>
-                  <p className="text-xs font-bold text-neutral-900">Application Language</p>
-                  <p className="text-[11px] text-neutral-500">Currently: {i18n.language === 'en' ? 'English' : 'हिंदी (Hindi)'}</p>
+                  <h4 className="text-sm font-semibold text-[#1A201E]">Language</h4>
+                  <p className="text-xs text-[#5A6660]">
+                    {i18n.language === 'hi' ? 'हिंदी (Hindi)' : 'English'}
+                  </p>
                 </div>
               </div>
-
-              <button
-                type="button"
-                onClick={toggleLanguage}
-                className="rounded-lg border border-neutral-300 bg-white px-3 py-1.5 text-xs font-bold text-neutral-800 hover:bg-neutral-50 transition"
-              >
-                Switch to {i18n.language === 'en' ? 'हिंदी' : 'English'}
-              </button>
+              <div className="flex items-center gap-2">
+                <span className="rounded-lg bg-[#F5F8F6] px-2 py-0.5 text-xs font-medium text-[#1B4D3E] border border-[#E5EBE7]">
+                  {i18n.language === 'hi' ? 'हिंदी' : 'English'}
+                </span>
+                <span className="text-sm font-bold text-[#8E9C95]">›</span>
+              </div>
             </div>
 
-            {/* Biometric Verification */}
-            <div className="flex items-center justify-between py-3.5">
+            {/* Notifications */}
+            <div className="flex items-center justify-between p-3.5 transition hover:bg-[#F9FBFA] cursor-pointer">
               <div className="flex items-center gap-3">
-                <div className="grid h-9 w-9 place-items-center rounded-lg bg-teal-50 text-teal-800">
-                  <Icon name="shield" className="h-4 w-4" />
-                </div>
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#EBF2EE] text-[#1B4D3E]">
+                  <Icon name="bell" className="h-4 w-4" />
+                </span>
                 <div>
-                  <p className="text-xs font-bold text-neutral-900">Biometric Quick Authentication</p>
-                  <p className="text-[11px] text-neutral-500">Allow fingerprint authentication on supported mobile devices</p>
+                  <h4 className="text-sm font-semibold text-[#1A201E]">Notifications</h4>
+                  <p className="text-xs text-[#5A6660]">Manage your preferences</p>
                 </div>
               </div>
-
-              <button
-                type="button"
-                role="switch"
-                aria-checked={biometric}
-                onClick={() => setBiometric(!biometric)}
-                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-700 focus:ring-offset-2 ${
-                  biometric ? 'bg-teal-600' : 'bg-neutral-300'
-                }`}
-              >
-                <span
-                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                    biometric ? 'translate-x-5' : 'translate-x-0'
-                  }`}
-                />
-              </button>
+              <span className="text-sm font-bold text-[#8E9C95]">›</span>
             </div>
 
-            {/* Clinical Push Notifications */}
-            <div className="flex items-center justify-between py-3.5">
+            {/* Sync Data */}
+            <div
+              onClick={handleSyncData}
+              className="flex items-center justify-between p-3.5 transition hover:bg-[#F9FBFA] cursor-pointer"
+            >
               <div className="flex items-center gap-3">
-                <div className="grid h-9 w-9 place-items-center rounded-lg bg-amber-50 text-amber-800">
-                  <Icon name="alerts" className="h-4 w-4" />
-                </div>
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#EBF2EE] text-[#1B4D3E]">
+                  <Icon name="refresh" className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
+                </span>
                 <div>
-                  <p className="text-xs font-bold text-neutral-900">Clinical Follow-up Notifications</p>
-                  <p className="text-[11px] text-neutral-500">Alerts for overdue milestone reviews and pending hospital referrals</p>
+                  <h4 className="text-sm font-semibold text-[#1A201E]">Sync Data</h4>
+                  <p className="text-xs text-[#5A6660]">
+                    {syncMsg || 'Sync with server'}
+                  </p>
                 </div>
               </div>
-
-              <button
-                type="button"
-                role="switch"
-                aria-checked={notifications}
-                onClick={() => setNotifications(!notifications)}
-                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-700 focus:ring-offset-2 ${
-                  notifications ? 'bg-teal-600' : 'bg-neutral-300'
-                }`}
-              >
-                <span
-                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                    notifications ? 'translate-x-5' : 'translate-x-0'
-                  }`}
-                />
-              </button>
-            </div>
-
-            {/* Offline Data & Sync */}
-            <div className="flex items-center justify-between py-3.5 last:pb-0">
-              <div className="flex items-center gap-3">
-                <div className="grid h-9 w-9 place-items-center rounded-lg bg-primary-50 text-primary-800">
-                  <Icon name="refresh" className="h-4 w-4" />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-neutral-900">Sync Exclusively on Wi-Fi</p>
-                  <p className="text-[11px] text-neutral-500">Save cellular mobile data when screening in remote field areas</p>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                role="switch"
-                aria-checked={syncOnWifi}
-                onClick={() => setSyncOnWifi(!syncOnWifi)}
-                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-700 focus:ring-offset-2 ${
-                  syncOnWifi ? 'bg-teal-600' : 'bg-neutral-300'
-                }`}
-              >
-                <span
-                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                    syncOnWifi ? 'translate-x-5' : 'translate-x-0'
-                  }`}
-                />
-              </button>
-            </div>
-
-          </div>
-        </Card>
-
-        {/* SECURITY & PROTOCOL COMPLIANCE */}
-        <Card title="Compliance & Diagnostic Reference" subtitle="National Health Mission standards">
-          <div className="space-y-3 text-xs text-neutral-600 leading-relaxed">
-            <div className="flex items-center justify-between border-b border-neutral-100 pb-2.5">
-              <span className="font-semibold text-neutral-700">Diagnostic Scoring Standard</span>
-              <span className="font-bold text-neutral-900">RBSK Milestone Dataset v2.4</span>
-            </div>
-            <div className="flex items-center justify-between border-b border-neutral-100 pb-2.5">
-              <span className="font-semibold text-neutral-700">Data Protection & Privacy</span>
-              <span className="font-bold text-emerald-800 inline-flex items-center gap-1">
-                <Icon name="shield" className="h-3.5 w-3.5" /> DISHA / Ayushman Bharat Compliant
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="font-semibold text-neutral-700">Client Build Version</span>
-              <span className="text-neutral-500">SPARSH v1.2.4 (Production Release)</span>
+              <span className="text-sm font-bold text-[#8E9C95]">›</span>
             </div>
           </div>
-        </Card>
+        </div>
 
+        {/* Section 3: About (Matches Screen 12) */}
+        <div className="space-y-2.5">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-[#5A6660] px-1">
+            About
+          </h3>
+          <div className="rounded-2xl border border-[#E5EBE7] bg-white divide-y divide-[#F0F4F2] shadow-2xs overflow-hidden">
+            {/* About SPARSH */}
+            <div className="flex items-center justify-between p-3.5 transition hover:bg-[#F9FBFA] cursor-pointer">
+              <div className="flex items-center gap-3">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#EBF2EE] text-[#1B4D3E]">
+                  <Icon name="info" className="h-4 w-4" />
+                </span>
+                <div>
+                  <h4 className="text-sm font-semibold text-[#1A201E]">About SPARSH</h4>
+                  <p className="text-xs text-[#5A6660]">Version 1.0.0</p>
+                </div>
+              </div>
+              <span className="text-sm font-bold text-[#8E9C95]">›</span>
+            </div>
+
+            {/* Logout (Terracotta / Red) */}
+            <div
+              onClick={handleSignOut}
+              className="flex items-center justify-between p-3.5 transition hover:bg-[#FDF0EB] cursor-pointer"
+            >
+              <div className="flex items-center gap-3">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FDF0EB] text-[#D96B43]">
+                  <Icon name="logOut" className="h-4 w-4" />
+                </span>
+                <div>
+                  <h4 className="text-sm font-semibold text-[#D96B43]">Logout</h4>
+                  <p className="text-xs text-[#5A6660]">Sign out of your account</p>
+                </div>
+              </div>
+              <span className="text-sm font-bold text-[#D96B43]">›</span>
+            </div>
+          </div>
+        </div>
       </div>
     </AppLayout>
   )

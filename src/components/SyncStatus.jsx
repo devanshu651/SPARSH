@@ -25,27 +25,27 @@ export default function SyncStatus({ compact = true, className = '' }) {
 
   if (!online) {
     return (
-      <div className={`inline-flex items-center gap-1.5 rounded-md border border-amber-300 bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-900 ${className}`}>
-        <span className="h-2 w-2 rounded-full bg-amber-500" aria-hidden="true" />
-        <span>Offline Mode ({queueCount} pending)</span>
+      <div className={`inline-flex items-center gap-1.5 rounded-full border border-[#F7D4C8] bg-[#FDF0EB] px-2.5 py-0.5 text-xs font-medium text-[#D96B43] ${className}`}>
+        <span className="h-1.5 w-1.5 rounded-full bg-[#D96B43]" aria-hidden="true" />
+        <span>Offline ({queueCount} pending)</span>
       </div>
     )
   }
 
   if (queueCount > 0) {
     return (
-      <div className={`inline-flex items-center gap-1.5 rounded-md border border-sky-300 bg-sky-50 px-2.5 py-1 text-xs font-medium text-sky-900 ${className}`}>
-        <Icon name="refresh" className="h-3.5 w-3.5 animate-spin text-sky-700" />
-        <span>Syncing {queueCount} records</span>
+      <div className={`inline-flex items-center gap-1.5 rounded-full border border-[#D5E3DB] bg-[#EBF2EE] px-2.5 py-0.5 text-xs font-medium text-[#1B4D3E] ${className}`}>
+        <Icon name="refresh" className="h-3 w-3 animate-spin text-[#1B4D3E]" />
+        <span>Syncing {queueCount}</span>
       </div>
     )
   }
 
   if (compact) {
     return (
-      <div className={`inline-flex items-center gap-1.5 rounded-md border border-emerald-200 bg-emerald-50/80 px-2.5 py-1 text-xs font-medium text-emerald-800 ${className}`}>
-        <span className="h-2 w-2 rounded-full bg-emerald-600" aria-hidden="true" />
-        <span>Live Sync Active</span>
+      <div className={`inline-flex items-center gap-1.5 rounded-full border border-[#C6E7D5] bg-[#E8F5EE] px-2.5 py-0.5 text-xs font-medium text-[#2D7A58] ${className}`}>
+        <span className="h-1.5 w-1.5 rounded-full bg-[#2D7A58]" aria-hidden="true" />
+        <span>Online</span>
       </div>
     )
   }
