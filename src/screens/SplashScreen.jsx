@@ -150,98 +150,98 @@ function HeroChildDevelopmentVisual({ className = 'w-full h-auto max-w-md' }) {
 
 export default function SplashScreen({ onContinue }) {
   return (
-    <main className="min-h-screen w-full bg-white relative overflow-hidden flex flex-col justify-between">
+    <main className="min-h-screen min-h-[100dvh] w-full bg-white relative overflow-hidden flex flex-col justify-between">
       {/* ============================================================== */}
-      {/* DESKTOP VIEW (>= 1024px): EXPANDED FULL-VIEWPORT COMPOSITION   */}
+      {/* DESKTOP / TABLET VIEW (>= 768px): EXPANDED BALANCED VIEWPORT    */}
       {/* ============================================================== */}
-      <div className="hidden lg:grid lg:grid-cols-12 lg:min-h-screen lg:w-full">
-        {/* Left Section: Brand, Large Hero Illustration & Trust Points */}
-        <section className="lg:col-span-7 xl:col-span-7 bg-white p-12 xl:p-16 flex flex-col justify-between relative overflow-hidden">
+      <div className="hidden md:grid md:grid-cols-12 md:min-h-screen md:h-screen md:w-full md:overflow-y-auto xl:overflow-hidden">
+        {/* Left Section: Brand, Hero Visual & Core Trust Points */}
+        <section className="md:col-span-7 xl:col-span-7 bg-white px-6 sm:px-8 xl:px-12 py-4 sm:py-5 xl:py-7 flex flex-col justify-between relative overflow-hidden h-full">
           <SparshBotanical variant="top-left" opacity="opacity-30" />
           <SparshBotanical variant="bottom-left" opacity="opacity-20" />
 
           {/* Top Brand Header */}
-          <div className="relative z-10">
-            <BrandLogo className="h-12 w-12" showWordmark showTagline stacked={false} />
+          <div className="relative z-10 shrink-0">
+            <BrandLogo className="h-10 w-10 sm:h-11 sm:w-11 xl:h-12 xl:w-12" showWordmark showTagline stacked={false} />
           </div>
 
-          {/* Center: Large Integrated Hero Visual + Headline */}
-          <div className="relative z-10 py-6 space-y-6 max-w-xl">
-            <div className="flex flex-col items-start gap-4">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#EBF2EE] px-3.5 py-1 text-xs font-semibold text-[#1B4D3E] border border-[#D5E3DB]">
+          {/* Center: Integrated Hero Visual + Headline */}
+          <div className="relative z-10 my-auto py-2 xl:py-4 space-y-3 xl:space-y-4 max-w-xl">
+            <div className="flex flex-col items-start gap-2 xl:gap-2.5">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#EBF2EE] px-3 sm:px-3.5 py-0.5 sm:py-1 text-[11px] sm:text-xs font-semibold text-[#1B4D3E] border border-[#D5E3DB]">
                 Developmental Screening &amp; Follow-up Support
               </span>
-              <h1 className="text-3xl xl:text-4xl font-extrabold text-[#1A201E] tracking-tight font-heading leading-tight">
+              <h1 className="text-2xl sm:text-3xl xl:text-4xl font-extrabold text-[#1A201E] tracking-tight font-heading leading-tight">
                 Supporting Every Child&apos;s <br />
                 Brighter Tomorrow
               </h1>
-              <p className="text-sm text-[#5A6660] leading-relaxed max-w-lg">
+              <p className="text-xs sm:text-sm text-[#5A6660] leading-relaxed max-w-lg">
                 Empowering Anganwadi workers with RBSK 5-domain developmental surveillance, automated delay detection, and immediate clinical DEIC referral.
               </p>
             </div>
 
-            {/* Large Hero Illustration (35-40% visual presence) */}
-            <div className="pt-2 w-full flex justify-center">
-              <HeroChildDevelopmentVisual className="w-full max-w-lg h-auto drop-shadow-xs" />
+            {/* Prominent Hero Illustration with responsive viewport max-height */}
+            <div className="w-full flex justify-center py-1 sm:py-1.5">
+              <HeroChildDevelopmentVisual className="w-full max-w-[340px] md:max-w-[370px] xl:max-w-[420px] max-h-[25vh] sm:max-h-[28vh] h-auto drop-shadow-xs object-contain" />
             </div>
 
             {/* Core Trust Pillars */}
-            <div className="grid grid-cols-3 gap-3 pt-3 border-t border-[#E5EBE7]">
+            <div className="grid grid-cols-3 gap-2.5 sm:gap-3 pt-2.5 xl:pt-3 border-t border-[#E5EBE7]">
               <div className="space-y-0.5">
                 <p className="text-xs font-bold text-[#1A201E]">RBSK Standard</p>
-                <p className="text-[11px] text-[#5A6660]">5-Domain Checklist</p>
+                <p className="text-[10px] sm:text-[11px] text-[#5A6660]">5-Domain Checklist</p>
               </div>
               <div className="space-y-0.5">
                 <p className="text-xs font-bold text-[#1A201E]">Offline-First</p>
-                <p className="text-[11px] text-[#5A6660]">IndexedDB Local Queue</p>
+                <p className="text-[10px] sm:text-[11px] text-[#5A6660]">IndexedDB Local Queue</p>
               </div>
               <div className="space-y-0.5">
                 <p className="text-xs font-bold text-[#1A201E]">DEIC Referral</p>
-                <p className="text-[11px] text-[#5A6660]">Official Form 3A Docket</p>
+                <p className="text-[10px] sm:text-[11px] text-[#5A6660]">Official Form 3A Docket</p>
               </div>
             </div>
           </div>
 
           {/* Footer note */}
-          <div className="relative z-10 text-xs text-[#8E9C95]">
+          <div className="relative z-10 text-[11px] sm:text-xs text-[#8E9C95] shrink-0 pt-1">
             <p>SPARSH Child Health Companion · Ministry of Health & Family Welfare</p>
           </div>
         </section>
 
         {/* Right Section: Dark Forest Green Hero Panel */}
-        <section className="lg:col-span-5 xl:col-span-5 bg-[#1B4D3E] text-white p-12 xl:p-16 flex flex-col justify-between relative overflow-hidden">
+        <section className="md:col-span-5 xl:col-span-5 bg-[#1B4D3E] text-white px-6 sm:px-8 xl:px-12 py-4 sm:py-5 xl:py-7 flex flex-col justify-between relative overflow-hidden h-full">
           <SparshBotanical variant="top-right" opacity="opacity-25" />
           <SparshBotanical variant="bottom-right" opacity="opacity-20" />
 
           {/* Upper Badge */}
-          <div className="relative z-10">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1 text-xs font-semibold text-[#D2E3D8] border border-white/20">
+          <div className="relative z-10 shrink-0">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 sm:px-3.5 py-0.5 sm:py-1 text-[11px] sm:text-xs font-semibold text-[#D2E3D8] border border-white/20">
               Anganwadi Frontline Portal
             </span>
           </div>
 
           {/* Center Message */}
-          <div className="relative z-10 space-y-4 my-auto py-8 max-w-md">
-            <h2 className="text-3xl xl:text-4xl font-extrabold text-white tracking-tight font-heading leading-tight">
+          <div className="relative z-10 space-y-3 xl:space-y-4 my-auto py-4 xl:py-6 max-w-md">
+            <h2 className="text-2xl sm:text-3xl xl:text-4xl font-extrabold text-white tracking-tight font-heading leading-tight">
               Early Steps <br />
               Brighter Futures
             </h2>
-            <p className="text-sm xl:text-base text-[#D2E3D8] leading-relaxed">
+            <p className="text-xs sm:text-sm xl:text-base text-[#D2E3D8] leading-relaxed">
               A digital companion for Anganwadi workers to track and support child development across frontline communities in India.
             </p>
           </div>
 
           {/* Action Area */}
-          <div className="relative z-10 space-y-3">
+          <div className="relative z-10 space-y-2 sm:space-y-2.5 shrink-0 pt-2">
             <button
               type="button"
               onClick={onContinue}
-              className="w-full min-h-[54px] rounded-2xl bg-white hover:bg-[#EBF2EE] text-[#1B4D3E] font-bold text-base shadow-md flex items-center justify-center gap-2.5 transition-all active:scale-[0.99] cursor-pointer"
+              className="w-full min-h-[50px] sm:min-h-[54px] rounded-2xl bg-white hover:bg-[#EBF2EE] text-[#1B4D3E] font-bold text-sm sm:text-base shadow-md flex items-center justify-center gap-2.5 transition-all active:scale-[0.99] cursor-pointer"
             >
               <span>Get Started</span>
-              <Icon name="arrowRight" className="h-5 w-5" />
+              <Icon name="arrowRight" className="h-4 w-4 sm:h-5 sm:w-5" />
             </button>
-            <p className="text-center text-xs text-[#D2E3D8]/70">
+            <p className="text-center text-[11px] sm:text-xs text-[#D2E3D8]/75">
               Sign in with your registered Anganwadi credentials
             </p>
           </div>
@@ -249,9 +249,9 @@ export default function SplashScreen({ onContinue }) {
       </div>
 
       {/* ============================================================== */}
-      {/* MOBILE VIEW (< 1024px): STRICT MATCH TO SCREEN 1 IN REFERENCE   */}
+      {/* MOBILE VIEW (< 768px): STRICT MATCH TO SCREEN 1 IN REFERENCE    */}
       {/* ============================================================== */}
-      <div className="lg:hidden flex flex-col min-h-screen bg-white relative">
+      <div className="md:hidden flex flex-col min-h-screen bg-white relative">
         {/* Subtle corner foliage */}
         <SparshBotanical variant="top-right" opacity="opacity-35" />
 
