@@ -143,7 +143,7 @@ def test_legacy_production_catalog_is_backward_compatible_and_ids_are_stable():
     assert len(dataset.items) == 155
 
 
-def test_active_final_65_is_schema_valid_versioned_and_preserves_age_semantics():
+def test_active_expanded_catalog_is_schema_valid_versioned_and_preserves_age_semantics():
     config = load_milestone_config()
     dataset = parse_milestone_content(
         json.loads(PRODUCTION_MILESTONES_PATH.read_text(encoding="utf-8"))
@@ -151,7 +151,7 @@ def test_active_final_65_is_schema_valid_versioned_and_preserves_age_semantics()
     active = milestones_by_id()
     from collections import Counter
 
-    assert config["version"] == "phase5-final-65-v2"
+    assert config["version"] == "phase5-expanded-v1"
     legacy = json.loads(
         PRODUCTION_MILESTONES_PATH.with_name("milestones_legacy_155.json").read_text(
             encoding="utf-8"
@@ -159,31 +159,35 @@ def test_active_final_65_is_schema_valid_versioned_and_preserves_age_semantics()
     )
     assert config["red_flags"] == legacy["red_flags"]
     assert dataset.version == config["version"]
-    assert len(dataset.items) == 65
+    assert len(dataset.items) == 74
     assert Counter(item.domain.value for item in dataset.items) == {
         "gross_motor": 13,
         "fine_motor": 13,
-        "language": 13,
+        "language": 14,
         "cognitive": 13,
-        "social_emotional": 13,
+        "social_emotional": 21,
     }
-    assert len({item.id for item in dataset.items}) == 65
+    assert len({item.id for item in dataset.items}) == 74
     candidate = json.loads(
         PRODUCTION_MILESTONES_PATH.with_name("milestones_final_candidate.json").read_text(
             encoding="utf-8-sig"
         )
     )
-    assert [item.id for item in dataset.items] == [item["id"] for item in candidate["items"]]
+    assert [item.id for item in dataset.items[:65]] == [item["id"] for item in candidate["items"]]
+    assert {item.id for item in dataset.items[65:]} == {
+        "la_6_02", "so_18_01", "so_24_02", "so_2_03", "so_48_01",
+        "so_4_01", "so_60_01", "so_60_02", "so_6_02",
+    }
     assert all(item.dataset_version == dataset.version for item in dataset.items)
     assert all(item.weight == 1 for item in dataset.items)
     assert Counter(item.age.type for item in dataset.items) == {
-        "checkpoint": 36,
+        "checkpoint": 45,
         "range": 3,
         "review_required": 26,
     }
     assert all(item.clinical_review_status == "pending" for item in dataset.items)
     assert all(item.wording_review_status == "pending" for item in dataset.items)
-    assert len(active) == 65
+    assert len(active) == 74
     hot_object_item = active["co_36_03"]
     assert "Never introduce a hot object" in hot_object_item["administration_note"]
 
@@ -211,7 +215,7 @@ def test_age_aware_screening_submission_shape_and_answer_validation():
                 {"milestone_id": item_id, "response": "YES"} for item_id in expected_ids
             ],
             "checkpoint_age_months": checkpoint,
-            "milestone_dataset_version": "phase5-final-65-v2",
+            "milestone_dataset_version": "phase5-expanded-v1",
             "client_submission_id": "content-schema-regression",
             "screened_at": "2026-10-04T00:00:00Z",
         }
@@ -220,12 +224,12 @@ def test_age_aware_screening_submission_shape_and_answer_validation():
     validate_checkpoint_answers(expected, [answer.milestone_id for answer in payload.answers])
     assert payload.checkpoint_age_months == 12
     assert len(expected_ids) == 5
-    assert payload.milestone_dataset_version == "phase5-final-65-v2"
+    assert payload.milestone_dataset_version == "phase5-expanded-v1"
 
 
 @pytest.mark.parametrize(
     "age,expected_checkpoint,expected_count",
-    [(0, None, 0), (2, 2, 5), (12, 12, 5), (24, 24, 2), (36, 36, 2), (60, 60, 1)],
+    [(0, None, 0), (2, 2, 6), (12, 12, 5), (24, 24, 3), (36, 36, 2), (60, 60, 3)],
 )
 def test_production_selection_matches_explicit_checkpoint_metadata(age, expected_checkpoint, expected_count):
     dataset = parse_milestone_content(
@@ -257,11 +261,34 @@ def test_who_ranges_and_review_required_items_are_never_age_cutoffs():
 
 
 def test_representative_checkpoint_distribution_is_source_derived():
-    expected_counts = {2: 5, 12: 5, 24: 2, 36: 2, 60: 1}
+    expected_counts = {2: 6, 12: 5, 24: 3, 36: 2, 60: 3}
     for age, count in expected_counts.items():
         _, selected = milestones_for_age(age)
         assert len(selected) == count
         assert all(item["age"]["type"] == "checkpoint" and item["age"]["months"] == age for item in selected)
+
+
+def test_emergency_checkpoint_coverage_and_no_unsupported_motor_activation():
+    from collections import Counter
+
+    expected = {
+        3: (2, {"gross_motor": 0, "fine_motor": 0, "language": 1, "cognitive": 2, "social_emotional": 3}, 6),
+        12: (12, {"gross_motor": 0, "fine_motor": 0, "language": 3, "cognitive": 1, "social_emotional": 1}, 5),
+        24: (24, {"gross_motor": 0, "fine_motor": 0, "language": 1, "cognitive": 0, "social_emotional": 2}, 3),
+        36: (36, {"gross_motor": 0, "fine_motor": 0, "language": 1, "cognitive": 0, "social_emotional": 1}, 2),
+        60: (60, {"gross_motor": 0, "fine_motor": 0, "language": 0, "cognitive": 1, "social_emotional": 2}, 3),
+    }
+    for age, (expected_checkpoint, expected_domains, expected_total) in expected.items():
+        checkpoint, questions = milestones_for_age(age)
+        assert checkpoint == expected_checkpoint
+        assert len({item["id"] for item in questions}) == len(questions)
+        assert all(item["age"]["type"] == "checkpoint" for item in questions)
+        assert all(item["age"]["months"] == checkpoint for item in questions)
+        assert Counter(item["domain"] for item in questions) == {
+            domain: count for domain, count in expected_domains.items() if count
+        }
+        assert len(questions) == expected_total
+        assert not any(item["domain"] in {"gross_motor", "fine_motor"} for item in questions)
 
 
 def test_age_eligibility_rejects_future_infant_and_unresolved_mismatches():

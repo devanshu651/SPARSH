@@ -24,23 +24,23 @@ class ScreeningRulesTests(unittest.TestCase):
         self.assertEqual(milestones_for_age(0), (None, []))
         self.assertGreaterEqual(age_months(date.today()), 0)
 
-    def test_active_set_has_exactly_65_questions_and_13_per_domain(self):
+    def test_active_expanded_set_has_74_unique_questions_and_retains_review_metadata(self):
         from collections import Counter
 
         catalog = load_milestone_config()["milestones"]
-        self.assertEqual(len(catalog), 65)
+        self.assertEqual(len(catalog), 74)
         self.assertEqual(
             Counter(item["domain"] for item in catalog),
             {
                 "gross_motor": 13,
                 "fine_motor": 13,
-                "language": 13,
+                "language": 14,
                 "cognitive": 13,
-                "social_emotional": 13,
+                "social_emotional": 21,
             },
         )
-        self.assertEqual(len({item["id"] for item in catalog}), 65)
-        self.assertTrue(all(item["dataset_version"] == "phase5-final-65-v2" for item in catalog))
+        self.assertEqual(len({item["id"] for item in catalog}), 74)
+        self.assertTrue(all(item["dataset_version"] == "phase5-expanded-v1" for item in catalog))
         self.assertTrue(all(item["age_metadata"] for item in catalog))
         self.assertLess(len(milestones_for_age(13)[1]), len(catalog))
 
@@ -69,7 +69,7 @@ class ScreeningRulesTests(unittest.TestCase):
              patch.object(children, "age_months", return_value=13):
             response = children.child_milestones("child-1", worker)
 
-        self.assertEqual(response["dataset_version"], "phase5-final-65-v2")
+        self.assertEqual(response["dataset_version"], "phase5-expanded-v1")
         self.assertEqual(response["current_age_months"], 13)
         self.assertEqual(response["checkpoint_age_months"], 12)
         self.assertEqual(response["question_count"], 5)
@@ -77,7 +77,7 @@ class ScreeningRulesTests(unittest.TestCase):
         self.assertEqual(response["coverage"]["shortfall"], 8)
         self.assertEqual(response["coverage"]["missing_domains"], ["fine_motor", "gross_motor"])
         self.assertEqual(len(response["milestones"]), 5)
-        self.assertEqual(response["milestones"][0]["dataset_version"], "phase5-final-65-v2")
+        self.assertEqual(response["milestones"][0]["dataset_version"], "phase5-expanded-v1")
 
     def test_submit_rejects_previous_fixed_set_version(self):
         class Snapshot:
