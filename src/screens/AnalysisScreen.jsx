@@ -52,6 +52,8 @@ export default function AnalysisScreen({ onNavigate }) {
       setScreeningResult(result)
       setPendingScreening?.(null)
       sessionStorage.removeItem('sparsh:pending-screening')
+      // Production behavior: auto-navigate to report immediately after successful submission
+      onNavigate('report')
     } catch (e) {
       if (e?.status === 409 && e?.code === 'duplicate_submission') {
         setPendingScreening?.(null)
@@ -76,11 +78,10 @@ export default function AnalysisScreen({ onNavigate }) {
     }
   }
 
+  // Auto-run on mount — matching production useEffect([], run) behavior
   useEffect(() => {
-    if (pendingScreening || sessionStorage.getItem('sparsh:pending-screening')) {
-      runAnalysis()
-    }
-  }, [pendingScreening])
+    runAnalysis()
+  }, [])
 
   // PRECONDITION: No active or past screening result and not analyzing
   if (!screeningResult && !analyzing && !error) {

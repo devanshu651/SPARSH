@@ -7,12 +7,13 @@ import { SparshBotanicalCorner } from '../components/SparshBotanical'
 import { useApp } from '../context/AppContext'
 
 export default function AVAssessmentScreen({ onNavigate }) {
-  const { currentChild, pendingScreening, setPendingScreening } = useApp()
+  const { currentChild } = useApp()
 
+  // Hearing and Vision observation state only (production contract)
+  // Speech observation is not part of the production A/V model
   const [observations, setObservations] = useState({
     hearing: null, // 'normal' | 'concern'
-    vision: null,  // 'normal' | 'concern'
-    speech: null   // 'normal' | 'concern'
+    vision: null   // 'normal' | 'concern'
   })
 
   // Audio tone generator
@@ -25,9 +26,7 @@ export default function AVAssessmentScreen({ onNavigate }) {
   const [targetPos, setTargetPos] = useState({ x: 50, y: 50 })
   const animationFrameRef = useRef(null)
 
-  // Speech observation timer
-  const [secondsRemaining, setSecondsRemaining] = useState(30)
-  const [timerRunning, setTimerRunning] = useState(false)
+
 
   const playTone = (freq) => {
     try {
@@ -96,18 +95,7 @@ export default function AVAssessmentScreen({ onNavigate }) {
     }
   }, [trackingActive])
 
-  // Speech observation countdown
-  useEffect(() => {
-    let interval = null
-    if (timerRunning && secondsRemaining > 0) {
-      interval = setInterval(() => {
-        setSecondsRemaining((s) => s - 1)
-      }, 1000)
-    } else if (secondsRemaining === 0) {
-      setTimerRunning(false)
-    }
-    return () => clearInterval(interval)
-  }, [timerRunning, secondsRemaining])
+
 
   const setFinding = (test, status) => {
     setObservations((prev) => ({ ...prev, [test]: status }))
@@ -115,36 +103,11 @@ export default function AVAssessmentScreen({ onNavigate }) {
 
   const hasConcerningObservation =
     observations.hearing === 'concern' ||
-    observations.vision === 'concern' ||
-    observations.speech === 'concern'
+    observations.vision === 'concern'
 
+  // Production behavior: navigate directly to analysis without enriching
+  // the pending screening payload (device integration is pending / non-clinical)
   const handleProceedToAnalysis = () => {
-    const avData = {
-      hearing: observations.hearing === 'normal' ? 'responded' : observations.hearing === 'concern' ? 'no_response' : 'unsure',
-      visual: observations.vision === 'normal' ? 'responded' : observations.vision === 'concern' ? 'no_response' : 'unsure',
-      speech: observations.speech,
-      observed_at: new Date().toISOString()
-    }
-
-    if (pendingScreening) {
-      setPendingScreening({
-        ...pendingScreening,
-        sensory_observations: observations,
-        av_observation: avData
-      })
-    }
-
-    // Append supplemental sensory results to stored session
-    try {
-      const raw = sessionStorage.getItem('sparsh:pending-screening')
-      if (raw) {
-        const payload = JSON.parse(raw)
-        payload.sensory_observations = observations
-        payload.av_observation = avData
-        sessionStorage.setItem('sparsh:pending-screening', JSON.stringify(payload))
-      }
-    } catch {}
-
     onNavigate('analysis')
   }
 
@@ -181,11 +144,13 @@ export default function AVAssessmentScreen({ onNavigate }) {
           </button>
         </div>
 
-        {/* Observation Aid Clinical Notice */}
+        {/* Clinical Disclaimer — device integration pending (production behavior) */}
         <div className="rounded-2xl border border-amber-200 bg-amber-50/90 p-4 text-xs leading-relaxed text-amber-950 shadow-2xs">
           <p className="font-bold text-amber-900">Screening Observation Aid — Non-Diagnostic</p>
           <p className="mt-0.5 text-amber-800">
-            Use these supplemental aids to observe immediate behavioral reflexes. Diagnostic confirmation is provided by specialist DEIC referral centres.
+            <span className="font-semibold">Device integration pending.</span>{' '}
+            Hearing and camera capture require validated native-device workflows before clinical use.
+            These controls do not generate clinical results.
           </p>
         </div>
 
@@ -297,56 +262,7 @@ export default function AVAssessmentScreen({ onNavigate }) {
           </div>
         </div>
 
-        {/* Module 3: Vocalization & Speech Sample */}
-        <div className="rounded-2xl border border-[#E5EBE7] bg-white p-5 shadow-2xs space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#FDF0EB] text-[#D96B43]">
-                <Icon name="speech" className="h-4 w-4" />
-              </span>
-              <div>
-                <h3 className="text-sm font-semibold text-[#1A201E]">Vocalization Sample</h3>
-                <p className="text-xs text-[#5A6660]">30-second observation of spontaneous speech</p>
-              </div>
-            </div>
-            {observations.speech && (
-              <BadgePill tone={observations.speech === 'normal' ? 'normal' : 'followup'}>
-                {observations.speech === 'normal' ? 'Pass' : 'Concern'}
-              </BadgePill>
-            )}
-          </div>
 
-          <div className="flex items-center justify-between rounded-xl bg-[#F9FBFA] p-3 text-xs border border-[#E5EBE7]">
-            <span className="font-semibold text-[#1A201E]">Observation Timer: {secondsRemaining}s</span>
-            <button
-              type="button"
-              onClick={() => {
-                setSecondsRemaining(30)
-                setTimerRunning(true)
-              }}
-              className="text-xs font-semibold text-[#1B4D3E]"
-            >
-              {timerRunning ? 'Running...' : 'Start 30s'}
-            </button>
-          </div>
-
-          <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#F0F4F2]">
-            <Button
-              size="sm"
-              variant={observations.speech === 'normal' ? 'primary' : 'outline'}
-              onClick={() => setFinding('speech', 'normal')}
-            >
-              Age-Appropriate
-            </Button>
-            <Button
-              size="sm"
-              variant={observations.speech === 'concern' ? 'terracotta' : 'outline'}
-              onClick={() => setFinding('speech', 'concern')}
-            >
-              Atypical / Silent
-            </Button>
-          </div>
-        </div>
 
         {/* Concerning Observation Notice */}
         {hasConcerningObservation && (
