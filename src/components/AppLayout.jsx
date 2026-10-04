@@ -37,16 +37,16 @@ export default function AppLayout({
   const centreName = currentWorker?.centre_ids?.[0] ? `Centre: ${currentWorker.centre_ids[0]}` : 'Assigned Anganwadi'
 
   return (
-    <div className="min-h-screen w-full bg-white text-[#1A201E] flex flex-col lg:flex-row">
-      {/* DESKTOP SIDEBAR — Full height, clean pure white with subtle border */}
-      <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:border-r lg:border-[#E5EBE7] lg:bg-white lg:shrink-0">
+    <div className="min-h-screen w-full bg-[#F8FAF9] text-[#1A201E] flex flex-col lg:flex-row">
+      {/* DESKTOP SIDEBAR — Full height, clean pure white with clear boundary */}
+      <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:border-r lg:border-[#D5DDD7] lg:bg-white lg:shrink-0">
         {/* Brand Header */}
-        <div className="flex h-16 items-center justify-between border-b border-[#E5EBE7] px-5">
+        <div className="flex h-16 items-center justify-between border-b border-[#D5DDD7] px-5">
           <BrandLogo className="h-8 w-8" showWordmark />
         </div>
 
         {/* Worker Badge */}
-        <div className="border-b border-[#F3F6F4] bg-[#FAFCFA] p-4">
+        <div className="border-b border-[#EBF0EC] bg-[#F8FAF9] p-4">
           <div className="flex items-center gap-3">
             <div className="grid h-10 w-10 place-items-center rounded-full bg-[#FDF0EB] text-xs font-bold text-[#C85A32] border border-[#F7D4C8] shadow-xs">
               {workerInitials}
@@ -73,7 +73,7 @@ export default function AppLayout({
                 className={`flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-xs font-bold transition-all ${
                   isActive
                     ? 'bg-[#EBF2EE] text-[#1B4D3E]'
-                    : 'text-[#5A6660] hover:bg-[#F5F8F6] hover:text-[#1A201E]'
+                    : 'text-[#5A6660] hover:bg-[#F2F6F3] hover:text-[#1A201E]'
                 }`}
               >
                 <Icon
@@ -87,16 +87,16 @@ export default function AppLayout({
         </nav>
 
         {/* Footer Info */}
-        <div className="border-t border-[#E5EBE7] p-4 text-[11px] text-[#8E9C95]">
+        <div className="border-t border-[#D5DDD7] p-4 text-[11px] text-[#8E9C95]">
           <p className="font-bold text-[#5A6660]">SPARSH v1.2</p>
           <p className="mt-0.5">Developmental Screening &amp; Follow-up Support</p>
         </div>
       </aside>
 
-      {/* MAIN VIEWPORT — Expands to fill available viewport */}
-      <div className="flex flex-1 flex-col min-w-0 pb-20 lg:pb-0 bg-white">
+      {/* MAIN VIEWPORT — Subtle neutral background canvas for clear card separation */}
+      <div className="flex flex-1 flex-col min-w-0 pb-20 lg:pb-0 bg-[#F8FAF9]">
         {/* TOP MOBILE BAR (<= 1023px) */}
-        <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-[#E5EBE7] bg-white/95 px-4 backdrop-blur lg:hidden">
+        <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-[#D5DDD7] bg-white/95 px-4 backdrop-blur lg:hidden">
           <div className="flex items-center gap-2.5 min-w-0">
             {backTo ? (
               <button
@@ -145,14 +145,14 @@ export default function AppLayout({
 
         {/* DESKTOP PAGE TITLE BAR (>= 1024px) */}
         {(title || actions || backTo) && (
-          <div className="hidden border-b border-[#E5EBE7] bg-white px-8 py-4 lg:block">
+          <div className="hidden border-b border-[#D5DDD7] bg-white px-8 py-4 lg:block">
             <div className="mx-auto flex max-w-7xl items-center justify-between">
               <div className="flex items-center gap-3">
                 {backTo && (
                   <button
                     type="button"
                     onClick={() => onNavigate?.(backTo)}
-                    className="grid h-8 w-8 place-items-center rounded-xl border border-[#E5EBE7] text-[#5A6660] hover:bg-[#F5F8F6] hover:text-[#1A201E]"
+                    className="grid h-8 w-8 place-items-center rounded-xl border border-[#D5DDD7] text-[#5A6660] hover:bg-[#F5F8F6] hover:text-[#1A201E]"
                     aria-label="Back"
                   >
                     <Icon name="arrowLeft" className="h-4 w-4" />

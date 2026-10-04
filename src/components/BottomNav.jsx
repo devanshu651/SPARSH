@@ -151,7 +151,7 @@ export default function BottomNav({ active = 'dashboard', onChange }) {
       {/* Main 5-tab bar matching the reference image */}
       <nav
         aria-label="Mobile Navigation"
-        className="flex h-16 items-center justify-around border-t border-[#E5EBE7] bg-white px-2 safe-bottom shadow-[0_-2px_10px_rgba(26,32,30,0.03)]"
+        className="flex h-16 items-center justify-around border-t border-[#D5DDD7] bg-white px-2 safe-bottom shadow-[0_-2px_10px_rgba(26,32,30,0.03)]"
       >
         {mainItems.map((item) => {
           let isActive = false

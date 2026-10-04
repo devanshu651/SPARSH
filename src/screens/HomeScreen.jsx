@@ -161,7 +161,7 @@ export default function HomeScreen({ onNavigate }) {
           {/* ============================================================== */}
           {/* 1. GREETING HERO CARD (LEFT: TEXT, RIGHT: INTEGRATED WORKER VISUAL) */}
           {/* ============================================================== */}
-          <section className="relative overflow-hidden rounded-2xl bg-white border border-[#E5EBE7] p-5 sm:p-6 shadow-2xs">
+          <section className="relative overflow-hidden rounded-2xl bg-white border border-[#D5DDD7] p-5 sm:p-6 shadow-[0_1px_3px_0_rgba(20,38,30,0.06),0_1px_2px_-1px_rgba(20,38,30,0.04)]">
             <div className="flex items-center justify-between gap-4 relative z-10">
               {/* Left: Greeting Text */}
               <div className="space-y-1 max-w-md">
@@ -192,7 +192,7 @@ export default function HomeScreen({ onNavigate }) {
             {/* Card 1: Start Screening (Solid Dark Forest Green) */}
             <div
               onClick={() => onNavigate?.('screening')}
-              className="group cursor-pointer rounded-2xl bg-[#1B4D3E] text-white p-5 shadow-2xs hover:bg-[#143D31] transition-all flex flex-col justify-between min-h-[135px]"
+              className="group cursor-pointer rounded-2xl bg-[#1B4D3E] border border-[#164134] text-white p-5 shadow-[0_2px_5px_0_rgba(20,38,30,0.15),0_1px_2px_0_rgba(20,38,30,0.10)] hover:bg-[#143D31] hover:border-[#0F2D24] transition-all flex flex-col justify-between min-h-[135px]"
             >
               <div className="flex items-center justify-between">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 text-white">
@@ -216,7 +216,7 @@ export default function HomeScreen({ onNavigate }) {
             {/* Card 2: Register Child (White with Warm Terracotta Accent) */}
             <div
               onClick={() => onNavigate?.('register')}
-              className="group cursor-pointer rounded-2xl bg-white border border-[#E5EBE7] text-[#1A201E] p-5 shadow-2xs hover:border-[#CBD5D0] hover:bg-[#F9FBFA] transition-all flex flex-col justify-between min-h-[135px]"
+              className="group cursor-pointer rounded-2xl bg-white border border-[#D5DDD7] text-[#1A201E] p-5 shadow-[0_1px_3px_0_rgba(20,38,30,0.06),0_1px_2px_-1px_rgba(20,38,30,0.04)] hover:border-[#B2C2B8] hover:bg-[#F9FBFA] transition-all flex flex-col justify-between min-h-[135px]"
             >
               <div className="flex items-center justify-between">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FDF0EB] text-[#D96B43]">
@@ -240,7 +240,7 @@ export default function HomeScreen({ onNavigate }) {
             {/* Card 3: View Children (White with Muted Sage Accent) */}
             <div
               onClick={() => onNavigate?.('children')}
-              className={`group cursor-pointer rounded-2xl bg-white border border-[#E5EBE7] text-[#1A201E] p-5 shadow-2xs hover:border-[#CBD5D0] hover:bg-[#F9FBFA] transition-all flex flex-col justify-between min-h-[135px] ${!isAdmin ? 'sm:col-span-2 lg:col-span-1' : ''}`}
+              className={`group cursor-pointer rounded-2xl bg-white border border-[#D5DDD7] text-[#1A201E] p-5 shadow-[0_1px_3px_0_rgba(20,38,30,0.06),0_1px_2px_-1px_rgba(20,38,30,0.04)] hover:border-[#B2C2B8] hover:bg-[#F9FBFA] transition-all flex flex-col justify-between min-h-[135px] ${!isAdmin ? 'sm:col-span-2 lg:col-span-1' : ''}`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#EBF2EE] text-[#1B4D3E]">
@@ -265,7 +265,7 @@ export default function HomeScreen({ onNavigate }) {
             {isAdmin && (
               <div
                 onClick={() => onNavigate?.('admin-console')}
-                className="group cursor-pointer rounded-2xl bg-white border border-[#E5EBE7] text-[#1A201E] p-5 shadow-2xs hover:border-[#CBD5D0] hover:bg-[#F9FBFA] transition-all flex flex-col justify-between min-h-[135px]"
+                className="group cursor-pointer rounded-2xl bg-white border border-[#D5DDD7] text-[#1A201E] p-5 shadow-[0_1px_3px_0_rgba(20,38,30,0.06),0_1px_2px_-1px_rgba(20,38,30,0.04)] hover:border-[#B2C2B8] hover:bg-[#F9FBFA] transition-all flex flex-col justify-between min-h-[135px]"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#F5F8F6] text-[#1B4D3E]">
@@ -291,7 +291,7 @@ export default function HomeScreen({ onNavigate }) {
           {/* ============================================================== */}
           {/* 3. COHORT PROGRESS / SURVEILLANCE METRICS STRIP               */}
           {/* ============================================================== */}
-          <section className="rounded-2xl border border-[#E5EBE7] bg-white p-4 sm:p-5 shadow-2xs space-y-3">
+          <section className="rounded-2xl border border-[#D5DDD7] bg-white p-4 sm:p-5 shadow-[0_1px_3px_0_rgba(20,38,30,0.06),0_1px_2px_-1px_rgba(20,38,30,0.04)] space-y-3.5">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-xs font-bold uppercase tracking-wider text-[#5A6660]">
@@ -311,30 +311,32 @@ export default function HomeScreen({ onNavigate }) {
             </div>
 
             {/* Progress bar */}
-            <div className="h-2 w-full overflow-hidden rounded-full bg-[#E5EBE7]">
+            <div className="h-2 w-full overflow-hidden rounded-full bg-[#EBF0EC]">
               <div
                 className="h-full rounded-full bg-[#1B4D3E] transition-all duration-300"
                 style={{ width: `${completionRate}%` }}
               />
             </div>
 
-            {/* 4 Clean Metric Badges */}
-            <div className="grid grid-cols-4 gap-2 pt-1 text-center">
-              <div className="rounded-xl border border-[#E5EBE7] bg-[#F9FBFA] py-2 px-1">
-                <span className="text-[10px] font-bold uppercase text-[#5A6660]">Total</span>
-                <p className="text-base font-bold text-[#1A201E] leading-tight mt-0.5">{childrenList.length}</p>
-              </div>
-              <div className="rounded-xl border border-[#C6E7D5] bg-[#E8F5EE] py-2 px-1">
-                <span className="text-[10px] font-bold uppercase text-[#2D7A58]">Normal</span>
-                <p className="text-base font-bold text-[#2D7A58] leading-tight mt-0.5">{onTrackCount}</p>
-              </div>
-              <div className="rounded-xl border border-[#F7D4C8] bg-[#FDF0EB] py-2 px-1">
-                <span className="text-[10px] font-bold uppercase text-[#D96B43]">Follow Up</span>
-                <p className="text-base font-bold text-[#D96B43] leading-tight mt-0.5">{moderateCount}</p>
-              </div>
-              <div className="rounded-xl border border-[#F8C4C4] bg-[#FDE8E8] py-2 px-1">
-                <span className="text-[10px] font-bold uppercase text-[#D32F2F]">At Risk</span>
-                <p className="text-base font-bold text-[#D32F2F] leading-tight mt-0.5">{atRiskCount}</p>
+            {/* 4 Clean Metric Badges with subtle divider and clearer boundaries */}
+            <div className="pt-2 border-t border-[#EBF0EC]">
+              <div className="grid grid-cols-4 gap-2 text-center">
+                <div className="rounded-xl border border-[#D2DDD6] bg-[#F4F8F5] py-2 px-1 shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
+                  <span className="text-[10px] font-bold uppercase text-[#5A6660]">Total</span>
+                  <p className="text-base font-bold text-[#1A201E] leading-tight mt-0.5">{childrenList.length}</p>
+                </div>
+                <div className="rounded-xl border border-[#B4DEC7] bg-[#EAF6EF] py-2 px-1 shadow-[0_1px_2px_rgba(45,122,88,0.05)]">
+                  <span className="text-[10px] font-bold uppercase text-[#2D7A58]">Normal</span>
+                  <p className="text-base font-bold text-[#2D7A58] leading-tight mt-0.5">{onTrackCount}</p>
+                </div>
+                <div className="rounded-xl border border-[#F2C5B5] bg-[#FDF3EE] py-2 px-1 shadow-[0_1px_2px_rgba(217,107,67,0.05)]">
+                  <span className="text-[10px] font-bold uppercase text-[#D96B43]">Follow Up</span>
+                  <p className="text-base font-bold text-[#D96B43] leading-tight mt-0.5">{moderateCount}</p>
+                </div>
+                <div className="rounded-xl border border-[#F4B4B4] bg-[#FDEAEA] py-2 px-1 shadow-[0_1px_2px_rgba(211,47,47,0.05)]">
+                  <span className="text-[10px] font-bold uppercase text-[#D32F2F]">At Risk</span>
+                  <p className="text-base font-bold text-[#D32F2F] leading-tight mt-0.5">{atRiskCount}</p>
+                </div>
               </div>
             </div>
           </section>
@@ -358,8 +360,8 @@ export default function HomeScreen({ onNavigate }) {
 
             {/* Empty state when no activity */}
             {childrenList.length === 0 ? (
-              <div className="rounded-2xl border border-[#E5EBE7] bg-white p-6 text-center shadow-2xs space-y-2">
-                <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl bg-[#F5F8F6] text-[#8E9C95]">
+              <div className="rounded-2xl border border-[#D5DDD7] bg-white p-6 text-center shadow-[0_1px_3px_0_rgba(20,38,30,0.06),0_1px_2px_-1px_rgba(20,38,30,0.04)] space-y-2">
+                <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl bg-[#F2F6F3] text-[#729082]">
                   <Icon name="report" className="h-5 w-5" />
                 </div>
                 <h3 className="text-sm font-semibold text-[#1A201E]">
@@ -376,7 +378,7 @@ export default function HomeScreen({ onNavigate }) {
                 </div>
               </div>
             ) : (
-              <div className="rounded-2xl border border-[#E5EBE7] bg-white divide-y divide-[#F0F4F2] shadow-2xs overflow-hidden">
+              <div className="rounded-2xl border border-[#D5DDD7] bg-white divide-y divide-[#EBF0EC] shadow-[0_1px_3px_0_rgba(20,38,30,0.06),0_1px_2px_-1px_rgba(20,38,30,0.04)] overflow-hidden">
                 {recentActivity.map((child) => {
                   const tone =
                     child.latest_risk === 'RED'
@@ -404,7 +406,7 @@ export default function HomeScreen({ onNavigate }) {
                     <div
                       key={child.id}
                       onClick={() => handleSelectChild(child)}
-                      className="p-3.5 flex items-center justify-between gap-3 hover:bg-[#F9FBFA] cursor-pointer transition-colors"
+                      className="p-3.5 flex items-center justify-between gap-3 hover:bg-[#F6FAF7] cursor-pointer transition-colors"
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#FDF0EB] text-[#D96B43] font-bold text-xs">
