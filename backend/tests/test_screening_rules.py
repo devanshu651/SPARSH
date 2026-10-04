@@ -73,6 +73,9 @@ class ScreeningRulesTests(unittest.TestCase):
         self.assertEqual(response["current_age_months"], 13)
         self.assertEqual(response["checkpoint_age_months"], 12)
         self.assertEqual(response["question_count"], 5)
+        self.assertEqual(response["coverage"]["target_question_count"], 13)
+        self.assertEqual(response["coverage"]["shortfall"], 8)
+        self.assertEqual(response["coverage"]["missing_domains"], ["fine_motor", "gross_motor"])
         self.assertEqual(len(response["milestones"]), 5)
         self.assertEqual(response["milestones"][0]["dataset_version"], "phase5-final-65-v2")
 

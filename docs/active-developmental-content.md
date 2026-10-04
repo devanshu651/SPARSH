@@ -44,6 +44,12 @@ The backend chooses the greatest checkpoint not greater than the child's complet
 
 The distribution follows the 36 checkpoint-supported items in the candidate. It is uneven: the currently checkpoint-selectable content has no Gross Motor or Fine Motor questions because those domain items have AAP mean or WHO range age evidence, and no checkpoint policy was approved for them. The full 65-item catalog remains intact.
 
+## Strict age eligibility and coverage disclosure
+
+The selector classifies catalog records before returning them. A checkpoint record is eligible only when its source reference is reviewed and its checkpoint equals the configured lower checkpoint selected for the child's completed age. It is not carried forward as a permanent minimum-age rule. A range record is eligible only when its age basis explicitly approves screening applicability and it has a reviewed source reference. The three current WHO records describe attainment windows only, so they remain ineligible for screening selection. `review_required` records and content explicitly held/rejected by review remain excluded.
+
+When valid items are fewer than the product target of 13, the selector returns the full supported set without padding. `GET /api/v1/children/{child_id}/milestones` exposes `coverage.target_question_count`, `coverage.shortfall`, and `coverage.missing_domains`; the screening page displays that gap. Based on the current checkpoint table, shortfalls are 8, 11, 6, 9, 8, 11, 10, 11, 11, 10, and 12 questions respectively for 2, 4, 6, 9, 12, 15, 18, 24, 36, 48, and 60 months. The 13-question target is not a reason to assign an unsupported age or include an unresolved item.
+
 ## Scoring compatibility
 
 Candidate records did not define numeric weights. To keep the production scoring engine operational without changing its rules, all 65 records use the existing catalog's unit weight of 1. YES contributes 0, NO contributes 1, and UNSURE contributes 0.5. The existing domain-watch weight (2), YELLOW threshold (3), RED threshold (6), recommendations, and red-flag handling are unchanged.

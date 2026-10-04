@@ -5,7 +5,9 @@ from pydantic import ValidationError
 from app.models.milestone_content import MilestoneContentDataset, MilestoneContentItem
 from app.models.screening import ScreeningSubmit
 from app.services.milestone_content_service import (
+    QuestionEligibility,
     checkpoint_items_for_age,
+    is_question_applicable,
     parse_milestone_content,
 )
 from app.services.milestone_service import (
@@ -25,7 +27,9 @@ def _item(item_id, age, **extra):
         "age": age,
         "weight": None,
         "red_flag": False,
-        "source_references": [],
+        "source_references": [
+            {"organization": "CDC", "evidence_status": "reviewed"}
+        ],
         **extra,
     }
 
@@ -258,3 +262,39 @@ def test_representative_checkpoint_distribution_is_source_derived():
         _, selected = milestones_for_age(age)
         assert len(selected) == count
         assert all(item["age"]["type"] == "checkpoint" and item["age"]["months"] == age for item in selected)
+
+
+def test_age_eligibility_rejects_future_infant_and_unresolved_mismatches():
+    dataset = parse_milestone_content(
+        json.loads(PRODUCTION_MILESTONES_PATH.read_text(encoding="utf-8"))
+    )
+    by_id = {item.id: item for item in dataset.items}
+
+    # A 3-month-old follows the configured 2-month checkpoint until the next
+    # supported checkpoint; later toddler/school-age milestones cannot leak in.
+    checkpoint, infant_selection = checkpoint_items_for_age(dataset, 3)
+    assert checkpoint == 2
+    assert infant_selection
+    assert all(
+        is_question_applicable(item, 3, checkpoint) == QuestionEligibility.APPLICABLE_NOW
+        for item in infant_selection
+    )
+    assert is_question_applicable(by_id["gm_aap13_24_jump"], 3, checkpoint) == QuestionEligibility.UNRESOLVED
+    assert is_question_applicable(by_id["la_4_02"], 3, checkpoint) == QuestionEligibility.APPLICABLE_AT_ANOTHER_AGE
+
+    # WHO attainment bounds and AAP mean ages are not screening applicability.
+    assert is_question_applicable(by_id["gm_aap13_06_sit_unsupported"], 6, 6) == QuestionEligibility.UNSUPPORTED
+    assert is_question_applicable(by_id["gm_aap13_02_head_lift"], 60, 60) == QuestionEligibility.UNRESOLVED
+    assert is_question_applicable(by_id["co_36_03"], 36, 36) == QuestionEligibility.UNRESOLVED
+
+    # Selection is checkpoint-local: no infant checkpoint item persists as an
+    # older child's primary screening question set.
+    for age in (12, 24, 36, 60):
+        selected_checkpoint, selected = checkpoint_items_for_age(dataset, age)
+        assert selected
+        assert all(
+            is_question_applicable(item, age, selected_checkpoint)
+            in {QuestionEligibility.APPLICABLE_NOW, QuestionEligibility.RANGE_APPLICABLE}
+            for item in selected
+        )
+        assert all(item.age.type == "checkpoint" and item.age.months == selected_checkpoint for item in selected)

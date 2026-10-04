@@ -8,6 +8,7 @@ from app.core.audit import audit_log
 from app.core.security import ensure_centre_access, require_roles
 from app.models.auth import CurrentUser, Role
 from app.models.child import ChildCreate, ChildResponse, HealthDataCreate, HealthDataResponse
+from app.models.screening import Domain
 from app.routers.centres import centre_from_snapshot
 from app.services.milestone_service import load_milestone_config, milestones_for_age
 
@@ -82,11 +83,19 @@ def child_milestones(child_id: str, user: CurrentUser = Depends(require_roles(Ro
     ensure_centre_access(user, child["centre_id"])
     current_age = age_months(child["date_of_birth"])
     checkpoint, milestones = milestones_for_age(current_age)
+    assessed_domains = {item["domain"] for item in milestones}
+    all_domains = {domain.value for domain in Domain}
+    question_target = 13
     return {
         "dataset_version": load_milestone_config()["version"],
         "current_age_months": current_age,
         "checkpoint_age_months": checkpoint,
         "question_count": len(milestones),
+        "coverage": {
+            "target_question_count": question_target,
+            "shortfall": max(0, question_target - len(milestones)),
+            "missing_domains": sorted(all_domains - assessed_domains),
+        },
         "milestones": milestones,
     }
 

@@ -560,6 +560,20 @@ export default function ScreeningScreen({ onNavigate }) {
           </div>
         </div>
 
+        {data.coverage?.shortfall > 0 && (
+          <div role="status" aria-live="polite" className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
+            <p className="font-semibold">
+              Age-supported coverage: {totalMilestones} of {data.coverage.target_question_count} target questions.
+              {' '}{data.coverage.shortfall} slots lack source-supported, age-applicable questions.
+            </p>
+            {data.coverage.missing_domains?.length > 0 && (
+              <p className="mt-1">
+                Domains not assessed: {data.coverage.missing_domains.map((key) => domainLabels[key] || key).join(', ')}.
+              </p>
+            )}
+          </div>
+        )}
+
         {error && (
           <div className="rounded-lg bg-amber-50 p-3 text-xs text-amber-900 border border-amber-200 flex items-center gap-2">
             <Icon name="alertTriangle" className="h-4 w-4 text-amber-700" />
