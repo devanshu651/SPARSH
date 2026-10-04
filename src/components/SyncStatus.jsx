@@ -4,18 +4,17 @@ import Icon from './Icon'
 
 export default function SyncStatus({ compact = true, className = '' }) {
   const [online, setOnline] = useState(navigator.onLine)
-  const [queueCount, setQueueCount] = useState(() => queuedScreenings().length)
+  const [queueCount, setQueueCount] = useState(0)
 
   useEffect(() => {
-    const update = () => {
+    const update = async () => {
       setOnline(navigator.onLine)
-      setQueueCount(queuedScreenings().length)
+      try { setQueueCount((await queuedScreenings()).length) } catch { setQueueCount(0) }
     }
-
     window.addEventListener('online', update)
     window.addEventListener('offline', update)
     const interval = setInterval(update, 5000)
-
+    update()
     return () => {
       window.removeEventListener('online', update)
       window.removeEventListener('offline', update)
@@ -36,7 +35,7 @@ export default function SyncStatus({ compact = true, className = '' }) {
     return (
       <div className={`inline-flex items-center gap-1.5 rounded-full border border-[#D5E3DB] bg-[#EBF2EE] px-2.5 py-0.5 text-xs font-medium text-[#1B4D3E] ${className}`}>
         <Icon name="refresh" className="h-3 w-3 animate-spin text-[#1B4D3E]" />
-        <span>Syncing {queueCount}</span>
+        <span>Waiting to sync ({queueCount})</span>
       </div>
     )
   }

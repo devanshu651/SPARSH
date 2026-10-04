@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     firebase_project_id: str | None = None
     firebase_service_account_path: str | None = None
     cors_origins_raw: str = Field(
-        default="http://localhost:5173", validation_alias="CORS_ORIGINS"
+        default="", validation_alias="CORS_ORIGINS"
     )
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")

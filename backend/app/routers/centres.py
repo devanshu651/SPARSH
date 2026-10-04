@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, status
 from firebase_admin import firestore
 
+from app.core.audit import audit_log
 from app.core.firebase import get_firestore_client
 from app.core.security import ensure_centre_access, get_current_user, require_roles
 from app.models.auth import CurrentUser, Role
@@ -51,6 +52,7 @@ def create_centre(payload: CentreCreate, user: CurrentUser = Depends(require_rol
         "created_by": user.uid,
     }
     centre_id = _create_centre_in_transaction(get_firestore_client(), data)
+    audit_log(user.uid, "centre_created", centre_id, centre_id)
     return CentreResponse(id=centre_id, **data)
 
 
@@ -76,4 +78,5 @@ def update_centre(centre_id: str, payload: CentreUpdate, user: CurrentUser = Dep
     centre_from_snapshot(db.collection("centres").document(centre_id).get())
     updates = payload.model_dump(exclude_unset=True)
     db.collection("centres").document(centre_id).update(updates)
+    audit_log(user.uid, "centre_updated", centre_id, centre_id)
     return CentreResponse(**centre_from_snapshot(db.collection("centres").document(centre_id).get()))

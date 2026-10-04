@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useApp } from '../context/AppContext'
 import { authService } from '../services/auth'
-import { stopDemoMode } from '../services/demo'
 import { syncQueuedScreenings } from '../services/offline'
 import { screeningsApi } from '../services/api'
 import AppLayout from '../components/AppLayout'
@@ -10,14 +9,15 @@ import Icon from '../components/Icon'
 import { SparshBotanicalCorner } from '../components/SparshBotanical'
 
 export default function SettingsScreen({ onNavigate }) {
-  const { i18n } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { currentWorker, setCurrentWorker } = useApp()
   const [syncing, setSyncing] = useState(false)
   const [syncMsg, setSyncMsg] = useState('')
 
   const handleSignOut = async () => {
-    stopDemoMode()
-    await authService.signOut()
+    try {
+      await authService.signOut()
+    } catch {}
     setCurrentWorker(null)
     onNavigate('login')
   }
@@ -40,6 +40,10 @@ export default function SettingsScreen({ onNavigate }) {
       setTimeout(() => setSyncMsg(''), 3000)
     }
   }
+
+  const workerName = currentWorker?.name || currentWorker?.uid || 'Authenticated worker'
+  const workerRole = currentWorker?.role ? currentWorker.role.toUpperCase() : 'WORKER'
+  const centreId = currentWorker?.centre_ids?.[0] || 'No centre assigned'
 
   return (
     <AppLayout
@@ -65,9 +69,9 @@ export default function SettingsScreen({ onNavigate }) {
                   <Icon name="user" className="h-4 w-4" />
                 </span>
                 <div>
-                  <h4 className="text-sm font-semibold text-[#1A201E]">Profile</h4>
+                  <h4 className="text-sm font-semibold text-[#1A201E]">{workerName}</h4>
                   <p className="text-xs text-[#5A6660]">
-                    {currentWorker?.name || 'Anita'} · {currentWorker?.role || 'Anganwadi Worker'}
+                    Role: {workerRole} · {centreId}
                   </p>
                 </div>
               </div>
@@ -82,7 +86,7 @@ export default function SettingsScreen({ onNavigate }) {
                 </span>
                 <div>
                   <h4 className="text-sm font-semibold text-[#1A201E]">Change Password</h4>
-                  <p className="text-xs text-[#5A6660]">Update your password</p>
+                  <p className="text-xs text-[#5A6660]">Update your account credentials</p>
                 </div>
               </div>
               <span className="text-sm font-bold text-[#8E9C95]">›</span>
@@ -128,7 +132,7 @@ export default function SettingsScreen({ onNavigate }) {
                 </span>
                 <div>
                   <h4 className="text-sm font-semibold text-[#1A201E]">Notifications</h4>
-                  <p className="text-xs text-[#5A6660]">Manage your preferences</p>
+                  <p className="text-xs text-[#5A6660]">Manage alert preferences</p>
                 </div>
               </div>
               <span className="text-sm font-bold text-[#8E9C95]">›</span>
@@ -144,9 +148,9 @@ export default function SettingsScreen({ onNavigate }) {
                   <Icon name="refresh" className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
                 </span>
                 <div>
-                  <h4 className="text-sm font-semibold text-[#1A201E]">Sync Data</h4>
+                  <h4 className="text-sm font-semibold text-[#1A201E]">Sync Offline Data</h4>
                   <p className="text-xs text-[#5A6660]">
-                    {syncMsg || 'Sync with server'}
+                    {syncMsg || 'Synchronize cached screenings with server'}
                   </p>
                 </div>
               </div>
@@ -158,7 +162,7 @@ export default function SettingsScreen({ onNavigate }) {
         {/* Section 3: About (Matches Screen 12) */}
         <div className="space-y-2.5">
           <h3 className="text-xs font-bold uppercase tracking-wider text-[#5A6660] px-1">
-            About
+            About & Security
           </h3>
           <div className="rounded-2xl border border-[#E5EBE7] bg-white divide-y divide-[#F0F4F2] shadow-2xs overflow-hidden">
             {/* About SPARSH */}
@@ -169,7 +173,7 @@ export default function SettingsScreen({ onNavigate }) {
                 </span>
                 <div>
                   <h4 className="text-sm font-semibold text-[#1A201E]">About SPARSH</h4>
-                  <p className="text-xs text-[#5A6660]">Version 1.0.0</p>
+                  <p className="text-xs text-[#5A6660]">Authenticated screening & follow-up</p>
                 </div>
               </div>
               <span className="text-sm font-bold text-[#8E9C95]">›</span>
@@ -186,7 +190,7 @@ export default function SettingsScreen({ onNavigate }) {
                 </span>
                 <div>
                   <h4 className="text-sm font-semibold text-[#D96B43]">Logout</h4>
-                  <p className="text-xs text-[#5A6660]">Sign out of your account</p>
+                  <p className="text-xs text-[#5A6660]">Sign out of active session</p>
                 </div>
               </div>
               <span className="text-sm font-bold text-[#D96B43]">›</span>

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { childrenApi, referralsApi } from '../services/api'
-import { ErrorState, LoadingState, EmptyState } from '../components/AsyncState'
+import { childrenApi } from '../services/api'
+import { ErrorState, LoadingState } from '../components/AsyncState'
 import AppLayout from '../components/AppLayout'
 import Button from '../components/Button'
 import BadgePill from '../components/BadgePill'
@@ -17,21 +17,7 @@ export default function HistoryScreen({ onNavigate }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  // Vitals entry modal state
-  const [showVitalsModal, setShowVitalsModal] = useState(false)
-  const [vitalsChild, setVitalsChild] = useState(null)
-  const [vitalsForm, setVitalsForm] = useState({
-    weight_kg: '',
-    height_cm: '',
-    muac_mm: '',
-    head_circumference_cm: '',
-    notes: '',
-    measured_on: new Date().toISOString().split('T')[0]
-  })
-  const [savingVitals, setSavingVitals] = useState(false)
-  const [vitalsSuccess, setVitalsSuccess] = useState('')
-
-  // Load cohort and all past screenings
+  // Load cohort and past screenings
   const loadData = async () => {
     setLoading(true)
     setError(null)
@@ -41,7 +27,7 @@ export default function HistoryScreen({ onNavigate }) {
       const childList = Array.isArray(rawChildren) ? rawChildren : []
       setChildren(childList)
 
-      // Fetch history for each child to build the unified screening history list
+      // Fetch history for children to build the screening history list
       const allScreenings = []
       await Promise.all(
         childList.map(async (c) => {
@@ -59,7 +45,8 @@ export default function HistoryScreen({ onNavigate }) {
                   screeningId: s.screening_id,
                   screenedAt: s.screened_at,
                   riskLevel: s.risk_level || c.latest_risk || 'GREEN',
-                  totalMissed: s.total_missed_weight || 0,
+                  domainScores: s.domain_scores || {},
+                  recommendation: s.recommendation,
                   status: 'Completed'
                 })
               })
@@ -72,8 +59,6 @@ export default function HistoryScreen({ onNavigate }) {
 
       // Sort by screenedAt descending
       allScreenings.sort((a, b) => new Date(b.screenedAt || 0) - new Date(a.screenedAt || 0))
-
-      // If no screenings found in real data, keep list empty or populate if children exist
       setScreeningsList(allScreenings)
     } catch (e) {
       setError(e)
@@ -120,46 +105,10 @@ export default function HistoryScreen({ onNavigate }) {
       child_id: item.childId,
       risk_level: item.riskLevel,
       screened_at: item.screenedAt,
-      recommendation: item.riskLevel === 'GREEN' ? 'Continue routine age-appropriate stimulation.' : 'Referral follow-up recommended.',
-      domain_scores: {
-        gross_motor: { missed_count: item.riskLevel === 'RED' ? 1 : 0 },
-        fine_motor: { missed_count: 0 },
-        language: { missed_count: item.riskLevel === 'YELLOW' ? 1 : 0 },
-        social_emotional: { missed_count: 0 },
-        cognitive: { missed_count: 0 }
-      }
+      recommendation: item.recommendation || (item.riskLevel === 'GREEN' ? 'Routine development. Continue age-appropriate activities.' : 'Clinical review and referral follow-up recommended.'),
+      domain_scores: item.domainScores
     })
     onNavigate?.('report')
-  }
-
-  const handleSaveVitals = async (e) => {
-    e.preventDefault()
-    if (!vitalsChild) return
-    setSavingVitals(true)
-    try {
-      const payload = {
-        measured_on: vitalsForm.measured_on ? new Date(vitalsForm.measured_on).toISOString() : new Date().toISOString(),
-        weight_kg: vitalsForm.weight_kg ? parseFloat(vitalsForm.weight_kg) : null,
-        height_cm: vitalsForm.height_cm ? parseFloat(vitalsForm.height_cm) : null,
-        muac_mm: vitalsForm.muac_mm ? parseFloat(vitalsForm.muac_mm) : null,
-        head_circumference_cm: vitalsForm.head_circumference_cm ? parseFloat(vitalsForm.head_circumference_cm) : null,
-        notes: vitalsForm.notes || null
-      }
-      const hdCall = childrenApi.healthData(vitalsChild.id, payload)
-      if (typeof hdCall === 'function') await hdCall(vitalsChild.id, payload)
-      else await hdCall
-
-      setVitalsSuccess('Checkup recorded successfully!')
-      setTimeout(() => {
-        setShowVitalsModal(false)
-        setVitalsSuccess('')
-      }, 1000)
-    } catch {
-      // Ignore in demo/fallback
-      setShowVitalsModal(false)
-    } finally {
-      setSavingVitals(false)
-    }
   }
 
   return (
@@ -203,8 +152,8 @@ export default function HistoryScreen({ onNavigate }) {
             >
               <option value="all">All Status</option>
               <option value="completed">Completed</option>
-              <option value="followup">Follow Up</option>
-              <option value="risk">At Risk</option>
+              <option value="followup">Review Needed (Yellow)</option>
+              <option value="risk">High Risk (Red)</option>
             </select>
             <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#5A6660]">
               ⌄
@@ -215,6 +164,8 @@ export default function HistoryScreen({ onNavigate }) {
         {/* Screening List (Matches Screen 10) */}
         {loading ? (
           <LoadingState label="Loading screening history..." />
+        ) : error ? (
+          <ErrorState error={error} onRetry={loadData} />
         ) : filteredScreenings.length === 0 ? (
           <div className="rounded-2xl border border-[#E5EBE7] bg-white p-8 text-center shadow-xs">
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EBF2EE] text-[#1B4D3E] mb-3">
@@ -238,7 +189,21 @@ export default function HistoryScreen({ onNavigate }) {
             {filteredScreenings.map((item) => {
               const formattedDate = item.screenedAt
                 ? new Date(item.screenedAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
-                : '12 Apr 2024'
+                : 'Recent'
+
+              const riskTone =
+                item.riskLevel === 'RED'
+                  ? 'risk'
+                  : item.riskLevel === 'YELLOW'
+                  ? 'followup'
+                  : 'normal'
+
+              const riskLabel =
+                item.riskLevel === 'RED'
+                  ? 'High Risk'
+                  : item.riskLevel === 'YELLOW'
+                  ? 'Review Needed'
+                  : 'On Track'
 
               return (
                 <div
@@ -252,13 +217,15 @@ export default function HistoryScreen({ onNavigate }) {
                     </div>
                     <div>
                       <h4 className="text-sm font-semibold text-[#1A201E]">{item.childName}</h4>
-                      <p className="text-xs text-[#5A6660]">{formattedDate}</p>
+                      <p className="text-xs text-[#5A6660]">
+                        {formattedDate} {item.ageMonths ? `· ${item.ageMonths}m` : ''}
+                      </p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <BadgePill tone="normal">
-                      Completed
+                    <BadgePill tone={riskTone}>
+                      {riskLabel}
                     </BadgePill>
                     <span className="text-sm font-bold text-[#8E9C95]">›</span>
                   </div>

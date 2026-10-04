@@ -1,1 +1,10 @@
-{"appName":"स्पर्श","welcome":"नमस्ते, स्वास्थ्य कार्यकर्ता","login":{"welcome":"वापसी पर स्वागत है"}}
+{
+  "appName": "स्पर्श",
+  "welcome": "नमस्ते, आंगनवाड़ी कार्यकर्ता",
+  "login": { "welcome": "वापसी पर स्वागत है" },
+  "profile": "बाल विकास प्रोफ़ाइल",
+  "screeningIndication": "स्क्रीनिंग संकेत",
+  "needsFollowUp": "आगे समीक्षा आवश्यक",
+  "assistant": "SPARSH सहायक",
+  "languages": { "en": "English", "hi": "हिन्दी" }
+}

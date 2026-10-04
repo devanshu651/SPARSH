@@ -73,35 +73,41 @@ export default function RegistrationScreen({ onNavigate }) {
     e.preventDefault()
     if (!validate()) return
 
-    const centreId = currentWorker?.centre_ids?.[0] || 'AWC-MH-2025'
+    const centreId = currentWorker?.centre_ids?.[0]
+    if (!centreId) {
+      setErrors({ submit: 'Your worker account has no assigned centre. Ask an administrator to assign one.' })
+      return
+    }
+
     setSaving(true)
     setErrors({})
 
     try {
-      const payload = {
+      const childPayload = {
         name: form.name.trim(),
-        sex: form.gender,
-        gender: form.gender,
-        dob: form.dob,
-        village: form.village.trim() || 'Ward 4',
+        date_of_birth: form.dob,
         child_identifier: form.childIdentifier.trim() || `AW-${Date.now().toString().slice(-4)}`,
-        guardian_name: form.guardianName.trim() || 'Primary Guardian',
-        phone: form.mobile.replace(/\s/g, '') || null,
-        centre_id: centreId
+        sex: form.gender || null,
+        guardian_name: form.guardianName ? form.guardianName.trim() : null,
+        guardian_phone: form.mobile ? form.mobile.replace(/\s/g, '') : null,
+        centre_id: centreId,
+        centre_name: 'Assigned Anganwadi Centre'
       }
 
-      const createCall = childrenApi.create(payload)
-      const res = typeof createCall === 'function' ? await createCall(payload) : await createCall
+      const createCall = childrenApi.create(childPayload)
+      const res = typeof createCall === 'function' ? await createCall(childPayload) : await createCall
 
       if (form.weight || form.height || form.muac) {
         try {
-          const vCall = childrenApi.healthData(res.id, {
-            measured_on: new Date().toISOString(),
+          const healthPayload = {
+            measured_on: new Date().toISOString().slice(0, 10),
             weight_kg: form.weight ? parseFloat(form.weight) : null,
             height_cm: form.height ? parseFloat(form.height) : null,
             muac_mm: form.muac ? parseFloat(form.muac) : null
-          })
-          if (typeof vCall === 'function') await vCall(res.id)
+          }
+          const vCall = childrenApi.healthData(res.id, healthPayload)
+          if (typeof vCall === 'function') await vCall(res.id, healthPayload)
+          else await vCall
         } catch {
           // Non-blocking
         }

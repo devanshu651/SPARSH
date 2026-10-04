@@ -34,13 +34,28 @@ def get_current_user(
     if credentials is None or not credentials.credentials:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing bearer token")
 
+    # Firebase Admin is initialized lazily by the existing backend initializer.
+    # Initialize it before the first Auth SDK call so a fresh process can verify
+    # its first request as well as subsequent requests.
+    try:
+        db = get_firestore_client()
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise _unauthorized() from exc
+
     try:
         token = auth.verify_id_token(credentials.credentials, check_revoked=True)
         uid = token.get("uid")
         if not isinstance(uid, str) or not uid:
             raise ValueError("Token has no uid")
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise _unauthorized() from exc
 
-        profile = get_firestore_client().collection("users").document(uid).get().to_dict()
+    try:
+        profile = db.collection("users").document(uid).get().to_dict()
         if not isinstance(profile, dict):
             raise ValueError("User profile not found")
 
@@ -57,8 +72,6 @@ def get_current_user(
     except HTTPException:
         raise
     except Exception as exc:
-        # Firebase distinguishes invalid, expired, revoked, and disabled tokens.
-        # Deliberately expose one response so callers cannot learn authentication state.
         raise _unauthorized() from exc
 
 

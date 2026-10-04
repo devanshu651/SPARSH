@@ -32,7 +32,7 @@ export default function AuthShell({
         {/* Core clinical messaging matching reference tone */}
         <div className="relative z-10 max-w-lg space-y-4">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold text-[#D2E3D8] border border-white/20">
-            Supporting Every Child&apos;s Brighter Tomorrow
+            Developmental screening and follow-up support
           </span>
 
           <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl leading-tight font-heading">
@@ -46,7 +46,7 @@ export default function AuthShell({
 
           <div className="grid grid-cols-2 gap-3 pt-3 text-xs">
             <div className="rounded-xl border border-white/15 bg-white/10 p-3.5 backdrop-blur-xs">
-              <span className="font-bold text-white block">RBSK Standard</span>
+              <span className="font-bold text-white block">Milestone Screening</span>
               <span className="text-[#D2E3D8] text-[11px]">5 Developmental Domains</span>
             </div>
             <div className="rounded-xl border border-white/15 bg-white/10 p-3.5 backdrop-blur-xs">
@@ -68,7 +68,7 @@ export default function AuthShell({
       </section>
 
       {/* RIGHT SIDE INTERACTIVE FORM PANEL */}
-      <section className={`flex flex-col justify-center bg-white p-6 sm:p-10 lg:col-span-6 lg:p-12 xl:col-span-5 relative ${className}`}>
+      <section className={`flex flex-col justify-center bg-white p-4 py-6 sm:p-10 lg:col-span-6 lg:p-12 xl:col-span-5 relative ${className}`}>
         <SparshBotanical variant="top-left" opacity="opacity-20" />
         <SparshBotanical variant="bottom-right" opacity="opacity-25" />
 

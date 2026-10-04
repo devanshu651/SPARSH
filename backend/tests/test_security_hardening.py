@@ -6,7 +6,7 @@ from fastapi import HTTPException
 from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import ValidationError
 
-from app.core import security
+from app.core import firebase, security
 from app.models.auth import CurrentUser, Role
 from app.models.centre import CentreCreate, CentreUpdate
 from app.models.child import ChildCreate, HealthDataCreate
@@ -50,6 +50,64 @@ def test_profile_is_authoritative_over_token_claims():
         user = security.get_current_user(credentials())
     verify.assert_called_once_with("token", check_revoked=True)
     assert user == CurrentUser(uid="u1", role=Role.WORKER, name="Profile Name", centre_ids=["centre-a"])
+
+
+def test_token_verification_failure_does_not_log_exception_details(caplog):
+    token = "SYNTHETIC_ID_TOKEN_NEVER_LOG"
+    failure = RuntimeError(f"Authorization: Bearer {token}")
+    with patch.object(security, "get_firestore_client", return_value=firestore_for(None)), \
+         patch.object(security.auth, "verify_id_token", side_effect=failure):
+        with pytest.raises(HTTPException) as error:
+            security.get_current_user(HTTPAuthorizationCredentials(scheme="Bearer", credentials=token))
+    assert error.value.status_code == 401
+    assert error.value.detail == "Invalid or expired authentication credentials"
+    assert caplog.text == ""
+
+
+def test_firebase_admin_is_initialized_before_first_token_verification():
+    db = firestore_for({"role": "worker", "name": "Worker", "centre_ids": ["centre-a"]})
+    app = object()
+    certificate = object()
+    apps = {}
+    order = []
+
+    def initialize_app(credential, options=None):
+        assert credential is certificate
+        assert options == {"projectId": "test-project"}
+        order.append("initialize")
+        apps["[DEFAULT]"] = app
+        return app
+
+    def verify_token(token, *, check_revoked):
+        assert token == "token"
+        assert check_revoked is True
+        assert apps.get("[DEFAULT]") is app
+        order.append("verify")
+        return {"uid": "u1"}
+
+    firebase.get_firebase_app.cache_clear()
+    firebase.get_firestore_client.cache_clear()
+    try:
+        with (
+            patch.object(firebase.firebase_admin, "_apps", apps),
+            patch.object(firebase.settings, "firebase_project_id", "test-project"),
+            patch.object(firebase.settings, "firebase_service_account_path", "test-service-account.json"),
+            patch.object(firebase.credentials, "Certificate", return_value=certificate),
+            patch.object(firebase.firebase_admin, "initialize_app", side_effect=initialize_app) as initialize,
+            patch.object(firebase.firestore, "client", return_value=db) as firestore_client,
+            patch.object(security.auth, "verify_id_token", side_effect=verify_token) as verify,
+        ):
+            first_user = security.get_current_user(credentials())
+            second_user = security.get_current_user(credentials())
+
+        assert first_user == second_user
+        assert order == ["initialize", "verify", "verify"]
+        initialize.assert_called_once_with(certificate, {"projectId": "test-project"})
+        firestore_client.assert_called_once_with(app=app)
+        assert verify.call_count == 2
+    finally:
+        firebase.get_firebase_app.cache_clear()
+        firebase.get_firestore_client.cache_clear()
 
 
 @pytest.mark.parametrize("profile", [

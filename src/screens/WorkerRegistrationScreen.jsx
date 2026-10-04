@@ -19,7 +19,7 @@ export default function WorkerRegistrationScreen({ onBack }) {
         <div>
           <div className="inline-flex items-center gap-1.5 rounded-full bg-[#EBF2EE] px-3 py-1 text-xs font-semibold text-[#1B4D3E] border border-[#D5E3DB]">
             <Icon name="shield" className="h-3.5 w-3.5" />
-            <span>Official Provisioning</span>
+            <span>Account provisioning</span>
           </div>
 
           <h1 className="mt-3 text-xl font-bold tracking-tight text-[#1A201E] sm:text-2xl">

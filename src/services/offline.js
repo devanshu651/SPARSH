@@ -154,7 +154,7 @@ export async function syncQueuedScreenings(submitFn) {
       synced++
     } catch (e) {
       const status = e && e.status
-      if (status === 409) {
+      if (status === 409 && e.code === 'duplicate_submission') {
         // Duplicate submission already processed on the server.
         await removeQueuedItem(item.id)
         synced++

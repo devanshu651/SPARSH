@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { AppProvider } from './context/AppContext'
+import { AppProvider, useApp } from './context/AppContext'
 import ErrorBoundary from './components/ErrorBoundary'
 
 import SplashScreen from './screens/SplashScreen'
@@ -22,6 +22,7 @@ import AnalyticsScreen from './screens/AnalyticsScreen'
 import AlertsScreen from './screens/AlertsScreen'
 import SettingsScreen from './screens/SettingsScreen'
 import AdminConsoleScreen from './screens/AdminConsoleScreen'
+import ChildProfileScreen from './screens/ChildProfileScreen'
 
 const getInitialScreen = () => {
   if (typeof window !== 'undefined' && window.history.state && window.history.state.screen) {
@@ -30,13 +31,25 @@ const getInitialScreen = () => {
   return 'splash'
 }
 
-export default function App() {
+function AppContent() {
+  const { currentWorker, authReady } = useApp()
   const [screen, setScreen] = useState(getInitialScreen)
   const currentScreenRef = useRef(screen)
 
   useEffect(() => {
     currentScreenRef.current = screen
   }, [screen])
+
+  useEffect(() => {
+    const publicScreens = ['splash', 'login', 'worker-registration']
+    if (authReady && !currentWorker && !publicScreens.includes(screen)) navigate('login', { replace: true })
+    if (authReady && currentWorker?.role === 'admin' && !publicScreens.includes(screen) && screen !== 'admin-console') {
+      navigate('admin-console', { replace: true })
+    }
+    if (authReady && currentWorker && currentWorker.role !== 'admin' && screen === 'admin-console') {
+      navigate('dashboard', { replace: true })
+    }
+  }, [authReady, currentWorker, screen])
 
   useEffect(() => {
     const currentState = window.history.state
@@ -94,9 +107,12 @@ export default function App() {
     }
   }, [])
 
+  if (authReady && currentWorker?.role === 'admin' && screen !== 'admin-console') {
+    return <AdminConsoleScreen onNavigate={navigate} />
+  }
+
   return (
     <ErrorBoundary>
-      <AppProvider>
 
       {screen === 'splash' && (
         <SplashScreen
@@ -107,7 +123,7 @@ export default function App() {
       {screen === 'login' && (
         <LoginScreen
           onBack={() => navigate('splash', { isBack: true })}
-          onLogin={() => navigate('dashboard', { replace: true })}
+          onLogin={() => navigate(currentWorker?.role === 'admin' ? 'admin-console' : 'dashboard', { replace: true })}
           onRegister={() => navigate('worker-registration')}
         />
       )}
@@ -167,6 +183,10 @@ export default function App() {
         />
       )}
 
+      {screen === 'child-profile' && (
+        <ChildProfileScreen onNavigate={navigate} />
+      )}
+
       {screen === 'records' && (
         <RecordsScreen
           onNavigate={navigate}
@@ -203,7 +223,10 @@ export default function App() {
         />
       )}
 
-      </AppProvider>
     </ErrorBoundary>
   )
+}
+
+export default function App() {
+  return <AppProvider><AppContent /></AppProvider>
 }

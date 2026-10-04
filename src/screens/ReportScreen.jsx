@@ -5,7 +5,6 @@ import Button from '../components/Button'
 import BadgePill from '../components/BadgePill'
 import Icon from '../components/Icon'
 import { SparshBotanicalCorner } from '../components/SparshBotanical'
-import { EmptyState } from '../components/AsyncState'
 
 const domainConfig = [
   { key: 'gross_motor', label: 'Gross Motor', icon: 'activity' },
@@ -20,15 +19,46 @@ export default function ReportScreen({ onNavigate }) {
   const [notes, setNotes] = useState('')
   const [notesSaved, setNotesSaved] = useState(false)
 
-  // Precondition check: If no screening result is available
+  const childName = currentChild?.name || 'Screened Child'
+  const ageDisplay = currentChild?.age_months !== null && currentChild?.age_months !== undefined
+    ? `${Math.floor(currentChild.age_months / 12)} years ${currentChild.age_months % 12} months`
+    : `${screeningResult?.checkpoint_age_months || '—'} months`
+  const childSex = currentChild?.sex || 'Child'
+  const screenedDate = screeningResult?.screened_at
+    ? new Date(screeningResult.screened_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+    : 'Recent'
+
+  const domainScores = screeningResult?.domain_scores || {}
+
+  // Generate intelligent summary sentence matching actual results
+  const flaggedDomains = useMemo(() => {
+    return domainConfig.filter((d) => {
+      const s = domainScores[d.key]
+      return s && (s.missed_count > 0 || s.missed_weight > 0 || s.risk === 'YELLOW' || s.risk === 'RED')
+    })
+  }, [domainScores])
+
+  const summaryText = flaggedDomains.length === 0
+    ? 'The child is developing well across observed domains. Developmental milestones are on track for their age checkpoint.'
+    : `The child is developing well in most areas. ${flaggedDomains.map((d) => d.label).join(' and ')} domain${flaggedDomains.length > 1 ? 's need' : ' needs'} attention and follow-up review.`
+
+  const handleDownloadPdf = () => {
+    window.print()
+  }
+
+  const handleSaveNotes = () => {
+    setNotesSaved(true)
+    setTimeout(() => setNotesSaved(false), 2500)
+  }
+
   if (!screeningResult) {
     return (
       <AppLayout
         active="screening"
         onNavigate={onNavigate}
         backTo="dashboard"
-        title="Report"
-        subtitle="Standardized RBSK Clinical Assessment Report"
+        title="Developmental Screening Report"
+        subtitle="Screening indication and follow-up information"
       >
         <div className="relative mx-auto max-w-xl p-6 text-center space-y-4">
           <SparshBotanicalCorner position="top-right" className="opacity-30" />
@@ -36,7 +66,7 @@ export default function ReportScreen({ onNavigate }) {
             <Icon name="report" className="h-7 w-7" />
           </div>
           <h2 className="text-lg font-semibold text-[#1A201E]">No Report Available</h2>
-          <p className="text-xs text-[#5A6660] max-w-md mx-auto">
+          <p className="text-xs text-[#5A6660] max-w-md mx-auto leading-relaxed">
             Developmental reports are generated automatically upon completing a milestone observation screening.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
@@ -53,42 +83,15 @@ export default function ReportScreen({ onNavigate }) {
     )
   }
 
-  const childName = currentChild?.name || 'Aarav Sharma'
-  const ageDisplay = currentChild?.age_months !== null && currentChild?.age_months !== undefined
-    ? `${Math.floor(currentChild.age_months / 12)} years ${currentChild.age_months % 12} months`
-    : `${screeningResult.checkpoint_age_months || 18} months`
-  const childSex = currentChild?.sex || 'Male'
-  const screenedDate = screeningResult?.screened_at
-    ? new Date(screeningResult.screened_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
-    : '12 Apr 2024'
-
-  const domainScores = screeningResult.domain_scores || {}
-
-  // Generate intelligent summary sentence matching reference
-  const flaggedDomains = domainConfig.filter((d) => {
-    const s = domainScores[d.key]
-    return s && (s.missed_count > 0 || s.missed_weight > 0)
-  })
-
-  const summaryText = flaggedDomains.length === 0
-    ? 'The child is developing well across all five domains. Milestones are on track for their age group.'
-    : `The child is developing well in most areas. ${flaggedDomains.map((d) => d.label).join(' and ')} domain${flaggedDomains.length > 1 ? 's need' : ' needs'} attention.`
-
-  const handleDownloadPdf = () => {
-    window.print()
-  }
-
-  const handleSaveNotes = () => {
-    setNotesSaved(true)
-    setTimeout(() => setNotesSaved(false), 2500)
-  }
+  const riskLevel = screeningResult.risk_level || screeningResult.overall_risk
 
   return (
     <AppLayout
       active="screening"
       onNavigate={onNavigate}
       backTo="dashboard"
-      title="Report"
+      title="Screening Report"
+      subtitle={`Screening Reference: ${screeningResult.screening_id || '—'}`}
       actions={
         <Button variant="secondary" size="sm" onClick={handleDownloadPdf}>
           <Icon name="download" className="h-4 w-4 text-[#1B4D3E]" />
@@ -104,8 +107,27 @@ export default function ReportScreen({ onNavigate }) {
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#FDF0EB] text-[#D96B43] font-bold text-base">
             {childName.charAt(0)}
           </div>
-          <div className="min-w-0">
-            <h2 className="text-base font-semibold text-[#1A201E] truncate">{childName}</h2>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center justify-between">
+              <h2 className="text-base font-semibold text-[#1A201E] truncate">{childName}</h2>
+              {riskLevel && (
+                <BadgePill
+                  tone={
+                    riskLevel === 'RED'
+                      ? 'risk'
+                      : riskLevel === 'YELLOW'
+                      ? 'followup'
+                      : 'normal'
+                  }
+                >
+                  {riskLevel === 'RED'
+                    ? 'High Risk'
+                    : riskLevel === 'YELLOW'
+                    ? 'Review Needed'
+                    : 'On Track'}
+                </BadgePill>
+              )}
+            </div>
             <p className="text-xs text-[#5A6660]">{ageDisplay} · {childSex}</p>
             <p className="text-[11px] text-[#8E9C95] mt-0.5">Screened on {screenedDate}</p>
           </div>
@@ -118,7 +140,7 @@ export default function ReportScreen({ onNavigate }) {
           className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#EBF2EE] py-3.5 px-4 text-sm font-semibold text-[#1B4D3E] border border-[#D5E3DB] transition hover:bg-[#DDE9E2] shadow-2xs"
         >
           <Icon name="download" className="h-4 w-4" />
-          <span>Download PDF</span>
+          <span>Download PDF / Print Slip</span>
         </button>
 
         {/* Summary Section (Matches Screen 8) */}
@@ -129,7 +151,7 @@ export default function ReportScreen({ onNavigate }) {
           </p>
           {screeningResult.recommendation && (
             <p className="text-xs text-[#1B4D3E] font-medium pt-1">
-              {screeningResult.recommendation}
+              Recommendation: {screeningResult.recommendation}
             </p>
           )}
         </div>
@@ -143,9 +165,9 @@ export default function ReportScreen({ onNavigate }) {
           <div className="space-y-2.5">
             {domainConfig.map((dom) => {
               const score = domainScores[dom.key]
-              const isFlagged = score?.missed_count > 0 || score?.missed_weight > 0
+              const isFlagged = score?.missed_count > 0 || score?.missed_weight > 0 || score?.risk === 'YELLOW' || score?.risk === 'RED'
               const badgeTone = isFlagged ? 'followup' : 'normal'
-              const badgeLabel = isFlagged ? 'Needs Attention' : 'Normal'
+              const badgeLabel = isFlagged ? 'Needs Attention' : 'On Track'
 
               return (
                 <div
@@ -160,7 +182,14 @@ export default function ReportScreen({ onNavigate }) {
                     >
                       <Icon name={dom.icon} className="h-4 w-4" />
                     </span>
-                    <span className="text-sm font-medium text-[#1A201E]">{dom.label}</span>
+                    <div>
+                      <span className="text-sm font-medium text-[#1A201E]">{dom.label}</span>
+                      {score?.total_count ? (
+                        <p className="text-[11px] text-[#8E9C95]">
+                          {score.achieved_count ?? (score.total_count - (score.missed_count || 0))} of {score.total_count} milestones achieved
+                        </p>
+                      ) : null}
+                    </div>
                   </div>
 
                   <BadgePill tone={badgeTone}>
@@ -173,14 +202,14 @@ export default function ReportScreen({ onNavigate }) {
         </div>
 
         {/* RBSK Referral Escalation Action (if high risk or flagged) */}
-        {screeningResult.risk_level === 'RED' && (
+        {riskLevel === 'RED' && (
           <div className="rounded-2xl border border-[#F7D4C8] bg-[#FDF0EB]/60 p-4 sm:p-5 shadow-2xs space-y-3">
             <div className="flex items-center gap-2 text-xs font-semibold text-[#D96B43]">
               <Icon name="alertTriangle" className="h-4 w-4" />
               <span>Priority Clinical Action Required</span>
             </div>
             <p className="text-xs text-[#1A201E] leading-relaxed">
-              Standard RBSK guidelines recommend expedited referral to the nearest District Early Intervention Centre (DEIC) for multi-disciplinary evaluation.
+              Screening indicates high risk developmental delays. A referral record should be created for specialized evaluation at the District Early Intervention Centre (DEIC).
             </p>
             <Button
               variant="terracotta"
@@ -188,7 +217,7 @@ export default function ReportScreen({ onNavigate }) {
               className="w-full text-xs font-semibold"
             >
               <Icon name="referral" className="h-4 w-4 mr-1.5" />
-              <span>Generate RBSK Form 3A Referral</span>
+              <span>Generate DEIC Referral Slip</span>
             </Button>
           </div>
         )}

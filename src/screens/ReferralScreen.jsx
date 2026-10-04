@@ -1,176 +1,154 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { referralsApi, childrenApi } from '../services/api'
 import { useApp } from '../context/AppContext'
 import AppLayout from '../components/AppLayout'
 import Button from '../components/Button'
-import Select from '../components/Select'
 import BadgePill from '../components/BadgePill'
+import Select from '../components/Select'
 import Icon from '../components/Icon'
 import { SparshBotanicalCorner } from '../components/SparshBotanical'
-import { LoadingState } from '../components/AsyncState'
+import { LoadingState, ErrorState, EmptyState } from '../components/AsyncState'
 
 const facilities = [
-  'District Early Intervention Centre (DEIC) — District Civil Hospital',
-  'Sub-District Hospital / Community Health Centre (CHC) Pediatric Unit',
-  'Government Medical College & Tertiary Care Hospital',
-  'Primary Health Centre (PHC) Medical Officer Review'
+  'District Early Intervention Centre (DEIC) - District Civil Hospital',
+  'Sub-District Hospital (SDH) Pediatric Unit',
+  'Community Health Centre (CHC) Specialized Child Clinic',
+  'Tertiary Pediatric Medical College & Hospital'
 ]
 
 const referralReasons = [
-  'Severe multi-domain developmental delay identified under RBSK observation',
-  'Gross motor & posture control failure (suspected cerebral palsy / motor delay)',
-  'Suspected speech / auditory impairment requiring specialized audiometry',
-  'Vision tracking deficit / suspected strabismus requiring pediatric ophthalmology',
-  'Severe cognitive / social communication delay requiring developmental pediatrician'
+  'Developmental Delay: Multiple RBSK domain checkpoints missed',
+  'Motor Impairment: Severe gross/fine motor developmental lag',
+  'Sensory Observation: Auditory / visual pursuit concern noted',
+  'Language & Speech: Significant communicative delay at age checkpoint',
+  'Cognitive / Social: Persistent developmental milestones missed'
 ]
 
 export default function ReferralScreen({ onNavigate }) {
-  const { screeningResult, currentChild, setCurrentChild, currentWorker } = useApp()
-  const [facility, setFacility] = useState(facilities[0])
-  const [reason, setReason] = useState(referralReasons[0])
-  const [error, setError] = useState('')
-  const [saving, setSaving] = useState(false)
-  const [referralData, setReferralData] = useState(null)
+  const { currentChild, setCurrentChild, screeningResult, currentWorker } = useApp()
 
   const [atRiskChildren, setAtRiskChildren] = useState([])
-  const [loadingCohort, setLoadingCohort] = useState(false)
   const [selectedChildId, setSelectedChildId] = useState(currentChild?.id || '')
-  const [resolvedScreeningId, setResolvedScreeningId] = useState(screeningResult?.screening_id || '')
+  const [resolvedScreeningId, setResolvedScreeningId] = useState('')
+  const [facility, setFacility] = useState(facilities[0])
+  const [reason, setReason] = useState(referralReasons[0])
+  const [notes, setNotes] = useState('')
+  const [referralData, setReferralData] = useState(null)
+  const [loadingCohort, setLoadingCohort] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
-    if (screeningResult?.screening_id) {
-      setResolvedScreeningId(screeningResult.screening_id)
-      if (currentChild?.id) setSelectedChildId(currentChild.id)
-      return
-    }
+    let isMounted = true
 
-    const loadAtRiskCohort = async () => {
+    const init = async () => {
       setLoadingCohort(true)
+      setError(null)
       try {
         const fn = childrenApi.list()
         const raw = typeof fn === 'function' ? await fn() : await fn
-        const list = Array.isArray(raw) ? raw : []
-        const redList = list.filter((c) => c.latest_risk === 'RED')
-        setAtRiskChildren(redList)
+        const children = Array.isArray(raw) ? raw : []
 
-        if (redList.length > 0) {
-          const first = currentChild?.latest_risk === 'RED' ? currentChild : redList[0]
-          setSelectedChildId(first.id)
-          setCurrentChild(first)
-          resolveChildScreening(first.id)
+        if (!isMounted) return
+
+        const redChildren = children.filter((c) => c.latest_risk === 'RED')
+        setAtRiskChildren(redChildren)
+
+        if (screeningResult?.risk_level === 'RED' && screeningResult?.screening_id) {
+          setResolvedScreeningId(screeningResult.screening_id)
+          if (currentChild?.id) setSelectedChildId(currentChild.id)
+        } else if (redChildren.length > 0) {
+          const defaultChild = (currentChild && redChildren.find((c) => c.id === currentChild.id)) || redChildren[0]
+          setSelectedChildId(defaultChild.id)
+          await loadScreeningIdForChild(defaultChild.id)
         }
-      } catch {
-        // Fallback
+      } catch (err) {
+        if (isMounted) setError(err)
       } finally {
-        setLoadingCohort(false)
+        if (isMounted) setLoadingCohort(false)
       }
     }
 
-    loadAtRiskCohort()
-  }, [screeningResult?.screening_id])
+    init()
+    return () => { isMounted = false }
+  }, [screeningResult, currentChild])
 
-  useEffect(() => {
-    const checkExisting = async (sId) => {
-      if (!sId) return
-      try {
-        const rCall = referralsApi.byScreening(sId)
-        const existing = typeof rCall === 'function' ? await rCall(sId) : await rCall
-        if (existing) {
-          setReferralData(existing)
-        }
-      } catch {
-        // Proceed
-      }
-    }
-    const sId = screeningResult?.screening_id || resolvedScreeningId
-    if (sId) {
-      checkExisting(sId)
-    }
-  }, [screeningResult?.screening_id, resolvedScreeningId])
-
-  const resolveChildScreening = async (childId) => {
+  const loadScreeningIdForChild = async (childId) => {
     try {
       const hCall = childrenApi.history(childId)
-      const history = typeof hCall === 'function' ? await hCall(childId) : await hCall
-      if (history?.screenings?.length > 0) {
-        const latest = history.screenings[history.screenings.length - 1]
-        setResolvedScreeningId(latest.screening_id)
-      } else {
-        setResolvedScreeningId(`SR-${childId.slice(-5).toUpperCase()}`)
+      const h = typeof hCall === 'function' ? await hCall(childId) : await hCall
+      if (h && Array.isArray(h.screenings) && h.screenings.length > 0) {
+        const redScreening = h.screenings.find((s) => s.risk_level === 'RED') || h.screenings[0]
+        setResolvedScreeningId(redScreening.screening_id)
       }
     } catch {
-      setResolvedScreeningId(`SR-${Date.now().toString().slice(-5)}`)
+      // Best-effort history fetch
     }
   }
 
-  const handleChildSelectChange = (e) => {
-    const childId = e.target.value
-    setSelectedChildId(childId)
-    const found = atRiskChildren.find((c) => c.id === childId)
-    if (found) {
-      setCurrentChild(found)
-      resolveChildScreening(found.id)
+  const handleChildSelectChange = async (e) => {
+    const cid = e.target.value
+    setSelectedChildId(cid)
+    const child = atRiskChildren.find((c) => c.id === cid)
+    if (child) {
+      setCurrentChild(child)
     }
+    await loadScreeningIdForChild(cid)
   }
-
-  const activePatient = currentChild || atRiskChildren.find((c) => c.id === selectedChildId)
 
   const submitReferral = async () => {
-    const targetScreeningId = resolvedScreeningId || screeningResult?.screening_id
-    if (!targetScreeningId) {
-      setError('A valid screening ID is required to generate a formal RBSK referral.')
+    if (!facility) {
+      setError('Please select a designated referral facility.')
+      return
+    }
+
+    const scrId = resolvedScreeningId || screeningResult?.screening_id
+    if (!scrId) {
+      setError('No saved screening record found to attach to this referral.')
       return
     }
 
     setSaving(true)
-    setError('')
+    setError(null)
 
     try {
       const payload = {
-        screening_id: targetScreeningId,
-        facility_name: facility,
-        clinical_reason: reason
+        screening_id: scrId,
+        facility_name: facility
       }
-      const refCall = referralsApi.create(payload)
-      const response = typeof refCall === 'function' ? await refCall(payload) : await refCall
-      setReferralData(response)
+
+      const rCall = referralsApi.create(payload)
+      const res = typeof rCall === 'function' ? await rCall(payload) : await rCall
+      setReferralData(res)
     } catch (e) {
-      if (e?.status === 409 || e?.message?.includes('already')) {
-        try {
-          const rCall = referralsApi.byScreening(targetScreeningId)
-          const existing = typeof rCall === 'function' ? await rCall(targetScreeningId) : await rCall
-          if (existing) {
-            setReferralData(existing)
-            setError('')
-            return
-          }
-        } catch {}
-      }
-      setError(e?.message || 'Failed to generate referral slip.')
+      setError(e.message || 'Failed to generate referral docket.')
     } finally {
       setSaving(false)
     }
   }
 
-  // Handle case where no screening exists and no RED children in cohort
-  if (!screeningResult && !loadingCohort && atRiskChildren.length === 0) {
+  const activePatient = screeningResult
+    ? currentChild
+    : atRiskChildren.find((c) => c.id === selectedChildId) || currentChild
+
+  // Precondition: No child flagged as High Risk (RED)
+  if (!loadingCohort && !screeningResult && atRiskChildren.length === 0) {
     return (
       <AppLayout
         active="screening"
         onNavigate={onNavigate}
         backTo="dashboard"
-        title="DEIC Referral"
-        subtitle="National Health Mission · District Early Intervention Centre"
+        title="Referral Records"
+        subtitle="Child referral and follow-up support"
       >
-        <div className="relative mx-auto max-w-xl p-8 text-center space-y-4">
+        <div className="relative mx-auto max-w-xl p-6 text-center space-y-4">
           <SparshBotanicalCorner position="top-right" className="opacity-30" />
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#EBF2EE] text-[#1B4D3E]">
-            <Icon name="checkCircle" className="h-7 w-7" />
+            <Icon name="hospital" className="h-7 w-7" />
           </div>
-          <h2 className="text-lg font-semibold text-[#1A201E]">No High-Risk Referrals Pending</h2>
-          <p className="text-xs text-[#5A6660] max-w-md mx-auto">
-            Referral generation (RBSK Form 3A) is reserved for children categorized with High Risk developmental delays.
-            All screened children in your active cohort are currently meeting developmental milestones.
+          <h2 className="text-lg font-semibold text-[#1A201E]">No Referrals Pending</h2>
+          <p className="text-xs text-[#5A6660] max-w-md mx-auto leading-relaxed">
+            Referral records can be created for a child with a saved high risk screening result. All screened children in your ward cohort are currently meeting developmental milestones or undergoing routine community watch.
           </p>
           <div className="pt-2 flex justify-center gap-3">
             <Button variant="primary" onClick={() => onNavigate?.('screening')}>
@@ -192,7 +170,7 @@ export default function ReferralScreen({ onNavigate }) {
       onNavigate={onNavigate}
       backTo={screeningResult ? 'report' : 'alerts'}
       title="DEIC Referral"
-      subtitle="RBSK Form 3A Specialized Early Intervention Referral"
+      subtitle="Specialized early intervention referral record"
       actions={
         referralData && (
           <Button variant="secondary" size="sm" onClick={() => window.print()}>
@@ -216,17 +194,17 @@ export default function ReferralScreen({ onNavigate }) {
                   Urgent DEIC Referral Required
                 </BadgePill>
                 <span className="text-xs text-[#5A6660]">
-                  RBSK Form 3A
+                  High Risk Screening Result
                 </span>
               </div>
               <h2 className="text-base font-semibold text-[#1A201E]">
-                Patient: {activePatient?.name || 'Screened Child'}
+                Child: {activePatient?.name || 'Screened Child'}
               </h2>
               <p className="text-xs text-[#5A6660]">
                 Age: {activePatient?.age_months ?? '—'} months · ID: {activePatient?.child_identifier || '—'} · Guardian: {activePatient?.guardian_name || '—'}
               </p>
               <p className="text-xs text-[#D96B43] font-medium pt-1">
-                Screening Ref: {resolvedScreeningId || screeningResult?.screening_id || 'Pending Triage'}
+                Screening Reference: {(screeningResult?.risk_level === 'RED' && screeningResult?.screening_id) || resolvedScreeningId || 'Pending Triage'}
               </p>
             </div>
 
@@ -254,18 +232,18 @@ export default function ReferralScreen({ onNavigate }) {
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#EBF2EE] text-[#1B4D3E]">
                     <Icon name="checkCircle" className="h-6 w-6" />
                   </div>
-                  <h3 className="text-base font-semibold text-[#1A201E]">Official DEIC Referral Slip Issued</h3>
+                  <h3 className="text-base font-semibold text-[#1A201E]">Referral Record Saved</h3>
                   <p className="text-xs text-[#5A6660]">National Child Health Screening Program · Referral Docket</p>
                 </div>
 
                 <div className="rounded-xl border border-[#E5EBE7] bg-[#F9FBFA] p-4 text-xs space-y-2.5">
                   <div className="flex justify-between border-b border-[#E5EBE7] pb-2">
                     <span className="text-[#5A6660]">Docket Number:</span>
-                    <span className="font-bold text-[#1A201E]">{referralData.referral_id || `REF-${Date.now().toString().slice(-6)}`}</span>
+                    <span className="font-bold text-[#1A201E]">{referralData.referral_id || 'Reference unavailable'}</span>
                   </div>
                   <div className="flex justify-between border-b border-[#E5EBE7] pb-2">
                     <span className="text-[#5A6660]">Designated Facility:</span>
-                    <span className="font-semibold text-[#1A201E] text-right max-w-xs">{facility}</span>
+                    <span className="font-semibold text-[#1A201E] text-right max-w-xs">{referralData.facility_name || facility}</span>
                   </div>
                   <div className="flex justify-between border-b border-[#E5EBE7] pb-2">
                     <span className="text-[#5A6660]">Patient Name:</span>
@@ -277,13 +255,23 @@ export default function ReferralScreen({ onNavigate }) {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-[#5A6660]">Referring Worker:</span>
-                    <span className="font-semibold text-[#1A201E]">{currentWorker?.name || 'Anita'}</span>
+                    <span className="font-semibold text-[#1A201E]">{currentWorker?.name || 'Healthcare Worker'}</span>
                   </div>
                 </div>
 
+                <div className="rounded-xl border border-teal-200 bg-teal-50/70 p-3 text-xs text-teal-900 leading-relaxed">
+                  <span className="font-bold">Caregiver Guidance: </span>
+                  Review the referral details with the caregiver and follow the standard referral process used by your centre.
+                </div>
+
                 <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                  <Button variant="secondary" onClick={() => onNavigate?.('history')} className="flex-1">
-                    Child Record
+                  {screeningResult && (
+                    <Button variant="outline" onClick={() => onNavigate?.('report')} className="flex-1">
+                      Assessment Report
+                    </Button>
+                  )}
+                  <Button variant="secondary" onClick={() => onNavigate?.('child-profile')} className="flex-1">
+                    Child Profile
                   </Button>
                   <Button variant="primary" onClick={() => onNavigate?.('dashboard')} className="flex-1">
                     Return to Dashboard
@@ -319,7 +307,7 @@ export default function ReferralScreen({ onNavigate }) {
 
                   {error && (
                     <div className="rounded-xl bg-[#FDF0EB] p-3 text-xs text-[#D96B43] border border-[#F7D4C8]">
-                      {error}
+                      {typeof error === 'string' ? error : error?.message || 'Failed to submit referral'}
                     </div>
                   )}
 
@@ -338,7 +326,7 @@ export default function ReferralScreen({ onNavigate }) {
                       disabled={saving}
                       loading={saving}
                     >
-                      Issue Official RBSK Referral (Form 3A)
+                      Save Referral Record
                     </Button>
                   </div>
                 </form>

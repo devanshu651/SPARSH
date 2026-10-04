@@ -2,12 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
-const isProduction = process.env.NODE_ENV === 'production'
-
 export default defineConfig({
-  define: {
-    'import.meta.env.DEMO_MODE': !isProduction,
-  },
   plugins: [
     react(),
     VitePWA({

@@ -1,1 +1,10 @@
-{"appName":"SPARSH","welcome":"Namaste, Health Worker","login":{"welcome":"Welcome back"}}
+{
+  "appName": "SPARSH",
+  "welcome": "Namaste, Anganwadi Worker",
+  "login": { "welcome": "Welcome back" },
+  "profile": "Child Development Profile",
+  "screeningIndication": "Screening indication",
+  "needsFollowUp": "Needs follow-up",
+  "assistant": "SPARSH Assistant",
+  "languages": { "en": "English", "hi": "हिन्दी" }
+}

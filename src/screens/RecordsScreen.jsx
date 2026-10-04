@@ -24,7 +24,6 @@ export default function RecordsScreen({ onNavigate, alertsOnly = false }) {
     weight_kg: '',
     height_cm: '',
     muac_mm: '',
-    head_circumference_cm: '',
     notes: '',
     measured_on: new Date().toISOString().split('T')[0]
   })
@@ -37,29 +36,25 @@ export default function RecordsScreen({ onNavigate, alertsOnly = false }) {
     setError(null)
     try {
       const fn = childrenApi.list()
-      const raw = typeof fn === 'function' ? await fn() : await fn
-      const childrenList = Array.isArray(raw) ? raw : []
-      setItems(childrenList)
+      const data = typeof fn === 'function' ? await fn() : await fn
+      const list = Array.isArray(data) ? data : []
+      setItems(list)
 
-      const healthPromises = childrenList.map(async (c) => {
-        try {
-          const mCall = childrenApi.healthHistory(c.id)
-          const measurements = typeof mCall === 'function' ? await mCall(c.id) : await mCall
-          if (Array.isArray(measurements) && measurements.length > 0) {
-            const sorted = [...measurements].sort((a, b) => new Date(b.measured_on || b.created_at) - new Date(a.measured_on || a.created_at))
-            return { id: c.id, latest: sorted[0] }
-          }
-          return { id: c.id, latest: null }
-        } catch {
-          return { id: c.id, latest: null }
-        }
-      })
-
-      const healthResults = await Promise.all(healthPromises)
+      // Fetch latest health data for each child in parallel
       const map = {}
-      for (const res of healthResults) {
-        map[res.id] = res.latest
-      }
+      await Promise.all(
+        list.map(async (c) => {
+          try {
+            const hCall = childrenApi.history(c.id)
+            const h = typeof hCall === 'function' ? await hCall(c.id) : await hCall
+            if (h && Array.isArray(h.health_records) && h.health_records.length > 0) {
+              map[c.id] = h.health_records[0]
+            }
+          } catch {
+            // Optional health records
+          }
+        })
+      )
       setHealthMap(map)
     } catch (e) {
       setError(e)
@@ -72,40 +67,32 @@ export default function RecordsScreen({ onNavigate, alertsOnly = false }) {
     loadData()
   }, [])
 
-  const getMuacStatus = (muac) => {
-    if (!muac && muac !== 0) return { label: 'No MUAC', tone: 'neutral', isAtRisk: false }
-    const num = Number(muac)
-    if (num < 115) return { label: 'SAM (<115mm)', tone: 'risk', isAtRisk: true }
-    if (num < 125) return { label: 'MAM (115-124mm)', tone: 'followup', isAtRisk: true }
-    return { label: 'Normal Nutrition', tone: 'normal', isAtRisk: false }
-  }
-
   const shown = useMemo(() => {
     return items.filter((c) => {
-      const query = search.toLowerCase().trim()
+      const q = search.toLowerCase().trim()
       const match =
-        !query ||
-        c.name?.toLowerCase().includes(query) ||
-        c.child_identifier?.toLowerCase().includes(query) ||
-        c.guardian_name?.toLowerCase().includes(query)
+        !q ||
+        c.name?.toLowerCase().includes(q) ||
+        c.child_identifier?.toLowerCase().includes(q) ||
+        c.guardian_name?.toLowerCase().includes(q)
 
       const latestHealth = healthMap[c.id]
-      const muacStatus = getMuacStatus(latestHealth?.muac_mm)
+      const isNutritionalWatch = latestHealth?.muac_mm && latestHealth.muac_mm < 125
 
       const matchesFilter =
         filter === 'All' ||
-        (filter === 'Nutritional Watch' && (muacStatus.isAtRisk || c.latest_risk === 'RED' || c.latest_risk === 'YELLOW')) ||
         (filter === 'At Risk' && c.latest_risk === 'RED') ||
         (filter === 'Follow Up' && c.latest_risk === 'YELLOW') ||
-        (filter === 'Normal' && (c.latest_risk === 'GREEN' || !c.latest_risk))
+        (filter === 'Normal' && c.latest_risk === 'GREEN') ||
+        (filter === 'Nutritional Watch' && isNutritionalWatch)
 
       return match && matchesFilter
     })
   }, [items, search, filter, healthMap])
 
-  const selectChild = (child, destination = 'history') => {
+  const selectChild = (child, targetScreen) => {
     setCurrentChild(child)
-    onNavigate?.(destination)
+    onNavigate?.(targetScreen)
   }
 
   const openVitalsModal = (child) => {
@@ -116,7 +103,6 @@ export default function RecordsScreen({ onNavigate, alertsOnly = false }) {
       weight_kg: '',
       height_cm: '',
       muac_mm: '',
-      head_circumference_cm: '',
       notes: '',
       measured_on: new Date().toISOString().split('T')[0]
     })
@@ -127,47 +113,50 @@ export default function RecordsScreen({ onNavigate, alertsOnly = false }) {
     if (!activeChildForVitals) return
     setSavingVitals(true)
     setVitalsError('')
-
     try {
       const payload = {
-        measured_on: vitalsForm.measured_on ? new Date(vitalsForm.measured_on).toISOString() : new Date().toISOString(),
+        measured_on: vitalsForm.measured_on || new Date().toISOString().split('T')[0],
         weight_kg: vitalsForm.weight_kg ? parseFloat(vitalsForm.weight_kg) : null,
         height_cm: vitalsForm.height_cm ? parseFloat(vitalsForm.height_cm) : null,
         muac_mm: vitalsForm.muac_mm ? parseFloat(vitalsForm.muac_mm) : null,
-        head_circumference_cm: vitalsForm.head_circumference_cm ? parseFloat(vitalsForm.head_circumference_cm) : null,
         notes: vitalsForm.notes || null
       }
-
       const hdCall = childrenApi.healthData(activeChildForVitals.id, payload)
-      const newEntry = typeof hdCall === 'function' ? await hdCall(activeChildForVitals.id, payload) : await hdCall
-      
-      setHealthMap((prev) => ({
-        ...prev,
-        [activeChildForVitals.id]: newEntry
-      }))
+      if (typeof hdCall === 'function') await hdCall(activeChildForVitals.id, payload)
+      else await hdCall
 
-      setVitalsSuccess('Checkup recorded successfully!')
+      setVitalsSuccess('Vitals logged successfully!')
       setTimeout(() => {
         setActiveChildForVitals(null)
         setVitalsSuccess('')
-      }, 1200)
+        loadData()
+      }, 1000)
     } catch (err) {
-      setVitalsError(err.message || 'Failed to record health measurements.')
+      setVitalsError(err?.message || 'Failed to save health data.')
     } finally {
       setSavingVitals(false)
     }
   }
+
+  const getMuacStatus = (muac) => {
+    if (!muac) return { label: 'MUAC Not Logged', tone: 'neutral' }
+    if (muac < 115) return { label: `SAM (${muac}mm)`, tone: 'risk' }
+    if (muac < 125) return { label: `MAM (${muac}mm)`, tone: 'followup' }
+    return { label: `Normal (${muac}mm)`, tone: 'normal' }
+  }
+
+  const filters = ['All', 'At Risk', 'Follow Up', 'Normal', 'Nutritional Watch']
 
   return (
     <AppLayout
       active="more"
       onNavigate={onNavigate}
       backTo="dashboard"
-      title="Health Records"
-      subtitle="Nutritional anthropometry & growth tracking"
+      title={alertsOnly ? 'Nutritional Alerts' : 'Child Health Records'}
+      subtitle={alertsOnly ? 'Children requiring nutritional or clinical attention' : 'Anthropometric growth and milestone records'}
       actions={
         <Button variant="primary" size="sm" onClick={() => onNavigate?.('register')}>
-          <Icon name="plus" className="h-4 w-4" />
+          <Icon name="plus" className="h-4 w-4 mr-1" />
           <span>Register Child</span>
         </Button>
       }
@@ -176,28 +165,29 @@ export default function RecordsScreen({ onNavigate, alertsOnly = false }) {
         <SparshBotanicalCorner position="top-right" className="opacity-25" />
 
         {/* Search & Filter Bar */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="relative flex-1">
+        <div className="space-y-3">
+          <div className="relative">
             <Icon name="search" className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#5A6660]" />
             <input
               type="search"
+              aria-label="Search children"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by name, ID, or guardian..."
-              className="h-11 w-full rounded-xl border border-[#E5EBE7] bg-white pl-10 pr-4 text-xs sm:text-sm text-[#1A201E] placeholder:text-[#8E9C95] focus:border-[#1B4D3E] focus:outline-none transition shadow-2xs"
+              placeholder="Search by name, child ID, or guardian..."
+              className="h-11 w-full rounded-xl border border-[#E5EBE7] bg-white pl-10 pr-4 text-xs font-medium text-[#1A201E] placeholder:text-[#8E9C95] focus:border-[#1B4D3E] focus:outline-none transition shadow-2xs"
             />
           </div>
 
-          <div className="flex gap-1.5 overflow-x-auto pb-1 sm:pb-0 no-scrollbar">
-            {['All', 'Nutritional Watch', 'At Risk', 'Follow Up', 'Normal'].map((x) => (
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+            {filters.map((x) => (
               <button
                 key={x}
                 type="button"
                 onClick={() => setFilter(x)}
-                className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
+                className={`shrink-0 rounded-full px-4 py-1.5 text-xs font-semibold transition ${
                   filter === x
                     ? 'bg-[#1B4D3E] text-white shadow-2xs'
-                    : 'border border-[#E5EBE7] bg-white text-[#5A6660] hover:text-[#1A201E]'
+                    : 'border border-[#E5EBE7] bg-white text-[#5A6660] hover:border-[#CBD5D0] hover:text-[#1A201E]'
                 }`}
               >
                 {x}
@@ -277,8 +267,8 @@ export default function RecordsScreen({ onNavigate, alertsOnly = false }) {
                       <Button variant="outline" size="sm" onClick={() => openVitalsModal(child)}>
                         Log Vitals
                       </Button>
-                      <Button variant="secondary" size="sm" onClick={() => selectChild(child, 'history')}>
-                        History
+                      <Button variant="secondary" size="sm" onClick={() => selectChild(child, 'child-profile')}>
+                        Profile
                       </Button>
                       <Button variant="primary" size="sm" onClick={() => selectChild(child, 'screening')}>
                         Screen
@@ -367,7 +357,7 @@ export default function RecordsScreen({ onNavigate, alertsOnly = false }) {
                       Cancel
                     </Button>
                     <Button type="submit" variant="primary" disabled={savingVitals}>
-                      Save Vitals
+                      {savingVitals ? 'Saving…' : 'Save Vitals'}
                     </Button>
                   </div>
                 </form>

@@ -169,7 +169,7 @@ export default function SplashScreen({ onContinue }) {
           <div className="relative z-10 py-6 space-y-6 max-w-xl">
             <div className="flex flex-col items-start gap-4">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-[#EBF2EE] px-3.5 py-1 text-xs font-semibold text-[#1B4D3E] border border-[#D5E3DB]">
-                National Child Health Surveillance Protocol
+                Developmental Screening &amp; Follow-up Support
               </span>
               <h1 className="text-3xl xl:text-4xl font-extrabold text-[#1A201E] tracking-tight font-heading leading-tight">
                 Supporting Every Child&apos;s <br />

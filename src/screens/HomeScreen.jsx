@@ -1,10 +1,11 @@
-import { useState, useEffect, useMemo } from 'react'
-import { useApp } from '../context/AppContext'
-import { childrenApi } from '../services/api'
+import { useEffect, useMemo, useState } from 'react'
 import AppLayout from '../components/AppLayout'
 import BadgePill from '../components/BadgePill'
 import Button from '../components/Button'
 import Icon from '../components/Icon'
+import { ErrorState, LoadingState, EmptyState } from '../components/AsyncState'
+import { centresApi, childrenApi } from '../services/api'
+import { useApp } from '../context/AppContext'
 
 function AnganwadiWorkerVisual({ className = 'h-24 w-24 sm:h-28 sm:w-28' }) {
   return (
@@ -61,40 +62,49 @@ function AnganwadiWorkerVisual({ className = 'h-24 w-24 sm:h-28 sm:w-28' }) {
 
 export default function HomeScreen({ onNavigate }) {
   const { currentWorker, setCurrentChild } = useApp()
-  const [childrenList, setChildrenList] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [centres, setCentres] = useState([])
+  const [children, setChildren] = useState([])
+  const [state, setState] = useState('idle')
+  const [error, setError] = useState(null)
+
+  const navigate = (screen) => onNavigate?.(screen)
 
   useEffect(() => {
     let active = true
-    const fetchCohort = async () => {
+    const load = async () => {
+      setState('loading')
+      setError(null)
       try {
-        const fn = childrenApi.list()
-        const data = typeof fn === 'function' ? await fn() : await fn
+        const [centreList, childList] = await Promise.all([centresApi.list(), childrenApi.list()])
         if (active) {
-          setChildrenList(Array.isArray(data) ? data : [])
+          setCentres(centreList)
+          setChildren(childList)
+          setState('idle')
         }
-      } catch {
+      } catch (e) {
         if (active) {
-          setChildrenList([])
-        }
-      } finally {
-        if (active) {
-          setLoading(false)
+          setError(e)
+          setState('error')
         }
       }
     }
-    fetchCohort()
+    load()
     return () => {
       active = false
     }
   }, [])
+
+  const childrenList = children || []
 
   const { screenedCount, atRiskCount, moderateCount, onTrackCount, recentActivity } = useMemo(() => {
     const screened = childrenList.filter((c) => !!c.latest_risk)
     const atRisk = childrenList.filter((c) => c.latest_risk === 'RED')
     const moderate = childrenList.filter((c) => c.latest_risk === 'YELLOW')
     const onTrack = childrenList.filter((c) => c.latest_risk === 'GREEN')
-    const recent = childrenList.slice(0, 5)
+    const recent = childrenList
+      .slice()
+      .sort((a, b) => new Date(b.created_at || b.updated_at || 0) - new Date(a.created_at || a.updated_at || 0))
+      .slice(0, 5)
 
     return {
       screenedCount: screened.length,
@@ -105,8 +115,15 @@ export default function HomeScreen({ onNavigate }) {
     }
   }, [childrenList])
 
-  const workerFullName = currentWorker?.name || 'Anita'
+  const assignedCentre = useMemo(() => {
+    const ids = currentWorker?.centre_ids || []
+    if (!ids.length) return null
+    return centres.find((centre) => ids.includes(centre.id))
+  }, [centres, currentWorker?.centre_ids])
+
+  const workerFullName = currentWorker?.name || 'Healthcare Worker'
   const workerFirstName = workerFullName.split(' ')[0]
+  const isAdmin = currentWorker?.role === 'admin'
 
   const greeting = useMemo(() => {
     const hour = new Date().getHours()
@@ -118,7 +135,7 @@ export default function HomeScreen({ onNavigate }) {
   const handleSelectChild = (child) => {
     setCurrentChild(child)
     if (child.latest_risk) {
-      onNavigate?.('history')
+      onNavigate?.('child-profile')
     } else {
       onNavigate?.('screening')
     }
@@ -130,254 +147,293 @@ export default function HomeScreen({ onNavigate }) {
 
   return (
     <AppLayout active="dashboard" onNavigate={onNavigate}>
-      <div className="space-y-4 sm:space-y-5 pb-8 max-w-6xl mx-auto">
+      {state === 'loading' ? (
+        <div className="py-12">
+          <LoadingState label="Loading dashboard data…" />
+        </div>
+      ) : state === 'error' ? (
+        <div className="py-12">
+          <ErrorState error={error} onRetry={() => window.location.reload()} />
+        </div>
+      ) : (
+        <div className="space-y-4 sm:space-y-5 pb-8 max-w-6xl mx-auto">
 
-        {/* ============================================================== */}
-        {/* 1. GREETING HERO CARD (LEFT: TEXT, RIGHT: INTEGRATED WORKER VISUAL) */}
-        {/* ============================================================== */}
-        <section className="relative overflow-hidden rounded-2xl bg-white border border-[#E5EBE7] p-5 sm:p-6 shadow-2xs">
-          <div className="flex items-center justify-between gap-4 relative z-10">
-            {/* Left: Greeting Text */}
-            <div className="space-y-1 max-w-md">
-              <h1 className="text-xl sm:text-2xl font-bold text-[#1A201E] tracking-tight font-heading leading-tight">
-                {greeting}, <br />
-                <span className="text-[#1A201E]">{workerFirstName}</span>
-              </h1>
-              <p className="text-xs sm:text-sm text-[#5A6660] leading-relaxed pt-0.5">
-                Let&apos;s support our children&apos;s development today.
-              </p>
-            </div>
-
-            {/* Right: Integrated Anganwadi Worker Visual (occupying right ~35%) */}
-            <div className="shrink-0 flex items-center justify-center">
-              <AnganwadiWorkerVisual className="h-24 w-24 sm:h-28 sm:w-28 drop-shadow-2xs" />
-            </div>
-          </div>
-        </section>
-
-        {/* ============================================================== */}
-        {/* 2. ACTION CARDS (START SCREENING, REGISTER CHILD, VIEW CHILDREN) */}
-        {/* ============================================================== */}
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-          {/* Card 1: Start Screening (Solid Dark Forest Green) */}
-          <div
-            onClick={() => onNavigate?.('screening')}
-            className="group cursor-pointer rounded-2xl bg-[#1B4D3E] text-white p-5 shadow-2xs hover:bg-[#143D31] transition-all flex flex-col justify-between min-h-[135px]"
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 text-white">
-                <Icon name="screening" className="h-5 w-5" />
+          {/* ============================================================== */}
+          {/* 1. GREETING HERO CARD (LEFT: TEXT, RIGHT: INTEGRATED WORKER VISUAL) */}
+          {/* ============================================================== */}
+          <section className="relative overflow-hidden rounded-2xl bg-white border border-[#E5EBE7] p-5 sm:p-6 shadow-2xs">
+            <div className="flex items-center justify-between gap-4 relative z-10">
+              {/* Left: Greeting Text */}
+              <div className="space-y-1 max-w-md">
+                <h1 className="text-xl sm:text-2xl font-bold text-[#1A201E] tracking-tight font-heading leading-tight">
+                  {greeting}, <br />
+                  <span className="text-[#1A201E]">{workerFirstName}</span>
+                </h1>
+                <p className="text-xs sm:text-sm text-[#5A6660] leading-relaxed pt-0.5">
+                  {assignedCentre
+                    ? `${assignedCentre.name}, ${assignedCentre.district || ''}`.trim().replace(/,\s*$/, '')
+                    : isAdmin
+                    ? 'Administrator'
+                    : "Let's support our children's development today."}
+                </p>
               </div>
-              <span className="text-white text-lg font-bold group-hover:translate-x-1 transition-transform">
-                ›
-              </span>
-            </div>
 
-            <div className="mt-3">
-              <h2 className="text-base font-bold text-white font-heading">
-                Start Screening
-              </h2>
-              <p className="mt-0.5 text-xs text-[#D2E3D8] leading-relaxed">
-                Conduct developmental screening for a child
-              </p>
-            </div>
-          </div>
-
-          {/* Card 2: Register Child (White with Warm Terracotta Accent) */}
-          <div
-            onClick={() => onNavigate?.('register')}
-            className="group cursor-pointer rounded-2xl bg-white border border-[#E5EBE7] text-[#1A201E] p-5 shadow-2xs hover:border-[#CBD5D0] hover:bg-[#F9FBFA] transition-all flex flex-col justify-between min-h-[135px]"
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FDF0EB] text-[#D96B43]">
-                <Icon name="userPlus" className="h-5 w-5" />
+              {/* Right: Integrated Anganwadi Worker Visual */}
+              <div className="shrink-0 flex items-center justify-center">
+                <AnganwadiWorkerVisual className="h-24 w-24 sm:h-28 sm:w-28 drop-shadow-2xs" />
               </div>
-              <span className="text-[#8E9C95] text-lg font-bold group-hover:translate-x-1 transition-transform">
-                ›
-              </span>
             </div>
+          </section>
 
-            <div className="mt-3">
-              <h2 className="text-base font-bold text-[#1A201E] font-heading">
-                Register Child
-              </h2>
-              <p className="mt-0.5 text-xs text-[#5A6660] leading-relaxed">
-                Add a new child to the system
-              </p>
-            </div>
-          </div>
-
-          {/* Card 3: View Children (White with Muted Sage Accent) */}
-          <div
-            onClick={() => onNavigate?.('children')}
-            className="group cursor-pointer rounded-2xl bg-white border border-[#E5EBE7] text-[#1A201E] p-5 shadow-2xs hover:border-[#CBD5D0] hover:bg-[#F9FBFA] transition-all flex flex-col justify-between min-h-[135px] sm:col-span-2 lg:col-span-1"
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#EBF2EE] text-[#1B4D3E]">
-                <Icon name="children" className="h-5 w-5" />
-              </div>
-              <span className="text-[#8E9C95] text-lg font-bold group-hover:translate-x-1 transition-transform">
-                ›
-              </span>
-            </div>
-
-            <div className="mt-3">
-              <h2 className="text-base font-bold text-[#1A201E] font-heading">
-                View Children
-              </h2>
-              <p className="mt-0.5 text-xs text-[#5A6660] leading-relaxed">
-                Manage and monitor registered cohort
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* ============================================================== */}
-        {/* 3. COHORT PROGRESS / SURVEILLANCE METRICS STRIP               */}
-        {/* ============================================================== */}
-        <section className="rounded-2xl border border-[#E5EBE7] bg-white p-4 sm:p-5 shadow-2xs space-y-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#5A6660]">
-                Ward Milestone Coverage
-              </h3>
-              <p className="text-sm font-semibold text-[#1A201E] mt-0.5">
-                {screenedCount} of {childrenList.length} Children Screened ({completionRate}%)
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => onNavigate?.('analytics')}
-              className="text-xs font-bold text-[#1B4D3E] hover:underline"
-            >
-              Analytics →
-            </button>
-          </div>
-
-          {/* Progress bar */}
-          <div className="h-2 w-full overflow-hidden rounded-full bg-[#E5EBE7]">
+          {/* ============================================================== */}
+          {/* 2. ACTION CARDS (START SCREENING, REGISTER CHILD, VIEW CHILDREN) */}
+          {/* ============================================================== */}
+          <section className={`grid grid-cols-1 sm:grid-cols-2 ${isAdmin ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-3.5`}>
+            {/* Card 1: Start Screening (Solid Dark Forest Green) */}
             <div
-              className="h-full rounded-full bg-[#1B4D3E] transition-all duration-300"
-              style={{ width: `${completionRate}%` }}
-            />
-          </div>
-
-          {/* 4 Clean Metric Badges */}
-          <div className="grid grid-cols-4 gap-2 pt-1 text-center">
-            <div className="rounded-xl border border-[#E5EBE7] bg-[#F9FBFA] py-2 px-1">
-              <span className="text-[10px] font-bold uppercase text-[#5A6660]">Total</span>
-              <p className="text-base font-bold text-[#1A201E] leading-tight mt-0.5">{childrenList.length}</p>
-            </div>
-            <div className="rounded-xl border border-[#C6E7D5] bg-[#E8F5EE] py-2 px-1">
-              <span className="text-[10px] font-bold uppercase text-[#2D7A58]">Normal</span>
-              <p className="text-base font-bold text-[#2D7A58] leading-tight mt-0.5">{onTrackCount}</p>
-            </div>
-            <div className="rounded-xl border border-[#F7D4C8] bg-[#FDF0EB] py-2 px-1">
-              <span className="text-[10px] font-bold uppercase text-[#D96B43]">Follow Up</span>
-              <p className="text-base font-bold text-[#D96B43] leading-tight mt-0.5">{moderateCount}</p>
-            </div>
-            <div className="rounded-xl border border-[#F8C4C4] bg-[#FDE8E8] py-2 px-1">
-              <span className="text-[10px] font-bold uppercase text-[#D32F2F]">At Risk</span>
-              <p className="text-base font-bold text-[#D32F2F] leading-tight mt-0.5">{atRiskCount}</p>
-            </div>
-          </div>
-        </section>
-
-        {/* ============================================================== */}
-        {/* 4. RECENT ACTIVITY (EXACT MATCH TO REFERENCE SCREEN 3)         */}
-        {/* ============================================================== */}
-        <section className="space-y-2.5">
-          <div className="flex items-center justify-between px-1">
-            <h2 className="text-base font-bold text-[#1A201E] font-heading">
-              Recent Activity
-            </h2>
-            <button
-              type="button"
-              onClick={() => onNavigate?.('children')}
-              className="text-xs font-bold text-[#D96B43] hover:underline"
+              onClick={() => onNavigate?.('screening')}
+              className="group cursor-pointer rounded-2xl bg-[#1B4D3E] text-white p-5 shadow-2xs hover:bg-[#143D31] transition-all flex flex-col justify-between min-h-[135px]"
             >
-              View All
-            </button>
-          </div>
-
-          {/* Empty state when no activity (exact match to Screen 3 in reference) */}
-          {childrenList.length === 0 ? (
-            <div className="rounded-2xl border border-[#E5EBE7] bg-white p-6 text-center shadow-2xs space-y-2">
-              <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl bg-[#F5F8F6] text-[#8E9C95]">
-                <Icon name="report" className="h-5 w-5" />
+              <div className="flex items-center justify-between">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 text-white">
+                  <Icon name="screening" className="h-5 w-5" />
+                </div>
+                <span className="text-white text-lg font-bold group-hover:translate-x-1 transition-transform">
+                  ›
+                </span>
               </div>
-              <h3 className="text-sm font-semibold text-[#1A201E]">
-                No recent activity
-              </h3>
-              <p className="text-xs text-[#5A6660] max-w-xs mx-auto">
-                Your recent activities will appear here once you begin registrations or screenings.
-              </p>
-              <div className="pt-2">
-                <Button variant="primary" size="sm" onClick={() => onNavigate?.('register')}>
-                  <Icon name="plus" className="h-3.5 w-3.5 mr-1" />
-                  <span>Register First Child</span>
-                </Button>
+
+              <div className="mt-3">
+                <h2 className="text-base font-bold text-white font-heading">
+                  Start Screening
+                </h2>
+                <p className="mt-0.5 text-xs text-[#D2E3D8] leading-relaxed">
+                  Conduct developmental screening for a child
+                </p>
               </div>
             </div>
-          ) : (
-            <div className="rounded-2xl border border-[#E5EBE7] bg-white divide-y divide-[#F0F4F2] shadow-2xs overflow-hidden">
-              {recentActivity.map((child) => {
-                const tone =
-                  child.latest_risk === 'RED'
-                    ? 'risk'
-                    : child.latest_risk === 'YELLOW'
-                    ? 'followup'
-                    : child.latest_risk === 'GREEN'
-                    ? 'normal'
-                    : 'neutral'
 
-                const label =
-                  child.latest_risk === 'RED'
-                    ? 'At Risk'
-                    : child.latest_risk === 'YELLOW'
-                    ? 'Follow Up'
-                    : child.latest_risk === 'GREEN'
-                    ? 'Normal'
-                    : 'Pending'
+            {/* Card 2: Register Child (White with Warm Terracotta Accent) */}
+            <div
+              onClick={() => onNavigate?.('register')}
+              className="group cursor-pointer rounded-2xl bg-white border border-[#E5EBE7] text-[#1A201E] p-5 shadow-2xs hover:border-[#CBD5D0] hover:bg-[#F9FBFA] transition-all flex flex-col justify-between min-h-[135px]"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FDF0EB] text-[#D96B43]">
+                  <Icon name="userPlus" className="h-5 w-5" />
+                </div>
+                <span className="text-[#8E9C95] text-lg font-bold group-hover:translate-x-1 transition-transform">
+                  ›
+                </span>
+              </div>
 
-                const ageText = child.age_months !== null && child.age_months !== undefined
-                  ? `${Math.floor(child.age_months / 12)}y ${child.age_months % 12}m`
-                  : 'Age not logged'
+              <div className="mt-3">
+                <h2 className="text-base font-bold text-[#1A201E] font-heading">
+                  Register Child
+                </h2>
+                <p className="mt-0.5 text-xs text-[#5A6660] leading-relaxed">
+                  Add a new child to the system
+                </p>
+              </div>
+            </div>
 
-                return (
-                  <div
-                    key={child.id}
-                    onClick={() => handleSelectChild(child)}
-                    className="p-3.5 flex items-center justify-between gap-3 hover:bg-[#F9FBFA] cursor-pointer transition-colors"
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#FDF0EB] text-[#D96B43] font-bold text-xs">
-                        {child.name?.charAt(0) || 'C'}
-                      </div>
-                      <div className="min-w-0">
-                        <h4 className="text-xs sm:text-sm font-semibold text-[#1A201E] truncate">
-                          {child.name || 'Unnamed Child'}
-                        </h4>
-                        <p className="text-[11px] text-[#5A6660] truncate">
-                          {ageText}{child.sex ? ` · ${child.sex}` : ''} · ID: {child.child_identifier || '—'}
-                        </p>
-                      </div>
-                    </div>
+            {/* Card 3: View Children (White with Muted Sage Accent) */}
+            <div
+              onClick={() => onNavigate?.('children')}
+              className={`group cursor-pointer rounded-2xl bg-white border border-[#E5EBE7] text-[#1A201E] p-5 shadow-2xs hover:border-[#CBD5D0] hover:bg-[#F9FBFA] transition-all flex flex-col justify-between min-h-[135px] ${!isAdmin ? 'sm:col-span-2 lg:col-span-1' : ''}`}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#EBF2EE] text-[#1B4D3E]">
+                  <Icon name="children" className="h-5 w-5" />
+                </div>
+                <span className="text-[#8E9C95] text-lg font-bold group-hover:translate-x-1 transition-transform">
+                  ›
+                </span>
+              </div>
 
-                    <div className="flex items-center gap-2.5 shrink-0">
-                      <BadgePill tone={tone}>
-                        {label}
-                      </BadgePill>
-                      <span className="text-sm font-bold text-[#8E9C95]">›</span>
-                    </div>
+              <div className="mt-3">
+                <h2 className="text-base font-bold text-[#1A201E] font-heading">
+                  View Children
+                </h2>
+                <p className="mt-0.5 text-xs text-[#5A6660] leading-relaxed">
+                  Manage and monitor registered cohort
+                </p>
+              </div>
+            </div>
+
+            {/* Card 4 (Optional Admin): Admin Console */}
+            {isAdmin && (
+              <div
+                onClick={() => onNavigate?.('admin-console')}
+                className="group cursor-pointer rounded-2xl bg-white border border-[#E5EBE7] text-[#1A201E] p-5 shadow-2xs hover:border-[#CBD5D0] hover:bg-[#F9FBFA] transition-all flex flex-col justify-between min-h-[135px]"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#F5F8F6] text-[#1B4D3E]">
+                    <Icon name="settings" className="h-5 w-5" />
                   </div>
-                )
-              })}
-            </div>
-          )}
-        </section>
+                  <span className="text-[#8E9C95] text-lg font-bold group-hover:translate-x-1 transition-transform">
+                    ›
+                  </span>
+                </div>
 
-      </div>
+                <div className="mt-3">
+                  <h2 className="text-base font-bold text-[#1A201E] font-heading">
+                    Admin Console
+                  </h2>
+                  <p className="mt-0.5 text-xs text-[#5A6660] leading-relaxed">
+                    Manage centres and user credentials
+                  </p>
+                </div>
+              </div>
+            )}
+          </section>
+
+          {/* ============================================================== */}
+          {/* 3. COHORT PROGRESS / SURVEILLANCE METRICS STRIP               */}
+          {/* ============================================================== */}
+          <section className="rounded-2xl border border-[#E5EBE7] bg-white p-4 sm:p-5 shadow-2xs space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[#5A6660]">
+                  Ward Milestone Coverage
+                </h3>
+                <p className="text-sm font-semibold text-[#1A201E] mt-0.5">
+                  {screenedCount} of {childrenList.length} Children Screened ({completionRate}%)
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => onNavigate?.('analytics')}
+                className="text-xs font-bold text-[#1B4D3E] hover:underline"
+              >
+                Analytics →
+              </button>
+            </div>
+
+            {/* Progress bar */}
+            <div className="h-2 w-full overflow-hidden rounded-full bg-[#E5EBE7]">
+              <div
+                className="h-full rounded-full bg-[#1B4D3E] transition-all duration-300"
+                style={{ width: `${completionRate}%` }}
+              />
+            </div>
+
+            {/* 4 Clean Metric Badges */}
+            <div className="grid grid-cols-4 gap-2 pt-1 text-center">
+              <div className="rounded-xl border border-[#E5EBE7] bg-[#F9FBFA] py-2 px-1">
+                <span className="text-[10px] font-bold uppercase text-[#5A6660]">Total</span>
+                <p className="text-base font-bold text-[#1A201E] leading-tight mt-0.5">{childrenList.length}</p>
+              </div>
+              <div className="rounded-xl border border-[#C6E7D5] bg-[#E8F5EE] py-2 px-1">
+                <span className="text-[10px] font-bold uppercase text-[#2D7A58]">Normal</span>
+                <p className="text-base font-bold text-[#2D7A58] leading-tight mt-0.5">{onTrackCount}</p>
+              </div>
+              <div className="rounded-xl border border-[#F7D4C8] bg-[#FDF0EB] py-2 px-1">
+                <span className="text-[10px] font-bold uppercase text-[#D96B43]">Follow Up</span>
+                <p className="text-base font-bold text-[#D96B43] leading-tight mt-0.5">{moderateCount}</p>
+              </div>
+              <div className="rounded-xl border border-[#F8C4C4] bg-[#FDE8E8] py-2 px-1">
+                <span className="text-[10px] font-bold uppercase text-[#D32F2F]">At Risk</span>
+                <p className="text-base font-bold text-[#D32F2F] leading-tight mt-0.5">{atRiskCount}</p>
+              </div>
+            </div>
+          </section>
+
+          {/* ============================================================== */}
+          {/* 4. RECENT ACTIVITY                                             */}
+          {/* ============================================================== */}
+          <section className="space-y-2.5">
+            <div className="flex items-center justify-between px-1">
+              <h2 className="text-base font-bold text-[#1A201E] font-heading">
+                Recent Activity
+              </h2>
+              <button
+                type="button"
+                onClick={() => onNavigate?.('children')}
+                className="text-xs font-bold text-[#D96B43] hover:underline"
+              >
+                View All
+              </button>
+            </div>
+
+            {/* Empty state when no activity */}
+            {childrenList.length === 0 ? (
+              <div className="rounded-2xl border border-[#E5EBE7] bg-white p-6 text-center shadow-2xs space-y-2">
+                <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl bg-[#F5F8F6] text-[#8E9C95]">
+                  <Icon name="report" className="h-5 w-5" />
+                </div>
+                <h3 className="text-sm font-semibold text-[#1A201E]">
+                  No recent activity
+                </h3>
+                <p className="text-xs text-[#5A6660] max-w-xs mx-auto">
+                  Your recent activities will appear here once you begin registrations or screenings.
+                </p>
+                <div className="pt-2">
+                  <Button variant="primary" size="sm" onClick={() => onNavigate?.('register')}>
+                    <Icon name="plus" className="h-3.5 w-3.5 mr-1" />
+                    <span>Register First Child</span>
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-[#E5EBE7] bg-white divide-y divide-[#F0F4F2] shadow-2xs overflow-hidden">
+                {recentActivity.map((child) => {
+                  const tone =
+                    child.latest_risk === 'RED'
+                      ? 'risk'
+                      : child.latest_risk === 'YELLOW'
+                      ? 'followup'
+                      : child.latest_risk === 'GREEN'
+                      ? 'normal'
+                      : 'neutral'
+
+                  const label =
+                    child.latest_risk === 'RED'
+                      ? 'At Risk'
+                      : child.latest_risk === 'YELLOW'
+                      ? 'Follow Up'
+                      : child.latest_risk === 'GREEN'
+                      ? 'Normal'
+                      : 'Pending'
+
+                  const ageText = child.age_months !== null && child.age_months !== undefined
+                    ? `${Math.floor(child.age_months / 12)}y ${child.age_months % 12}m`
+                    : 'Age not logged'
+
+                  return (
+                    <div
+                      key={child.id}
+                      onClick={() => handleSelectChild(child)}
+                      className="p-3.5 flex items-center justify-between gap-3 hover:bg-[#F9FBFA] cursor-pointer transition-colors"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#FDF0EB] text-[#D96B43] font-bold text-xs">
+                          {child.name?.charAt(0) || 'C'}
+                        </div>
+                        <div className="min-w-0">
+                          <h4 className="text-xs sm:text-sm font-semibold text-[#1A201E] truncate">
+                            {child.name || 'Unnamed Child'}
+                          </h4>
+                          <p className="text-[11px] text-[#5A6660] truncate">
+                            {ageText}{child.sex ? ` · ${child.sex}` : ''} · ID: {child.child_identifier || '—'}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2.5 shrink-0">
+                        <BadgePill tone={tone}>
+                          {label}
+                        </BadgePill>
+                        <span className="text-sm font-bold text-[#8E9C95]">›</span>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </section>
+        </div>
+      )}
     </AppLayout>
   )
 }

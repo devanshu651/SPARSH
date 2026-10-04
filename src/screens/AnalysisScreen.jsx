@@ -53,11 +53,11 @@ export default function AnalysisScreen({ onNavigate }) {
       setPendingScreening?.(null)
       sessionStorage.removeItem('sparsh:pending-screening')
     } catch (e) {
-      if (e?.status === 409) {
+      if (e?.status === 409 && e?.code === 'duplicate_submission') {
         setPendingScreening?.(null)
         sessionStorage.removeItem('sparsh:pending-screening')
-        setError(new Error('This screening was already submitted. Open child history to view it.'))
-      } else if (!navigator.onLine) {
+        setError(new Error('This screening was already submitted. Open the child history to view it.'))
+      } else if (!navigator.onLine || e?.status === 0) {
         try {
           await enqueueScreening(payload)
         } catch {
@@ -66,7 +66,7 @@ export default function AnalysisScreen({ onNavigate }) {
         }
         setPendingScreening?.(null)
         sessionStorage.removeItem('sparsh:pending-screening')
-        setError(new Error('Device is offline. Screening cached locally and will synchronize automatically.'))
+        setError(new Error('Waiting to sync. This screening is stored on this device and has not been confirmed by the SPARSH server.'))
       } else {
         setError(e)
       }
@@ -89,8 +89,18 @@ export default function AnalysisScreen({ onNavigate }) {
         active="screening"
         onNavigate={onNavigate}
         backTo="screening"
-        title="Analysis"
-        subtitle="RBSK Algorithmic Risk Evaluation Engine"
+        title="Screening Result Review"
+        subtitle="Backend-calculated screening indication"
+        actions={
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => onNavigate?.('screening')}
+          >
+            <Icon name="screening" className="h-4 w-4" />
+            <span>Start Screening</span>
+          </Button>
+        }
       >
         <div className="relative mx-auto max-w-xl p-6 text-center space-y-4">
           <SparshBotanicalCorner position="top-right" className="opacity-30" />
@@ -98,13 +108,17 @@ export default function AnalysisScreen({ onNavigate }) {
             <Icon name="analytics" className="h-7 w-7" />
           </div>
           <h2 className="text-lg font-semibold text-[#1A201E]">No Active Screening to Analyze</h2>
-          <p className="text-xs text-[#5A6660] max-w-md mx-auto">
-            Developmental analysis requires completing a milestone screening observation first.
+          <p className="text-xs text-[#5A6660] max-w-md mx-auto leading-relaxed">
+            The screening service evaluates responses recorded during an active session. To review results, select a child from your cohort and complete milestone screening.
           </p>
-          <div className="pt-2">
+          <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
             <Button variant="primary" onClick={() => onNavigate?.('screening')}>
               <Icon name="screening" className="h-4 w-4 mr-1.5" />
               <span>Go to Screening</span>
+            </Button>
+            <Button variant="secondary" onClick={() => onNavigate?.('children')}>
+              <Icon name="children" className="h-4 w-4 mr-1.5" />
+              <span>Select Child</span>
             </Button>
           </div>
         </div>
@@ -114,7 +128,7 @@ export default function AnalysisScreen({ onNavigate }) {
 
   if (analyzing) {
     return (
-      <AppLayout active="screening" onNavigate={onNavigate} backTo="screening" title="Analysis">
+      <AppLayout active="screening" onNavigate={onNavigate} backTo="screening" title="Screening Analysis">
         <div className="mx-auto max-w-md p-10 text-center space-y-4">
           <LoadingState label="Evaluating developmental milestone responses..." />
         </div>
@@ -124,7 +138,7 @@ export default function AnalysisScreen({ onNavigate }) {
 
   if (error && !screeningResult) {
     return (
-      <AppLayout active="screening" onNavigate={onNavigate} backTo="screening" title="Analysis">
+      <AppLayout active="screening" onNavigate={onNavigate} backTo="screening" title="Screening Analysis">
         <div className="mx-auto max-w-md p-6">
           <ErrorState error={error} onRetry={runAnalysis} />
         </div>
@@ -132,24 +146,27 @@ export default function AnalysisScreen({ onNavigate }) {
     )
   }
 
-  // Exact Match to Screen 7 (Analysis)
-  const childName = currentChild?.name || 'Aarav Sharma'
+  // Exact Match to Screen 7 (Analysis) in Redesigned UI
+  const childName = currentChild?.name || 'Selected Child'
   const ageDisplay = currentChild?.age_months !== null && currentChild?.age_months !== undefined
     ? `${Math.floor(currentChild.age_months / 12)} years ${currentChild.age_months % 12} months`
-    : '3 years 2 months'
-  const childSex = currentChild?.sex || 'Male'
+    : 'Age recorded'
+  const childSex = currentChild?.sex || 'Child'
   const screenedDate = screeningResult?.screened_at
     ? new Date(screeningResult.screened_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
-    : '12 Apr 2024'
+    : 'Recent'
 
   const domainScores = screeningResult?.domain_scores || {}
+
+  const overallRisk = screeningResult?.overall_risk || screeningResult?.risk_level || screeningResult?.summary?.risk_level
 
   return (
     <AppLayout
       active="screening"
       onNavigate={onNavigate}
       backTo="screening"
-      title="Analysis"
+      title="Screening Analysis"
+      subtitle="Backend-calculated developmental indication"
       actions={
         <Button variant="primary" size="sm" onClick={() => onNavigate?.('report')}>
           <span>View Report →</span>
@@ -160,15 +177,35 @@ export default function AnalysisScreen({ onNavigate }) {
         <SparshBotanicalCorner position="top-right" className="opacity-25" />
 
         {/* Child Profile Card (Matches Screen 7) */}
-        <div className="flex items-center gap-3.5 rounded-2xl border border-[#E5EBE7] bg-white p-4 shadow-2xs">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#FDF0EB] text-[#D96B43] font-bold text-base">
-            {childName.charAt(0)}
+        <div className="flex items-center justify-between rounded-2xl border border-[#E5EBE7] bg-white p-4 shadow-2xs">
+          <div className="flex items-center gap-3.5">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#FDF0EB] text-[#D96B43] font-bold text-base">
+              {childName.charAt(0)}
+            </div>
+            <div>
+              <h2 className="text-base font-semibold text-[#1A201E]">{childName}</h2>
+              <p className="text-xs text-[#5A6660]">{ageDisplay} · {childSex}</p>
+              <p className="text-[11px] text-[#8E9C95] mt-0.5">Screened on {screenedDate}</p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-base font-semibold text-[#1A201E]">{childName}</h2>
-            <p className="text-xs text-[#5A6660]">{ageDisplay} · {childSex}</p>
-            <p className="text-[11px] text-[#8E9C95] mt-0.5">Screened on {screenedDate}</p>
-          </div>
+
+          {overallRisk && (
+            <BadgePill
+              tone={
+                overallRisk === 'RED'
+                  ? 'risk'
+                  : overallRisk === 'YELLOW'
+                  ? 'followup'
+                  : 'normal'
+              }
+            >
+              {overallRisk === 'RED'
+                ? 'Follow-up Recommended'
+                : overallRisk === 'YELLOW'
+                ? 'Review Recommended'
+                : 'Threshold Not Reached'}
+            </BadgePill>
+          )}
         </div>
 
         {/* Developmental Domains Section (Matches Screen 7) */}
@@ -180,9 +217,9 @@ export default function AnalysisScreen({ onNavigate }) {
           <div className="space-y-2.5">
             {domainConfig.map((dom) => {
               const score = domainScores[dom.key]
-              const isFlagged = score?.missed_count > 0 || score?.missed_weight > 0
+              const isFlagged = score?.missed_count > 0 || score?.missed_weight > 0 || score?.risk === 'YELLOW' || score?.risk === 'RED'
               const badgeTone = isFlagged ? 'followup' : 'normal'
-              const badgeLabel = isFlagged ? 'Needs Attention' : 'Normal'
+              const badgeLabel = isFlagged ? 'Needs Attention' : 'On Track'
 
               return (
                 <div
@@ -197,7 +234,14 @@ export default function AnalysisScreen({ onNavigate }) {
                     >
                       <Icon name={dom.icon} className="h-4 w-4" />
                     </span>
-                    <span className="text-sm font-medium text-[#1A201E]">{dom.label}</span>
+                    <div>
+                      <span className="text-sm font-medium text-[#1A201E]">{dom.label}</span>
+                      {score?.total_count ? (
+                        <p className="text-[11px] text-[#8E9C95]">
+                          {score.achieved_count ?? (score.total_count - (score.missed_count || 0))} of {score.total_count} milestones achieved
+                        </p>
+                      ) : null}
+                    </div>
                   </div>
 
                   <BadgePill tone={badgeTone}>

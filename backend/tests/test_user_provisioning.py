@@ -5,7 +5,7 @@ import pytest
 from fastapi import HTTPException
 from pydantic import ValidationError
 
-from app.models.auth import CurrentUser, Role, UserProvision, UserUpdate
+from app.models.auth import CurrentUser, Role, UserProfile, UserProvision, UserUpdate
 from app.routers import users
 
 
@@ -51,21 +51,33 @@ def payload(**overrides):
 def test_admin_can_provision_worker_and_password_is_not_persisted():
     db, profile_ref = provisioning_db()
     firebase_user = Mock(uid="uid-1", disabled=False)
-    with patch.object(users, "get_firestore_client", return_value=db), patch.object(users.auth, "create_user", return_value=firebase_user) as create:
+    with patch.object(users, "get_firestore_client", return_value=db), patch.object(users.auth, "create_user", return_value=firebase_user) as create, patch.object(users, "audit_log") as audit_event:
         response = users.provision_user(payload(), ADMIN)
     create.assert_called_once_with(email="9876543210@sparsh.local", password="safe-password", display_name="Asha Worker")
     written = db.transaction.return_value.set.call_args.args[1]
     assert "password" not in written
     assert response.uid == "uid-1"
     assert response.role is Role.WORKER
+    audit_event.assert_called_once_with("admin-1", "user_provisioned", "uid-1")
 
 
 def test_admin_can_provision_supervisor():
     db, _ = provisioning_db()
     firebase_user = Mock(uid="uid-2", disabled=False)
     provision = payload(role=Role.SUPERVISOR)
-    with patch.object(users, "get_firestore_client", return_value=db), patch.object(users.auth, "create_user", return_value=firebase_user):
+    with patch.object(users, "get_firestore_client", return_value=db), patch.object(users.auth, "create_user", return_value=firebase_user), patch.object(users, "audit_log") as audit_event:
         assert users.provision_user(provision, ADMIN).role is Role.SUPERVISOR
+    audit_event.assert_called_once_with("admin-1", "user_provisioned", "uid-2")
+
+
+def test_admin_profiles_can_have_no_centres_but_provisioned_users_require_one():
+    admin_profile = UserProfile(uid="admin-2", name="Admin Two", role=Role.ADMIN, centre_ids=[])
+    assert admin_profile.centre_ids == []
+    admin_session = CurrentUser(uid="admin-2", role=Role.ADMIN, centre_ids=[])
+    assert admin_session.centre_ids == []
+    for role in (Role.WORKER, Role.SUPERVISOR):
+        with pytest.raises(ValidationError, match="require at least one centre assignment"):
+            payload(role=role, centre_ids=[])
 
 
 @pytest.mark.parametrize("caller", [WORKER, SUPERVISOR])
@@ -115,12 +127,16 @@ def test_admin_can_update_assignments_role_and_activation():
     db, profile_ref = provisioning_db()
     profile_ref.get.return_value = Snapshot({"name": "Asha", "role": "worker", "centre_ids": ["centre-a"], "created_at": datetime.now(timezone.utc)}, "uid-1")
     firebase_user = Mock(disabled=False)
-    with patch.object(users, "get_firestore_client", return_value=db), patch.object(users.auth, "get_user", return_value=firebase_user), patch.object(users.auth, "update_user", return_value=Mock(disabled=True)):
+    with patch.object(users, "get_firestore_client", return_value=db), patch.object(users.auth, "get_user", return_value=firebase_user), patch.object(users.auth, "update_user", return_value=Mock(disabled=True)), patch.object(users, "audit_log") as audit_event:
         updated = users.update_user("uid-1", UserUpdate(role=Role.SUPERVISOR, centre_ids=[]), ADMIN)
         activated = users.set_user_activation("uid-1", __import__("app.models.auth", fromlist=["UserActivationUpdate"]).UserActivationUpdate(disabled=True), ADMIN)
     assert updated.role is Role.SUPERVISOR
     assert db.transaction.return_value.update.call_args.args[1]["centre_ids"] == []
     assert activated.disabled is True
+    assert [call.args for call in audit_event.call_args_list] == [
+        ("admin-1", "user_updated", "uid-1"),
+        ("admin-1", "user_activation_changed", "uid-1"),
+    ]
 
 
 def admin_safety_db(other_disabled=False):

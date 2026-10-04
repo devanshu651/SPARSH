@@ -7,40 +7,37 @@ import { SparshBotanicalCorner } from '../components/SparshBotanical'
 import { useApp } from '../context/AppContext'
 
 export default function AVAssessmentScreen({ onNavigate }) {
-  const { currentChild } = useApp()
+  const { currentChild, pendingScreening, setPendingScreening } = useApp()
+
   const [observations, setObservations] = useState({
     hearing: null, // 'normal' | 'concern'
     vision: null,  // 'normal' | 'concern'
     speech: null   // 'normal' | 'concern'
   })
 
-  // Audio Tone Generator State
+  // Audio tone generator
   const [playingFreq, setPlayingFreq] = useState(null)
   const audioCtxRef = useRef(null)
-  const oscRef = useRef(null)
 
-  // Visual Tracking Modal State
+  // Visual tracking
   const [showVisualModal, setShowVisualModal] = useState(false)
   const [trackingActive, setTrackingActive] = useState(false)
   const [targetPos, setTargetPos] = useState({ x: 50, y: 50 })
   const animationFrameRef = useRef(null)
 
-  // Speech Timer State
-  const [timerRunning, setTimerRunning] = useState(false)
+  // Speech observation timer
   const [secondsRemaining, setSecondsRemaining] = useState(30)
-  const [vocalChecklist, setVocalChecklist] = useState({
-    cooing: false,
-    babbling: false,
-    words: false
-  })
+  const [timerRunning, setTimerRunning] = useState(false)
 
-  // Web Audio Tone Synthesis
   const playTone = (freq) => {
-    stopTone()
     try {
-      const AudioContext = window.AudioContext || window.webkitAudioContext
-      if (!AudioContext) return
-      const ctx = new AudioContext()
+      stopTone()
+      const AudioCtx = window.AudioContext || window.webkitAudioContext
+      if (!AudioCtx) return
+
+      const ctx = new AudioCtx()
+      audioCtxRef.current = ctx
+
       const osc = ctx.createOscillator()
       const gain = ctx.createGain()
 
@@ -54,26 +51,13 @@ export default function AVAssessmentScreen({ onNavigate }) {
       gain.connect(ctx.destination)
 
       osc.start()
-      audioCtxRef.current = ctx
-      oscRef.current = osc
       setPlayingFreq(freq)
-
-      setTimeout(() => {
-        stopTone()
-      }, 2500)
-    } catch {
-      stopTone()
+    } catch (err) {
+      console.error('Audio tone error:', err)
     }
   }
 
   const stopTone = () => {
-    if (oscRef.current) {
-      try {
-        oscRef.current.stop()
-        oscRef.current.disconnect()
-      } catch {}
-      oscRef.current = null
-    }
     if (audioCtxRef.current) {
       try {
         audioCtxRef.current.close()
@@ -129,13 +113,34 @@ export default function AVAssessmentScreen({ onNavigate }) {
     setObservations((prev) => ({ ...prev, [test]: status }))
   }
 
+  const hasConcerningObservation =
+    observations.hearing === 'concern' ||
+    observations.vision === 'concern' ||
+    observations.speech === 'concern'
+
   const handleProceedToAnalysis = () => {
+    const avData = {
+      hearing: observations.hearing === 'normal' ? 'responded' : observations.hearing === 'concern' ? 'no_response' : 'unsure',
+      visual: observations.vision === 'normal' ? 'responded' : observations.vision === 'concern' ? 'no_response' : 'unsure',
+      speech: observations.speech,
+      observed_at: new Date().toISOString()
+    }
+
+    if (pendingScreening) {
+      setPendingScreening({
+        ...pendingScreening,
+        sensory_observations: observations,
+        av_observation: avData
+      })
+    }
+
     // Append supplemental sensory results to stored session
     try {
       const raw = sessionStorage.getItem('sparsh:pending-screening')
       if (raw) {
         const payload = JSON.parse(raw)
         payload.sensory_observations = observations
+        payload.av_observation = avData
         sessionStorage.setItem('sparsh:pending-screening', JSON.stringify(payload))
       }
     } catch {}
@@ -163,7 +168,7 @@ export default function AVAssessmentScreen({ onNavigate }) {
             <div>
               <h2 className="text-sm font-semibold text-[#1A201E]">{currentChild?.name || 'Child'}</h2>
               <p className="text-xs text-[#5A6660]">
-                {currentChild?.age_months ? `${currentChild.age_months} months` : 'Screening in progress'} · Sensory Screening
+                {currentChild?.age_months ? `${currentChild.age_months} months` : 'Screening in progress'} · Sensory Observation
               </p>
             </div>
           </div>
@@ -176,6 +181,14 @@ export default function AVAssessmentScreen({ onNavigate }) {
           </button>
         </div>
 
+        {/* Observation Aid Clinical Notice */}
+        <div className="rounded-2xl border border-amber-200 bg-amber-50/90 p-4 text-xs leading-relaxed text-amber-950 shadow-2xs">
+          <p className="font-bold text-amber-900">Screening Observation Aid — Non-Diagnostic</p>
+          <p className="mt-0.5 text-amber-800">
+            Use these supplemental aids to observe immediate behavioral reflexes. Diagnostic confirmation is provided by specialist DEIC referral centres.
+          </p>
+        </div>
+
         {/* Module 1: Auditory Tone Response */}
         <div className="rounded-2xl border border-[#E5EBE7] bg-white p-5 shadow-2xs space-y-4">
           <div className="flex items-center justify-between">
@@ -185,7 +198,7 @@ export default function AVAssessmentScreen({ onNavigate }) {
               </span>
               <div>
                 <h3 className="text-sm font-semibold text-[#1A201E]">Auditory Tone Response</h3>
-                <p className="text-xs text-[#5A6660]">Emit diagnostic audio frequencies (500Hz - 4000Hz)</p>
+                <p className="text-xs text-[#5A6660]">Emit calibrated audio frequencies (500Hz - 4000Hz)</p>
               </div>
             </div>
             {observations.hearing && (
@@ -334,6 +347,13 @@ export default function AVAssessmentScreen({ onNavigate }) {
             </Button>
           </div>
         </div>
+
+        {/* Concerning Observation Notice */}
+        {hasConcerningObservation && (
+          <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-xs font-semibold text-red-900 shadow-2xs">
+            ⚠️ Concerning screening observation flagged — these findings will be highlighted in the diagnostic evaluation.
+          </div>
+        )}
 
         {/* Action Button */}
         <div className="pt-2">

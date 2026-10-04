@@ -11,6 +11,12 @@ ALLOWED_ACTIONS = frozenset({
     "health_data_created",
     "screening_submitted",
     "referral_created",
+    "assistant_requested",
+    "user_provisioned",
+    "user_updated",
+    "user_activation_changed",
+    "centre_created",
+    "centre_updated",
 })
 
 AUDIT_COLLECTION = "audit_logs"
@@ -35,9 +41,9 @@ def audit_log(uid, action, resource_id, centre_id=None):
 
     try:
         get_firestore_client().collection(AUDIT_COLLECTION).add(record)
-    except Exception:
-        logger.exception(
-            "audit write failed for action=%s resource_id=%s",
+    except Exception as exc:
+        logger.warning(
+            "audit write failed action=%s exception_class=%s",
             action,
-            resource_id,
+            type(exc).__name__,
         )

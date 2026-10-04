@@ -44,10 +44,13 @@ export default function ScreeningScreen({ onNavigate }) {
   const [answers, setAnswers] = useState({})
   const [domainIndex, setDomainIndex] = useState(0)
   const [questionIndex, setQuestionIndex] = useState(0)
+  const [reviewing, setReviewing] = useState(false)
+  const [pendingPayload, setPendingPayload] = useState(null)
 
   // Cohort state when no child is selected
   const [cohort, setCohort] = useState([])
   const [loadingCohort, setLoadingCohort] = useState(false)
+  const [cohortError, setCohortError] = useState(null)
   const [cohortSearch, setCohortSearch] = useState('')
 
   const load = async () => {
@@ -74,6 +77,8 @@ export default function ScreeningScreen({ onNavigate }) {
     setAnswers({})
     setDomainIndex(0)
     setQuestionIndex(0)
+    setReviewing(false)
+    setPendingPayload(null)
     load()
   }, [currentChild?.id])
 
@@ -100,21 +105,22 @@ export default function ScreeningScreen({ onNavigate }) {
     }
   }, [answers, currentChild?.id, data])
 
-  // Load cohort when no child is selected
+  const fetchCohort = async () => {
+    setLoadingCohort(true)
+    setCohortError(null)
+    try {
+      const fn = childrenApi.list()
+      const res = typeof fn === 'function' ? await fn() : await fn
+      setCohort(Array.isArray(res) ? res : [])
+    } catch (err) {
+      setCohortError(err)
+    } finally {
+      setLoadingCohort(false)
+    }
+  }
+
   useEffect(() => {
     if (!currentChild) {
-      setLoadingCohort(true)
-      const fetchCohort = async () => {
-        try {
-          const fn = childrenApi.list()
-          const res = typeof fn === 'function' ? await fn() : await fn
-          setCohort(Array.isArray(res) ? res : [])
-        } catch {
-          setCohort([])
-        } finally {
-          setLoadingCohort(false)
-        }
-      }
       fetchCohort()
     }
   }, [currentChild])
@@ -177,10 +183,8 @@ export default function ScreeningScreen({ onNavigate }) {
       screened_at: new Date().toISOString()
     }
 
-    setPendingScreening?.(payload)
-    sessionStorage.setItem('sparsh:pending-screening', JSON.stringify(payload))
-    clearDraft()
-    onNavigate('av-assessment')
+    setPendingPayload(payload)
+    setReviewing(true)
   }
 
   const filteredCohort = useMemo(() => {
@@ -201,8 +205,8 @@ export default function ScreeningScreen({ onNavigate }) {
         active="screening"
         onNavigate={onNavigate}
         backTo="dashboard"
-        title="Screening"
-        subtitle="Select a child to begin developmental screening"
+        title="Child Developmental Screening"
+        subtitle="Select a child to begin age-based milestone screening"
         actions={
           <Button variant="primary" size="sm" onClick={() => onNavigate?.('register')}>
             <Icon name="plus" className="h-4 w-4" />
@@ -226,7 +230,9 @@ export default function ScreeningScreen({ onNavigate }) {
           </div>
 
           {loadingCohort ? (
-            <LoadingState label="Loading children..." />
+            <LoadingState label="Loading registered children..." />
+          ) : cohortError ? (
+            <ErrorState error={cohortError} onRetry={fetchCohort} />
           ) : filteredCohort.length === 0 ? (
             <div className="rounded-2xl border border-[#E5EBE7] bg-white p-8 text-center shadow-xs">
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#EBF2EE] text-[#1B4D3E] mb-3">
@@ -291,6 +297,10 @@ export default function ScreeningScreen({ onNavigate }) {
                       )}
                       <button
                         type="button"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setCurrentChild(child)
+                        }}
                         className="rounded-xl bg-[#1B4D3E] px-3.5 py-1.5 text-xs font-semibold text-white shadow-2xs hover:bg-[#143D31] transition"
                       >
                         Start
@@ -309,7 +319,7 @@ export default function ScreeningScreen({ onNavigate }) {
   // Loading questions state
   if (!data && !error) {
     return (
-      <AppLayout active="screening" onNavigate={onNavigate} backTo="dashboard" title="Screening">
+      <AppLayout active="screening" onNavigate={onNavigate} backTo="dashboard" title="Child Development Screening">
         <div className="mx-auto max-w-xl p-8">
           <LoadingState label={`Loading milestone questions for ${currentChild?.name || 'child'}...`} />
         </div>
@@ -319,9 +329,87 @@ export default function ScreeningScreen({ onNavigate }) {
 
   if (!data) {
     return (
-      <AppLayout active="screening" onNavigate={onNavigate} backTo="dashboard" title="Screening">
+      <AppLayout active="screening" onNavigate={onNavigate} backTo="dashboard" title="Child Development Screening">
         <div className="mx-auto max-w-xl p-8">
           <ErrorState error={error} onRetry={load} />
+        </div>
+      </AppLayout>
+    )
+  }
+
+  // Review step before submitting to AV assessment / backend
+  if (reviewing && pendingPayload) {
+    return (
+      <AppLayout
+        active="screening"
+        onNavigate={onNavigate}
+        backTo="dashboard"
+        title="Review Screening Responses"
+        subtitle={`${currentChild?.name || 'Child'} · ${pendingPayload.checkpoint_age_months} month checkpoint`}
+      >
+        <div className="relative mx-auto max-w-3xl space-y-5 p-4 sm:p-6 lg:p-8">
+          <SparshBotanicalCorner position="top-right" className="opacity-25" />
+
+          <div className="rounded-2xl border border-[#CBD5D0] bg-[#EBF2EE]/60 p-4 text-xs text-[#1A201E] leading-relaxed">
+            Review every response before continuing. Scoring and diagnostic risk evaluations are calculated by the backend upon completion.
+          </div>
+
+          {domains.map((domain) => {
+            const meta = domainMeta[domain] || { label: domain, icon: 'activity' }
+            const domainMilestones = data.milestones.filter((item) => item.domain === domain)
+
+            return (
+              <section key={domain} className="rounded-2xl border border-[#E5EBE7] bg-white p-5 shadow-2xs space-y-3">
+                <div className="flex items-center gap-2 border-b border-[#E5EBE7] pb-3">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#FDF0EB] text-[#D96B43]">
+                    <Icon name={meta.icon || 'activity'} className="h-4 w-4" />
+                  </span>
+                  <h2 className="text-sm font-semibold text-[#1A201E]">{meta.label}</h2>
+                </div>
+
+                <ul className="space-y-2.5">
+                  {domainMilestones.map((item) => {
+                    const text = item.task || item.question || item.description || item.label || 'Question'
+                    const ans = answers[item.id]
+
+                    return (
+                      <li key={item.id} className="flex items-start justify-between gap-3 text-xs border-b border-neutral-100 last:border-0 pb-2">
+                        <span className="text-[#5A6660]">{text}</span>
+                        <BadgePill
+                          tone={
+                            ans === 'YES'
+                              ? 'normal'
+                              : ans === 'NO'
+                              ? 'risk'
+                              : 'followup'
+                          }
+                        >
+                          {ans === 'YES' ? 'Yes' : ans === 'NO' ? 'No' : ans || 'Unanswered'}
+                        </BadgePill>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </section>
+            )
+          })}
+
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+            <Button variant="outline" onClick={() => setReviewing(false)}>
+              Edit Responses
+            </Button>
+            <Button
+              variant="primary"
+              onClick={() => {
+                setPendingScreening?.(pendingPayload)
+                sessionStorage.setItem('sparsh:pending-screening', JSON.stringify(pendingPayload))
+                clearDraft()
+                onNavigate('av-assessment')
+              }}
+            >
+              Continue to Sensory & AI Assessment →
+            </Button>
+          </div>
         </div>
       </AppLayout>
     )
@@ -335,20 +423,22 @@ export default function ScreeningScreen({ onNavigate }) {
   const childSex = currentChild?.sex || 'Child'
 
   const options = [
-    { label: 'Yes', value: 'YES' },
-    { label: 'Sometimes', value: 'UNSURE' },
-    { label: 'No', value: 'NO' },
+    { label: 'Yes (Achieved)', value: 'YES' },
+    { label: 'Unsure / Sometimes', value: 'UNSURE' },
+    { label: 'No (Not Yet)', value: 'NO' },
     { label: 'Not Observed', value: 'NOT_OBSERVED' }
   ]
 
   const isLastQuestion = domainIndex === domains.length - 1 && questionIndex === currentTasks.length - 1
+  const taskPrompt = currentTask?.task || currentTask?.question || currentTask?.description || currentTask?.label || 'Does the child demonstrate expected milestones?'
 
   return (
     <AppLayout
       active="screening"
       onNavigate={onNavigate}
       backTo="dashboard"
-      title="Screening"
+      title="Child Development Screening"
+      subtitle="Age-based milestone questions"
       actions={
         <button
           type="button"
@@ -386,7 +476,7 @@ export default function ScreeningScreen({ onNavigate }) {
         {/* Progress: 2 of 5 & 40% (Matches Screen 6) */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between text-xs font-semibold text-[#5A6660]">
-            <span>{domainIndex + 1} of {domains.length}</span>
+            <span>{domainIndex + 1} of {domains.length} ({meta.label})</span>
             <span>{progressPercent}%</span>
           </div>
           <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#E5EBE7]">
@@ -413,7 +503,7 @@ export default function ScreeningScreen({ onNavigate }) {
         {/* Question Prompt (Matches Screen 6) */}
         <div className="rounded-2xl border border-[#E5EBE7] bg-white p-5 shadow-2xs space-y-5">
           <h3 className="text-base font-semibold text-[#1A201E] leading-snug">
-            {currentTask?.task || currentTask?.description || currentTask?.label || 'Does the child demonstrate expected milestones?'}
+            {taskPrompt}
           </h3>
 
           {/* Radio Options List (Matches Screen 6) */}
@@ -490,7 +580,7 @@ export default function ScreeningScreen({ onNavigate }) {
             onClick={handleNext}
             className="w-32"
           >
-            {isLastQuestion ? 'Submit →' : 'Next →'}
+            {isLastQuestion ? 'Review & Submit →' : 'Next →'}
           </Button>
         </div>
       </div>

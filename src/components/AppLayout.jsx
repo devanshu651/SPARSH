@@ -4,7 +4,7 @@ import BottomNav from './BottomNav'
 import SyncStatus from './SyncStatus'
 import Icon from './Icon'
 
-const navLinks = [
+const workerNavLinks = [
   { id: 'dashboard', label: 'Dashboard', icon: 'home' },
   { id: 'children', label: 'Child Cohort', icon: 'children' },
   { id: 'register', label: 'Register Child', icon: 'userPlus' },
@@ -24,14 +24,17 @@ export default function AppLayout({
   children
 }) {
   const { currentWorker } = useApp()
-  const workerName = currentWorker?.name || 'Anita Sharma'
+  const navLinks = currentWorker?.role === 'admin'
+    ? [{ id: 'admin-console', label: 'Administration', icon: 'settings' }]
+    : workerNavLinks
+  const workerName = currentWorker?.name || 'Healthcare Worker'
   const workerInitials = workerName
     .split(' ')
     .map((n) => n[0])
     .join('')
     .slice(0, 2)
-    .toUpperCase() || 'AS'
-  const centreName = currentWorker?.centre_ids?.[0] ? `Centre: ${currentWorker.centre_ids[0]}` : 'Ward 4 Kendra'
+    .toUpperCase() || 'HW'
+  const centreName = currentWorker?.centre_ids?.[0] ? `Centre: ${currentWorker.centre_ids[0]}` : 'Assigned Anganwadi'
 
   return (
     <div className="min-h-screen w-full bg-white text-[#1A201E] flex flex-col lg:flex-row">
@@ -54,7 +57,7 @@ export default function AppLayout({
             </div>
           </div>
           <div className="mt-3">
-            <SyncStatus className="w-full justify-center" />
+            {currentWorker?.role !== 'admin' && <SyncStatus className="w-full justify-center" />}
           </div>
         </div>
 
@@ -86,7 +89,7 @@ export default function AppLayout({
         {/* Footer Info */}
         <div className="border-t border-[#E5EBE7] p-4 text-[11px] text-[#8E9C95]">
           <p className="font-bold text-[#5A6660]">SPARSH v1.2</p>
-          <p className="mt-0.5">National Health Protocol Compliant</p>
+          <p className="mt-0.5">Developmental Screening &amp; Follow-up Support</p>
         </div>
       </aside>
 
@@ -115,24 +118,28 @@ export default function AppLayout({
           </div>
 
           <div className="flex items-center gap-2">
-            <SyncStatus compact />
-            <button
-              type="button"
-              onClick={() => onNavigate?.('alerts')}
-              className="grid h-8 w-8 place-items-center rounded-xl text-[#5A6660] hover:bg-[#F5F8F6] hover:text-[#1A201E]"
-              aria-label="Alerts"
-            >
-              <Icon name="alerts" className="h-4 w-4" />
-            </button>
+            {currentWorker?.role !== 'admin' && <SyncStatus compact />}
+            {currentWorker?.role !== 'admin' && (
+              <button
+                type="button"
+                onClick={() => onNavigate?.('alerts')}
+                className="grid h-8 w-8 place-items-center rounded-xl text-[#5A6660] hover:bg-[#F5F8F6] hover:text-[#1A201E]"
+                aria-label="Alerts"
+              >
+                <Icon name="alerts" className="h-4 w-4" />
+              </button>
+            )}
             {/* Initial Avatar in terracotta tint matching Screen 3 in reference */}
-            <button
-              type="button"
-              onClick={() => onNavigate?.('settings')}
-              className="grid h-8 w-8 place-items-center rounded-full bg-[#FDF0EB] text-[11px] font-bold text-[#C85A32] border border-[#F7D4C8] shadow-xs"
-              aria-label="Profile and Settings"
-            >
-              {workerInitials}
-            </button>
+            {currentWorker?.role !== 'admin' && (
+              <button
+                type="button"
+                onClick={() => onNavigate?.('settings')}
+                className="grid h-8 w-8 place-items-center rounded-full bg-[#FDF0EB] text-[11px] font-bold text-[#C85A32] border border-[#F7D4C8] shadow-xs"
+                aria-label="Profile and Settings"
+              >
+                {workerInitials}
+              </button>
+            )}
           </div>
         </header>
 
@@ -168,7 +175,7 @@ export default function AppLayout({
       </div>
 
       {/* MOBILE BOTTOM NAVIGATION */}
-      <BottomNav active={active} onChange={onNavigate} />
+      {currentWorker?.role !== 'admin' && <BottomNav active={active} onChange={onNavigate} />}
     </div>
   )
 }

@@ -9,8 +9,8 @@ import { LoadingState, ErrorState, EmptyState } from '../components/AsyncState'
 const riskFilters = [
   { id: 'All', label: 'All' },
   { id: 'GREEN', label: 'Normal' },
-  { id: 'YELLOW', label: 'Follow Up' },
-  { id: 'RED', label: 'At Risk' },
+  { id: 'YELLOW', label: 'Review Recommended' },
+  { id: 'RED', label: 'Needs Follow-up' },
 ]
 
 export default function ChildrenScreen({ onNavigate }) {
@@ -139,7 +139,7 @@ export default function ChildrenScreen({ onNavigate }) {
           <div className="rounded-2xl border border-[#E5EBE7] bg-white p-8 text-center shadow-card space-y-3">
             <EmptyState
               title="No children found"
-              detail={search ? 'No children match your search criteria.' : 'No children registered in this cohort yet.'}
+              detail={search ? 'No children match your search criteria.' : 'Your Anganwadi centre cohort directory is currently empty. Enrol children to record developmental screening and follow-up history.'}
               icon="children"
               action={
                 <button
@@ -167,11 +167,11 @@ export default function ChildrenScreen({ onNavigate }) {
 
               const label =
                 child.latest_risk === 'RED'
-                  ? 'At Risk'
+                  ? 'Needs follow-up'
                   : child.latest_risk === 'YELLOW'
-                  ? 'Follow Up'
+                  ? 'Review recommended'
                   : child.latest_risk === 'GREEN'
-                  ? 'Normal'
+                  ? 'Follow-up threshold not reached'
                   : 'Not Screened'
 
               // Avatar background: soft warm terracotta or sage
@@ -180,7 +180,7 @@ export default function ChildrenScreen({ onNavigate }) {
               return (
                 <div
                   key={child.id}
-                  onClick={() => handleSelectChild(child, 'history')}
+                  onClick={() => handleSelectChild(child, 'child-profile')}
                   className="group rounded-2xl border border-[#E5EBE7] bg-white p-3.5 sm:p-4 shadow-card hover:border-[#D0D7D2] hover:bg-[#FAFCFA] cursor-pointer transition-all flex items-center justify-between gap-3"
                 >
                   {/* Avatar & Child Details */}

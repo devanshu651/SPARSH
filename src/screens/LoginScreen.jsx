@@ -5,13 +5,12 @@ import BrandLogo from '../components/BrandLogo'
 import SparshBotanical from '../components/SparshBotanical'
 import Icon from '../components/Icon'
 import { authService, readableAuthError } from '../services/auth'
-import { usersApi } from '../services/api'
 import { useApp } from '../context/AppContext'
-import { startDemoMode, demoAvailable } from '../services/demo'
+import { firebaseConfigError } from '../lib/firebase'
 
 export default function LoginScreen({ onBack, onLogin, onRegister }) {
   const { t, i18n } = useTranslation()
-  const { setCurrentWorker, demoWorker } = useApp()
+  const { loadCurrentWorker, authError } = useApp()
 
   const [mobile, setMobile] = useState('')
   const [password, setPassword] = useState('')
@@ -36,32 +35,25 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
     setLoading(true)
     setError('')
 
+    let firebaseSignInSucceeded = false
     try {
       const credential = await authService.signInWithEmailPassword(
         `${cleanMobile}@sparsh.local`,
         password
       )
+      firebaseSignInSucceeded = true
 
-      const meCall = usersApi.getMe()
-      const profile = typeof meCall === 'function' ? await meCall() : await meCall
-
-      setCurrentWorker({
-        ...profile,
-        email: credential.user.email
-      })
-
+      await loadCurrentWorker(credential.user)
       onLogin?.()
     } catch (err) {
-      setError(readableAuthError(err))
+      if (firebaseSignInSucceeded && err?.status) {
+        setError(`Firebase sign-in succeeded, but SPARSH rejected the session (HTTP ${err.status}): ${err.message}`)
+      } else {
+        setError(readableAuthError(err))
+      }
     } finally {
       setLoading(false)
     }
-  }
-
-  function exploreDemo() {
-    startDemoMode()
-    setCurrentWorker(demoWorker)
-    onLogin?.()
   }
 
   const toggleLang = () => {
@@ -70,7 +62,7 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
 
   return (
     <AuthShell showBackground>
-      <div className="space-y-6 py-2 relative">
+      <div className="space-y-4 sm:space-y-6 py-2 relative">
         <SparshBotanical variant="top-left" opacity="opacity-20" />
         <SparshBotanical variant="bottom-right" opacity="opacity-25" />
 
@@ -103,6 +95,11 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
           <p className="mt-1 text-xs text-[#5A6660]">
             Sign in to continue to SPARSH
           </p>
+          {(authError || firebaseConfigError) && (
+            <div className="mt-2 rounded-lg border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900" role="status">
+              {authError?.message || firebaseConfigError}
+            </div>
+          )}
         </div>
 
         {/* Login Form */}
@@ -188,22 +185,11 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
           >
             {loading ? 'Signing In…' : 'Sign In'}
           </button>
-
-          {/* 1-Tap Demo Mode Button */}
-          {demoAvailable && (
-            <button
-              type="button"
-              onClick={exploreDemo}
-              className="w-full min-h-[44px] rounded-xl border border-[#D5E3DB] bg-[#EBF2EE] text-[#1B4D3E] text-xs font-bold hover:bg-[#D5E3DB] transition-colors"
-            >
-              Explore Demo Mode (1-Tap Test)
-            </button>
-          )}
         </form>
 
         {/* Worker Provisioning / Sign Up link in Terracotta matching reference */}
         <div className="pt-2 text-center text-xs text-[#5A6660] relative z-10">
-          <span>Don&apos;t have an account? </span>
+          <span>Need account access for your Anganwadi centre? </span>
           <button
             type="button"
             onClick={onRegister}

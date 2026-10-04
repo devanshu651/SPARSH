@@ -6,21 +6,32 @@ import AppLayout from '../components/AppLayout'
 import BadgePill from '../components/BadgePill'
 import Icon from '../components/Icon'
 import { SparshBotanicalCorner } from '../components/SparshBotanical'
-import { LoadingState } from '../components/AsyncState'
+import { ErrorState, LoadingState } from '../components/AsyncState'
 
 export default function AlertsScreen({ onNavigate }) {
   const { setCurrentChild } = useApp()
   const [children, setChildren] = useState([])
+  const [offlineCount, setOfflineCount] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [activeFilter, setActiveFilter] = useState('All') // 'All' | 'Follow Up' | 'At Risk' | 'Referrals'
 
   const loadData = async () => {
     setLoading(true)
+    setError(null)
     try {
       const fn = childrenApi.list()
       const raw = typeof fn === 'function' ? await fn() : await fn
       setChildren(Array.isArray(raw) ? raw : [])
-    } catch {
+
+      try {
+        const queue = await queuedScreenings()
+        setOfflineCount(Array.isArray(queue) ? queue.length : 0)
+      } catch {
+        setOfflineCount(0)
+      }
+    } catch (err) {
+      setError(err)
       setChildren([])
     } finally {
       setLoading(false)
@@ -46,10 +57,10 @@ export default function AlertsScreen({ onNavigate }) {
           age: child.age_months !== null && child.age_months !== undefined
             ? `${Math.floor(child.age_months / 12)} years ${child.age_months % 12} months`
             : 'Age not logged',
-          desc: 'Gross motor delay detected. Consider referral.',
+          desc: `Child (ID: ${child.child_identifier || '—'}) has a high risk screening indication and needs follow-up review.`,
           date: child.updated_at
             ? new Date(child.updated_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
-            : '08 Apr 2024',
+            : 'Action Required',
           badge: 'At Risk',
           tone: 'risk',
           category: 'At Risk',
@@ -57,7 +68,7 @@ export default function AlertsScreen({ onNavigate }) {
         })
       })
 
-    // 2. Follow Up alerts
+    // 2. Follow Up alerts (Moderate / Yellow)
     children
       .filter((c) => c.latest_risk === 'YELLOW')
       .forEach((child) => {
@@ -68,14 +79,14 @@ export default function AlertsScreen({ onNavigate }) {
           age: child.age_months !== null && child.age_months !== undefined
             ? `${Math.floor(child.age_months / 12)} years ${child.age_months % 12} months`
             : 'Age not logged',
-          desc: 'Language domain needs re-evaluation.',
+          desc: `Review recommended: developmental domain checkpoint needs follow-up re-evaluation.`,
           date: child.updated_at
             ? new Date(child.updated_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
-            : '10 Apr 2024',
+            : 'Review Recommended',
           badge: 'Follow Up',
           tone: 'followup',
           category: 'Follow Up',
-          targetScreen: 'history'
+          targetScreen: 'child-profile'
         })
       })
 
@@ -91,10 +102,10 @@ export default function AlertsScreen({ onNavigate }) {
           age: child.age_months !== null && child.age_months !== undefined
             ? `${Math.floor(child.age_months / 12)} years ${child.age_months % 12} months`
             : 'Age not logged',
-          desc: 'Follow up screening due next month.',
+          desc: 'Developmental screening checkpoint is due for observation.',
           date: child.created_at
             ? new Date(child.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
-            : '05 Apr 2024',
+            : 'Due Checkpoint',
           badge: 'Follow Up',
           tone: 'followup',
           category: 'Follow Up',
@@ -103,15 +114,14 @@ export default function AlertsScreen({ onNavigate }) {
       })
 
     // 4. Offline sync alert if queued
-    const queued = queuedScreenings()
-    if (queued.length > 0) {
+    if (offlineCount > 0) {
       list.unshift({
         id: 'alert-offline-queue',
         child: null,
-        name: 'Offline Screenings Pending',
-        age: `${queued.length} records`,
+        name: 'Offline Screenings Pending Sync',
+        age: `${offlineCount} saved records`,
         desc: 'Screenings saved offline are ready to sync with the server.',
-        date: 'Today',
+        date: 'Awaiting Connection',
         badge: 'Follow Up',
         tone: 'followup',
         category: 'Follow Up',
@@ -120,7 +130,7 @@ export default function AlertsScreen({ onNavigate }) {
     }
 
     return list
-  }, [children])
+  }, [children, offlineCount])
 
   const filteredAlerts = useMemo(() => {
     if (activeFilter === 'All') return alerts
@@ -150,7 +160,9 @@ export default function AlertsScreen({ onNavigate }) {
           <span className="flex h-8 w-8 items-center justify-center rounded-full text-[#D96B43] hover:bg-[#FDF0EB] transition">
             <Icon name="bell" className="h-5 w-5" />
           </span>
-          <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-[#D96B43]" />
+          {alerts.some((a) => a.badge === 'At Risk') && (
+            <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-[#D96B43]" />
+          )}
         </div>
       }
     >
@@ -182,6 +194,8 @@ export default function AlertsScreen({ onNavigate }) {
         {/* Alerts List */}
         {loading ? (
           <LoadingState label="Loading alerts..." />
+        ) : error ? (
+          <ErrorState error={error} onRetry={loadData} />
         ) : filteredAlerts.length === 0 ? (
           <div className="rounded-2xl border border-[#E5EBE7] bg-white p-8 text-center shadow-xs">
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EBF2EE] text-[#1B4D3E] mb-3">
