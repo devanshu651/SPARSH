@@ -17,7 +17,7 @@ Requirements and field insights were gathered through interactions with parents,
 - Firebase sign-in with backend-verified identity and centre-scoped records.
 - Centre and user administration for Admin accounts.
 - Child registration and health measurements.
-- Age-selected milestone questions with `YES`, `NO`, and `UNSURE` responses.
+- A backend-provided 65-question developmental screening set with `YES`, `NO`, and `UNSURE` responses.
 - Server-side, rules-based scoring with domain findings and `GREEN`, `YELLOW`, or `RED` indications.
 - Screening history, result explanations, and referral records for `RED` results.
 - A Progressive Web App shell and an IndexedDB-backed pending screening submission queue.
@@ -33,7 +33,7 @@ flowchart TD
     B --> C[Firebase Authentication]
     B --> D[FastAPI REST API]
     D --> E[Token verification, RBAC and validation]
-    E --> F[Age selection and rules-based screening]
+    E --> F[65-question set and rules-based screening]
     E --> G[Referral and follow-up records]
     E --> H[Audit events]
     D --> I[Cloud Firestore]
@@ -66,15 +66,13 @@ Admins can access all centre records on endpoints whose role guards admit Admin;
 
 ## Screening engine
 
-The active production engine reads `backend/app/config/milestones.json` (currently `draft-1`) and `backend/app/config/scoring_rules.json`. It calculates the child’s completed age in months, selects the configured checkpoint at or below that age (using the youngest configured checkpoint for younger ages), and returns that checkpoint’s question set. The backend recomputes age and dataset version at submission and rejects stale checkpoint/version submissions. It requires each expected milestone ID exactly once.
-
-`YES`, `NO`, and `UNSURE` answers feed deterministic weight and threshold rules. The result includes a domain-level score, configured findings, and one of `GREEN`, `YELLOW`, or `RED`. Referral creation is restricted to `RED` results and is protected against duplicate records. These labels and thresholds describe software rules only; they are not validated clinical categories or diagnostic conclusions.
+The active production engine reads `backend/app/config/milestones.json` (`phase5-final-65-v1`) and `backend/app/config/scoring_rules.json`. It calculates the child's completed age in months and returns the fixed, versioned set of 65 questions. The backend recomputes age and dataset version at submission and rejects stale age/version submissions. It requires each expected milestone ID exactly once. Per-question source age metadata remains explicit; age bands and review-required ages are not converted to checkpoints.
 
 ## Developmental content and provenance
 
-SPARSH models five domains: Gross Motor, Fine Motor, Language, Cognitive, and Social-Emotional. The repository contains an existing production milestone dataset as well as separate candidate datasets, an evidence ledger, a 65-item review set and review artifacts, coverage analysis, a safety review, and a checkpoint decision document. The candidate/review materials are not loaded by the production screening engine.
+SPARSH models five domains: Gross Motor, Fine Motor, Language, Cognitive, and Social-Emotional. The active production catalog is based on the final 65-item proposal; candidate source files and review artifacts remain available for audit. The active set preserves checkpoint, range, and review-required age evidence without flattening these forms.
 
-Content is moving through an evidence-review workflow. Source concepts are paraphrased and mapped with provenance; source checklists are not copied into the product. The 13 checkpoints × 5 domains (13 × 5) set is a project target, not a claim that existing sources provide equal coverage. Source age formats differ, and unresolved age/domain mappings remain subject to review. CDC listed ages, AAP surveillance ages, and WHO attainment windows are not interchangeable; an evidence source does not itself validate SPARSH wording, age selection, or scoring.
+The active set has 13 items in each domain. Source concepts retain provenance and age evidence: CDC source-listed ages, AAP surveillance means, and WHO attainment windows remain distinct. Clinical and wording reviews are pending, and the content and scoring have not been clinically validated. SPARSH provides screening/risk indication, not diagnosis. See [`docs/active-developmental-content.md`](docs/active-developmental-content.md) for the active version, scoring behavior, limitations, and migration notes.
 
 See [`docs/developmental-content-evidence-ledger.md`](docs/developmental-content-evidence-ledger.md), [`docs/final-65-review.md`](docs/final-65-review.md), [`docs/final-65-safety-review.md`](docs/final-65-safety-review.md), [`docs/final-65-coverage.md`](docs/final-65-coverage.md), and [`docs/final-65-checkpoint-decision.md`](docs/final-65-checkpoint-decision.md).
 
@@ -90,7 +88,7 @@ ML feature extraction and evaluation scaffolding are present, but screening uses
 
 - Firebase ID tokens are verified by the backend with revoked-token checking; the Firestore `users/{uid}` profile supplies the authoritative role and centre assignments.
 - API route guards enforce roles, and record operations check centre access. Centre creation/update and user administration are Admin-only.
-- Pydantic request models validate payloads and selected models reject unknown fields. Screening submissions are checked against the current server-selected checkpoint and dataset version.
+- Pydantic request models validate payloads and selected models reject unknown fields. Screening submissions are checked against the current server-calculated screening age and dataset version.
 - Screening submissions use a client submission ID and a transactional uniqueness record to prevent duplicate writes. Referral records use deterministic IDs and duplicate protection.
 - Audit events are written for key account, centre, child, screening, referral, and assistant actions. Audit write failures are logged; they do not fail the primary request.
 - CORS origins are configured through backend settings. The checked-in example is for local development; set production origins in the deployment environment.
@@ -239,7 +237,7 @@ SPARSH is a software prototype/platform for developmental screening support. It 
 | Status | Work |
 |---|---|
 | **Implemented foundations** | Firebase authentication and RBAC; centre and user administration; child registration and health records; developmental screening, rules-based scoring, history, referrals; audit/security controls; PWA and offline queue foundations; evidence/content audit artifacts. |
-| **In progress / under review** | Final developmental content review; hybrid age/checkpoint model; provider-backed AI assistant; approved activity and follow-up knowledge base; stronger longitudinal child profile. Candidate content is not the active production dataset. |
+| **In progress / under review** | Final developmental content review; hybrid age/checkpoint model; provider-backed AI assistant; approved activity and follow-up knowledge base; stronger longitudinal child profile. The active 65-item set remains pending professional clinical and wording review. |
 | **Future work** | Predictive ML only after a suitable labelled dataset and validation; stronger clinical and larger field validation; expanded multilingual coverage; production-scale deployment hardening. Analytics exist in the frontend, but further analytics work is not presented as an approved roadmap commitment. |
 
 ## Contributing

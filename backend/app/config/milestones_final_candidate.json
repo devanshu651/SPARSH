@@ -1,19 +1,19 @@
 {
-  "version": "phase5-final-65-v1",
-  "status": "active-screening-set; clinical validation pending",
-  "source": "Phase 5 final candidate with age semantics mapped from Phase 5 checkpoint decision",
-  "selection_policy": "all_items_as_one_versioned_65_question_set",
+  "version": "candidate-final-1",
+  "status": "review_required",
   "clinical_validation": false,
   "items": [
     {
       "id": "gm_aap13_02_head_lift",
       "domain": "gross_motor",
       "age": {
-        "type": "review_required",
-        "months": null,
-        "basis": "AAP surveillance mean 2 months retained as source metadata; not an assigned SPARSH checkpoint"
+        "months": 2,
+        "age_basis": "source_checkpoint"
       },
-      "question": "Can the child lift their head and upper chest while lying on their tummy?",
+      "question": {
+        "en": "Can the child lift their head and upper chest while lying on their tummy?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "American Academy of Pediatrics",
@@ -26,23 +26,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Can the child lift their head and upper chest while lying on their tummy?",
-      "source_age_months": 2
+      "wording_review_status": "pending"
     },
     {
       "id": "gm_aap13_04_roll_prone_supine",
       "domain": "gross_motor",
       "age": {
-        "type": "review_required",
-        "months": null,
-        "basis": "AAP surveillance mean 4 months retained as source metadata; not an assigned SPARSH checkpoint"
+        "months": 4,
+        "age_basis": "source_checkpoint"
       },
-      "question": "Can the child roll from tummy to back?",
+      "question": {
+        "en": "Can the child roll from tummy to back?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "American Academy of Pediatrics",
@@ -55,23 +54,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Can the child roll from tummy to back?",
-      "source_age_months": 4
+      "wording_review_status": "pending"
     },
     {
       "id": "gm_aap13_04_prone_support",
       "domain": "gross_motor",
       "age": {
-        "type": "review_required",
-        "months": null,
-        "basis": "AAP surveillance mean 4 months retained as source metadata; not an assigned SPARSH checkpoint"
+        "months": 4,
+        "age_basis": "source_checkpoint"
       },
-      "question": "While on their tummy, can the child prop their upper body on their elbows or wrists?",
+      "question": {
+        "en": "While on their tummy, can the child prop their upper body on their elbows or wrists?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "American Academy of Pediatrics",
@@ -84,23 +82,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "While on their tummy, can the child prop their upper body on their elbows or wrists?",
-      "source_age_months": 4
+      "wording_review_status": "pending"
     },
     {
       "id": "gm_aap13_06_roll_supine_prone",
       "domain": "gross_motor",
       "age": {
-        "type": "review_required",
-        "months": null,
-        "basis": "AAP surveillance mean 6 months retained as source metadata; not an assigned SPARSH checkpoint"
+        "months": 6,
+        "age_basis": "source_checkpoint"
       },
-      "question": "Can the child roll from back to tummy?",
+      "question": {
+        "en": "Can the child roll from back to tummy?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "American Academy of Pediatrics",
@@ -113,24 +110,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Can the child roll from back to tummy?",
-      "source_age_months": 6
+      "wording_review_status": "pending"
     },
     {
       "id": "gm_aap13_06_sit_unsupported",
       "domain": "gross_motor",
       "age": {
-        "type": "range",
-        "min_months": 3.8,
-        "max_months": 9.2,
-        "basis": "WHO attainment window (1st?99th percentile)"
+        "months": 6,
+        "age_basis": "source_checkpoint"
       },
-      "question": "Can the child sit without another person holding them?",
+      "question": {
+        "en": "Can the child sit without another person holding them?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "American Academy of Pediatrics",
@@ -151,22 +146,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Can the child sit without another person holding them?"
+      "wording_review_status": "pending"
     },
     {
       "id": "gm_aap13_09_pull_stand",
       "domain": "gross_motor",
       "age": {
-        "type": "review_required",
-        "months": null,
-        "basis": "AAP surveillance mean 9 months retained as source metadata; not an assigned SPARSH checkpoint"
+        "months": 9,
+        "age_basis": "source_checkpoint"
       },
-      "question": "Can the child pull up to stand while holding support?",
+      "question": {
+        "en": "Can the child pull up to stand while holding support?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "American Academy of Pediatrics",
@@ -179,23 +174,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Can the child pull up to stand while holding support?",
-      "source_age_months": 9
+      "wording_review_status": "pending"
     },
     {
       "id": "gm_aap13_09_lie_to_sit",
       "domain": "gross_motor",
       "age": {
-        "type": "review_required",
-        "months": null,
-        "basis": "AAP surveillance mean 9 months retained as source metadata; not an assigned SPARSH checkpoint"
+        "months": 9,
+        "age_basis": "source_checkpoint"
       },
-      "question": "Can the child move from lying down into a sitting position?",
+      "question": {
+        "en": "Can the child move from lying down into a sitting position?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "American Academy of Pediatrics",
@@ -208,24 +202,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Can the child move from lying down into a sitting position?",
-      "source_age_months": 9
+      "wording_review_status": "pending"
     },
     {
       "id": "gm_aap13_12_stand",
       "domain": "gross_motor",
       "age": {
-        "type": "range",
-        "min_months": 6.9,
-        "max_months": 16.9,
-        "basis": "WHO attainment window (1st?99th percentile)"
+        "months": 12,
+        "age_basis": "source_checkpoint"
       },
-      "question": "Can the child stand without being held?",
+      "question": {
+        "en": "Can the child stand without being held?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "American Academy of Pediatrics",
@@ -246,23 +238,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Can the child stand without being held?"
+      "wording_review_status": "pending"
     },
     {
       "id": "gm_aap13_12_walk",
       "domain": "gross_motor",
       "age": {
-        "type": "range",
-        "min_months": 8.2,
-        "max_months": 17.6,
-        "basis": "WHO attainment window (1st?99th percentile)"
+        "months": 12,
+        "age_basis": "source_checkpoint"
       },
-      "question": "Can the child walk independently?",
+      "question": {
+        "en": "Can the child walk independently?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "American Academy of Pediatrics",
@@ -283,22 +274,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Can the child walk independently?"
+      "wording_review_status": "pending"
     },
     {
       "id": "gm_aap13_15_walk_backward",
       "domain": "gross_motor",
       "age": {
-        "type": "review_required",
-        "months": null,
-        "basis": "AAP surveillance mean 15 months retained as source metadata; not an assigned SPARSH checkpoint"
+        "months": 15,
+        "age_basis": "source_checkpoint"
       },
-      "question": "Can the child walk backward?",
+      "question": {
+        "en": "Can the child walk backward?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "American Academy of Pediatrics",
@@ -311,23 +302,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Can the child walk backward?",
-      "source_age_months": 15
+      "wording_review_status": "pending"
     },
     {
       "id": "gm_aap13_15_run",
       "domain": "gross_motor",
       "age": {
-        "type": "review_required",
-        "months": null,
-        "basis": "AAP surveillance mean 15 months retained as source metadata; not an assigned SPARSH checkpoint"
+        "months": 15,
+        "age_basis": "source_checkpoint"
       },
-      "question": "Can the child run?",
+      "question": {
+        "en": "Can the child run?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "American Academy of Pediatrics",
@@ -340,23 +330,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Can the child run?",
-      "source_age_months": 15
+      "wording_review_status": "pending"
     },
     {
       "id": "gm_aap13_18_steps_hand_held",
       "domain": "gross_motor",
       "age": {
-        "type": "review_required",
-        "months": null,
-        "basis": "AAP surveillance mean 18 months retained as source metadata; not an assigned SPARSH checkpoint"
+        "months": 18,
+        "age_basis": "source_checkpoint"
       },
-      "question": "Can the child walk up steps while holding an adult?s hand?",
+      "question": {
+        "en": "Can the child walk up steps while holding an adult?s hand?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "American Academy of Pediatrics",
@@ -369,23 +358,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Can the child walk up steps while holding an adult?s hand?",
-      "source_age_months": 18
+      "wording_review_status": "pending"
     },
     {
       "id": "gm_aap13_24_jump",
       "domain": "gross_motor",
       "age": {
-        "type": "review_required",
-        "months": null,
-        "basis": "AAP surveillance mean 24 months retained as source metadata; not an assigned SPARSH checkpoint"
+        "months": 24,
+        "age_basis": "source_checkpoint"
       },
-      "question": "Can the child jump upward?",
+      "question": {
+        "en": "Can the child jump upward?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "American Academy of Pediatrics",
@@ -398,23 +386,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Can the child jump upward?",
-      "source_age_months": 24
+      "wording_review_status": "pending"
     },
     {
       "id": "fm_aap13_04_grasp",
       "domain": "fine_motor",
       "age": {
-        "type": "review_required",
-        "months": null,
-        "basis": "AAP surveillance mean 4 months retained as source metadata; not an assigned SPARSH checkpoint"
+        "months": 4,
+        "age_basis": "source_checkpoint"
       },
-      "question": "Can the child grasp an object placed within reach?",
+      "question": {
+        "en": "Can the child grasp an object placed within reach?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "American Academy of Pediatrics",
@@ -427,23 +414,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Can the child grasp an object placed within reach?",
-      "source_age_months": 4
+      "wording_review_status": "pending"
     },
     {
       "id": "fm_aap13_06_transfer",
       "domain": "fine_motor",
       "age": {
-        "type": "review_required",
-        "months": null,
-        "basis": "AAP surveillance mean 6 months retained as source metadata; not an assigned SPARSH checkpoint"
+        "months": 6,
+        "age_basis": "source_checkpoint"
       },
-      "question": "Can the child move an object from one hand to the other?",
+      "question": {
+        "en": "Can the child move an object from one hand to the other?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "American Academy of Pediatrics",
@@ -456,23 +442,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Can the child move an object from one hand to the other?",
-      "source_age_months": 6
+      "wording_review_status": "pending"
     },
     {
       "id": "fm_aap13_06_rake",
       "domain": "fine_motor",
       "age": {
-        "type": "review_required",
-        "months": null,
-        "basis": "AAP surveillance mean 6 months retained as source metadata; not an assigned SPARSH checkpoint"
+        "months": 6,
+        "age_basis": "source_checkpoint"
       },
-      "question": "Can the child use several fingers together to gather a small object?",
+      "question": {
+        "en": "Can the child use several fingers together to gather a small object?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "American Academy of Pediatrics",
@@ -485,23 +470,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Can the child use several fingers together to gather a small object?",
-      "source_age_months": 6
+      "wording_review_status": "pending"
     },
     {
       "id": "fm_aap13_09_three_finger_pickup",
       "domain": "fine_motor",
       "age": {
-        "type": "review_required",
-        "months": null,
-        "basis": "AAP surveillance mean 9 months retained as source metadata; not an assigned SPARSH checkpoint"
+        "months": 9,
+        "age_basis": "source_checkpoint"
       },
-      "question": "Can the child pick up a small object using several fingers?",
+      "question": {
+        "en": "Can the child pick up a small object using several fingers?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "American Academy of Pediatrics",
@@ -514,23 +498,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Can the child pick up a small object using several fingers?",
-      "source_age_months": 9
+      "wording_review_status": "pending"
     },
     {
       "id": "fm_aap13_12_pincer",
       "domain": "fine_motor",
       "age": {
-        "type": "review_required",
-        "months": null,
-        "basis": "AAP surveillance mean 12 months retained as source metadata; not an assigned SPARSH checkpoint"
+        "months": 12,
+        "age_basis": "source_checkpoint"
       },
-      "question": "Can the child pick up a small object between the thumb and index finger?",
+      "question": {
+        "en": "Can the child pick up a small object between the thumb and index finger?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "American Academy of Pediatrics",
@@ -543,23 +526,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Can the child pick up a small object between the thumb and index finger?",
-      "source_age_months": 12
+      "wording_review_status": "pending"
     },
     {
       "id": "fm_aap13_12_block_cup",
       "domain": "fine_motor",
       "age": {
-        "type": "review_required",
-        "months": null,
-        "basis": "AAP surveillance mean 12 months retained as source metadata; not an assigned SPARSH checkpoint"
+        "months": 12,
+        "age_basis": "source_checkpoint"
       },
-      "question": "Can the child place a block inside a cup or container?",
+      "question": {
+        "en": "Can the child place a block inside a cup or container?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "American Academy of Pediatrics",
@@ -572,23 +554,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Can the child place a block inside a cup or container?",
-      "source_age_months": 12
+      "wording_review_status": "pending"
     },
     {
       "id": "fm_aap13_15_scribble_imitation",
       "domain": "fine_motor",
       "age": {
-        "type": "review_required",
-        "months": null,
-        "basis": "AAP surveillance mean 15 months retained as source metadata; not an assigned SPARSH checkpoint"
+        "months": 15,
+        "age_basis": "source_checkpoint"
       },
-      "question": "Can the child make a scribble after seeing someone demonstrate?",
+      "question": {
+        "en": "Can the child make a scribble after seeing someone demonstrate?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "American Academy of Pediatrics",
@@ -601,23 +582,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Can the child make a scribble after seeing someone demonstrate?",
-      "source_age_months": 15
+      "wording_review_status": "pending"
     },
     {
       "id": "fm_aap13_18_two_block_tower",
       "domain": "fine_motor",
       "age": {
-        "type": "review_required",
-        "months": null,
-        "basis": "AAP surveillance mean 18 months retained as source metadata; not an assigned SPARSH checkpoint"
+        "months": 18,
+        "age_basis": "source_checkpoint"
       },
-      "question": "Can the child stack two blocks?",
+      "question": {
+        "en": "Can the child stack two blocks?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "American Academy of Pediatrics",
@@ -630,23 +610,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Can the child stack two blocks?",
-      "source_age_months": 18
+      "wording_review_status": "pending"
     },
     {
       "id": "fm_aap13_18_scribble",
       "domain": "fine_motor",
       "age": {
-        "type": "review_required",
-        "months": null,
-        "basis": "AAP surveillance mean 18 months retained as source metadata; not an assigned SPARSH checkpoint"
+        "months": 18,
+        "age_basis": "source_checkpoint"
       },
-      "question": "Can the child make scribble marks spontaneously?",
+      "question": {
+        "en": "Can the child make scribble marks spontaneously?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "American Academy of Pediatrics",
@@ -659,23 +638,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Can the child make scribble marks spontaneously?",
-      "source_age_months": 18
+      "wording_review_status": "pending"
     },
     {
       "id": "fm_aap13_24_three_block_tower",
       "domain": "fine_motor",
       "age": {
-        "type": "review_required",
-        "months": null,
-        "basis": "AAP surveillance mean 24 months retained as source metadata; not an assigned SPARSH checkpoint"
+        "months": 24,
+        "age_basis": "source_checkpoint"
       },
-      "question": "Can the child stack three blocks?",
+      "question": {
+        "en": "Can the child stack three blocks?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "American Academy of Pediatrics",
@@ -688,23 +666,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Can the child stack three blocks?",
-      "source_age_months": 24
+      "wording_review_status": "pending"
     },
     {
       "id": "fm_aap13_30_lines",
       "domain": "fine_motor",
       "age": {
-        "type": "review_required",
-        "months": null,
-        "basis": "AAP surveillance mean 30 months retained as source metadata; not an assigned SPARSH checkpoint"
+        "months": 30,
+        "age_basis": "source_checkpoint"
       },
-      "question": "Can the child copy a horizontal line and a vertical line?",
+      "question": {
+        "en": "Can the child copy a horizontal line and a vertical line?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "American Academy of Pediatrics",
@@ -717,23 +694,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Can the child copy a horizontal line and a vertical line?",
-      "source_age_months": 30
+      "wording_review_status": "pending"
     },
     {
       "id": "fm_aap13_36_circle",
       "domain": "fine_motor",
       "age": {
-        "type": "review_required",
-        "months": null,
-        "basis": "AAP surveillance mean 36 months retained as source metadata; not an assigned SPARSH checkpoint"
+        "months": 36,
+        "age_basis": "source_checkpoint"
       },
-      "question": "Can the child copy a circle shape?",
+      "question": {
+        "en": "Can the child copy a circle shape?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "American Academy of Pediatrics",
@@ -746,23 +722,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Can the child copy a circle shape?",
-      "source_age_months": 36
+      "wording_review_status": "pending"
     },
     {
       "id": "fm_aap13_48_buttons",
       "domain": "fine_motor",
       "age": {
-        "type": "review_required",
-        "months": null,
-        "basis": "AAP surveillance mean 48 months retained as source metadata; not an assigned SPARSH checkpoint"
+        "months": 48,
+        "age_basis": "source_checkpoint"
       },
-      "question": "Can the child button medium-sized buttons?",
+      "question": {
+        "en": "Can the child button medium-sized buttons?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "American Academy of Pediatrics",
@@ -775,23 +750,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Can the child button medium-sized buttons?",
-      "source_age_months": 48
+      "wording_review_status": "pending"
     },
     {
       "id": "la_2_02",
       "domain": "language",
       "age": {
-        "type": "checkpoint",
-        "months": 2,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child respond to loud sounds?",
+      "question": {
+        "en": "Does the child respond to loud sounds?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -804,22 +778,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child respond to loud sounds?"
+      "wording_review_status": "pending"
     },
     {
       "id": "la_4_02",
       "domain": "language",
       "age": {
-        "type": "checkpoint",
-        "months": 4,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child turn toward the sound of a caregiver?s voice?",
+      "question": {
+        "en": "Does the child turn toward the sound of a caregiver?s voice?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -832,22 +806,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child turn toward the sound of a caregiver?s voice?"
+      "wording_review_status": "pending"
     },
     {
       "id": "la_6_01",
       "domain": "language",
       "age": {
-        "type": "checkpoint",
-        "months": 6,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child make sounds back and forth with a caregiver?",
+      "question": {
+        "en": "Does the child make sounds back and forth with a caregiver?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -860,22 +834,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child make sounds back and forth with a caregiver?"
+      "wording_review_status": "pending"
     },
     {
       "id": "la_6_03",
       "domain": "language",
       "age": {
-        "type": "checkpoint",
-        "months": 6,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child make squealing sounds?",
+      "question": {
+        "en": "Does the child make squealing sounds?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -888,22 +862,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child make squealing sounds?"
+      "wording_review_status": "pending"
     },
     {
       "id": "la_9_01",
       "domain": "language",
       "age": {
-        "type": "checkpoint",
-        "months": 9,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child make repeated babbling sounds?",
+      "question": {
+        "en": "Does the child make repeated babbling sounds?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -916,22 +890,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child make repeated babbling sounds?"
+      "wording_review_status": "pending"
     },
     {
       "id": "la_9_02",
       "domain": "language",
       "age": {
-        "type": "checkpoint",
-        "months": 9,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child raise their arms to ask to be picked up?",
+      "question": {
+        "en": "Does the child raise their arms to ask to be picked up?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -944,22 +918,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child raise their arms to ask to be picked up?"
+      "wording_review_status": "pending"
     },
     {
       "id": "la_12_01",
       "domain": "language",
       "age": {
-        "type": "checkpoint",
-        "months": 12,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child use a special name such as ?mama? or ?dada? for a parent?",
+      "question": {
+        "en": "Does the child use a special name such as ?mama? or ?dada? for a parent?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -972,22 +946,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child use a special name such as ?mama? or ?dada? for a parent?"
+      "wording_review_status": "pending"
     },
     {
       "id": "la_12_02",
       "domain": "language",
       "age": {
-        "type": "checkpoint",
-        "months": 12,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child pause or stop briefly after hearing ?no??",
+      "question": {
+        "en": "Does the child pause or stop briefly after hearing ?no??",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1000,22 +974,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child pause or stop briefly after hearing ?no??"
+      "wording_review_status": "pending"
     },
     {
       "id": "la_12_03",
       "domain": "language",
       "age": {
-        "type": "checkpoint",
-        "months": 12,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child wave to say goodbye?",
+      "question": {
+        "en": "Does the child wave to say goodbye?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1028,22 +1002,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child wave to say goodbye?"
+      "wording_review_status": "pending"
     },
     {
       "id": "la_18_02",
       "domain": "language",
       "age": {
-        "type": "checkpoint",
-        "months": 18,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Can the child follow a one-step direction without a gesture?",
+      "question": {
+        "en": "Can the child follow a one-step direction without a gesture?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1056,22 +1030,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Can the child follow a one-step direction without a gesture?"
+      "wording_review_status": "pending"
     },
     {
       "id": "la_24_01",
       "domain": "language",
       "age": {
-        "type": "checkpoint",
-        "months": 24,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child use at least two words together?",
+      "question": {
+        "en": "Does the child use at least two words together?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1084,22 +1058,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child use at least two words together?"
+      "wording_review_status": "pending"
     },
     {
       "id": "la_36_03",
       "domain": "language",
       "age": {
-        "type": "checkpoint",
-        "months": 36,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Is the child understood by other people most of the time?",
+      "question": {
+        "en": "Is the child understood by other people most of the time?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1112,22 +1086,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Is the child understood by other people most of the time?"
+      "wording_review_status": "pending"
     },
     {
       "id": "la_48_01",
       "domain": "language",
       "age": {
-        "type": "checkpoint",
-        "months": 48,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child use sentences with four or more words?",
+      "question": {
+        "en": "Does the child use sentences with four or more words?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1140,22 +1114,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child use sentences with four or more words?"
+      "wording_review_status": "pending"
     },
     {
       "id": "co_2_01",
       "domain": "cognitive",
       "age": {
-        "type": "checkpoint",
-        "months": 2,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child watch a person as they move?",
+      "question": {
+        "en": "Does the child watch a person as they move?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1168,22 +1142,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child watch a person as they move?"
+      "wording_review_status": "pending"
     },
     {
       "id": "co_2_02",
       "domain": "cognitive",
       "age": {
-        "type": "checkpoint",
-        "months": 2,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child keep looking at a toy for several seconds?",
+      "question": {
+        "en": "Does the child keep looking at a toy for several seconds?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1196,22 +1170,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child keep looking at a toy for several seconds?"
+      "wording_review_status": "pending"
     },
     {
       "id": "co_6_01",
       "domain": "cognitive",
       "age": {
-        "type": "checkpoint",
-        "months": 6,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child explore objects by mouthing them?",
+      "question": {
+        "en": "Does the child explore objects by mouthing them?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1224,22 +1198,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child explore objects by mouthing them?"
+      "wording_review_status": "pending"
     },
     {
       "id": "co_6_02",
       "domain": "cognitive",
       "age": {
-        "type": "checkpoint",
-        "months": 6,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child reach for a wanted toy?",
+      "question": {
+        "en": "Does the child reach for a wanted toy?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1252,22 +1226,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child reach for a wanted toy?"
+      "wording_review_status": "pending"
     },
     {
       "id": "co_6_03",
       "domain": "cognitive",
       "age": {
-        "type": "checkpoint",
-        "months": 6,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child close their lips to indicate they do not want more food?",
+      "question": {
+        "en": "Does the child close their lips to indicate they do not want more food?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1280,22 +1254,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child close their lips to indicate they do not want more food?"
+      "wording_review_status": "pending"
     },
     {
       "id": "co_9_01",
       "domain": "cognitive",
       "age": {
-        "type": "checkpoint",
-        "months": 9,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child look for an object after it goes out of view?",
+      "question": {
+        "en": "Does the child look for an object after it goes out of view?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1308,22 +1282,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child look for an object after it goes out of view?"
+      "wording_review_status": "pending"
     },
     {
       "id": "co_12_01",
       "domain": "cognitive",
       "age": {
-        "type": "review_required",
         "months": null,
-        "basis": "Phase 5 content or safety hold; included in fixed set by activation instruction, SPARSH applicability pending review"
+        "age_basis": "review_required"
       },
-      "question": "Does the child place an object inside a container?",
+      "question": {
+        "en": "Does the child place an object inside a container?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1336,22 +1310,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child place an object inside a container?"
+      "wording_review_status": "pending"
     },
     {
       "id": "co_12_02",
       "domain": "cognitive",
       "age": {
-        "type": "checkpoint",
-        "months": 12,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child look for an object the caregiver has hidden?",
+      "question": {
+        "en": "Does the child look for an object the caregiver has hidden?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1364,22 +1338,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child look for an object the caregiver has hidden?"
+      "wording_review_status": "pending"
     },
     {
       "id": "co_18_01",
       "domain": "cognitive",
       "age": {
-        "type": "checkpoint",
-        "months": 18,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child copy a caregiver doing a task?",
+      "question": {
+        "en": "Does the child copy a caregiver doing a task?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1392,22 +1366,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child copy a caregiver doing a task?"
+      "wording_review_status": "pending"
     },
     {
       "id": "co_36_01",
       "domain": "cognitive",
       "age": {
-        "type": "review_required",
         "months": null,
-        "basis": "Phase 5 content or safety hold; included in fixed set by activation instruction, SPARSH applicability pending review"
+        "age_basis": "review_required"
       },
-      "question": "Does the child draw a circle after seeing how?",
+      "question": {
+        "en": "Does the child draw a circle after seeing how?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1420,22 +1394,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child draw a circle after seeing how?"
+      "wording_review_status": "pending"
     },
     {
       "id": "co_36_03",
       "domain": "cognitive",
       "age": {
-        "type": "review_required",
         "months": null,
-        "basis": "Phase 5 content or safety hold; included in fixed set by activation instruction, SPARSH applicability pending review"
+        "age_basis": "review_required"
       },
-      "question": "Does the child avoid touching a hot object after being warned?",
+      "question": {
+        "en": "Does the child avoid touching a hot object after being warned?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1448,23 +1422,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child avoid touching a hot object after being warned?",
-      "administration_note": "Ask the caregiver only about a past or natural observation. Never introduce a hot object or ask the child to touch or approach one."
+      "wording_review_status": "pending"
     },
     {
       "id": "co_48_01",
       "domain": "cognitive",
       "age": {
-        "type": "checkpoint",
-        "months": 48,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child name several colors?",
+      "question": {
+        "en": "Does the child name several colors?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1477,22 +1450,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child name several colors?"
+      "wording_review_status": "pending"
     },
     {
       "id": "co_60_01",
       "domain": "cognitive",
       "age": {
-        "type": "checkpoint",
-        "months": 60,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child count to ten?",
+      "question": {
+        "en": "Does the child count to ten?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1505,22 +1478,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child count to ten?"
+      "wording_review_status": "pending"
     },
     {
       "id": "so_2_01",
       "domain": "social_emotional",
       "age": {
-        "type": "checkpoint",
-        "months": 2,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child settle when a caregiver speaks or picks them up?",
+      "question": {
+        "en": "Does the child settle when a caregiver speaks or picks them up?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1533,22 +1506,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child settle when a caregiver speaks or picks them up?"
+      "wording_review_status": "pending"
     },
     {
       "id": "so_2_02",
       "domain": "social_emotional",
       "age": {
-        "type": "checkpoint",
-        "months": 2,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child look at a caregiver?s face?",
+      "question": {
+        "en": "Does the child look at a caregiver?s face?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1561,22 +1534,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child look at a caregiver?s face?"
+      "wording_review_status": "pending"
     },
     {
       "id": "so_4_03",
       "domain": "social_emotional",
       "age": {
-        "type": "checkpoint",
-        "months": 4,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child use looks, movement, or sounds to get or keep attention?",
+      "question": {
+        "en": "Does the child use looks, movement, or sounds to get or keep attention?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1589,22 +1562,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child use looks, movement, or sounds to get or keep attention?"
+      "wording_review_status": "pending"
     },
     {
       "id": "so_6_01",
       "domain": "social_emotional",
       "age": {
-        "type": "checkpoint",
-        "months": 6,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child recognize familiar people?",
+      "question": {
+        "en": "Does the child recognize familiar people?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1617,22 +1590,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child recognize familiar people?"
+      "wording_review_status": "pending"
     },
     {
       "id": "so_6_03",
       "domain": "social_emotional",
       "age": {
-        "type": "checkpoint",
-        "months": 6,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child laugh?",
+      "question": {
+        "en": "Does the child laugh?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1645,22 +1618,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child laugh?"
+      "wording_review_status": "pending"
     },
     {
       "id": "so_9_01",
       "domain": "social_emotional",
       "age": {
-        "type": "checkpoint",
-        "months": 9,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child show shyness, clinginess, or fear around strangers?",
+      "question": {
+        "en": "Does the child show shyness, clinginess, or fear around strangers?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1673,22 +1646,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child show shyness, clinginess, or fear around strangers?"
+      "wording_review_status": "pending"
     },
     {
       "id": "so_12_01",
       "domain": "social_emotional",
       "age": {
-        "type": "checkpoint",
-        "months": 12,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child play a caregiver game such as pat-a-cake?",
+      "question": {
+        "en": "Does the child play a caregiver game such as pat-a-cake?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1701,22 +1674,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child play a caregiver game such as pat-a-cake?"
+      "wording_review_status": "pending"
     },
     {
       "id": "so_15_01",
       "domain": "social_emotional",
       "age": {
-        "type": "checkpoint",
-        "months": 15,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child imitate other children during play?",
+      "question": {
+        "en": "Does the child imitate other children during play?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1729,22 +1702,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child imitate other children during play?"
+      "wording_review_status": "pending"
     },
     {
       "id": "so_15_02",
       "domain": "social_emotional",
       "age": {
-        "type": "checkpoint",
-        "months": 15,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child show a caregiver an object they like?",
+      "question": {
+        "en": "Does the child show a caregiver an object they like?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1757,22 +1730,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child show a caregiver an object they like?"
+      "wording_review_status": "pending"
     },
     {
       "id": "so_18_02",
       "domain": "social_emotional",
       "age": {
-        "type": "checkpoint",
-        "months": 18,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child point to share interest in something?",
+      "question": {
+        "en": "Does the child point to share interest in something?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1785,22 +1758,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child point to share interest in something?"
+      "wording_review_status": "pending"
     },
     {
       "id": "so_24_01",
       "domain": "social_emotional",
       "age": {
-        "type": "checkpoint",
-        "months": 24,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child notice when another person is hurt or upset?",
+      "question": {
+        "en": "Does the child notice when another person is hurt or upset?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1813,22 +1786,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child notice when another person is hurt or upset?"
+      "wording_review_status": "pending"
     },
     {
       "id": "so_36_03",
       "domain": "social_emotional",
       "age": {
-        "type": "checkpoint",
-        "months": 36,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child notice other children and join their play?",
+      "question": {
+        "en": "Does the child notice other children and join their play?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1841,22 +1814,22 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child notice other children and join their play?"
+      "wording_review_status": "pending"
     },
     {
       "id": "so_48_02",
       "domain": "social_emotional",
       "age": {
-        "type": "checkpoint",
-        "months": 48,
-        "basis": "CDC source-listed checkpoint; not a screening cutoff"
+        "months": null,
+        "age_basis": "review_required"
       },
-      "question": "Does the child offer comfort to someone who is hurt or sad?",
+      "question": {
+        "en": "Does the child offer comfort to someone who is hurt or sad?",
+        "hi": null
+      },
       "source_references": [
         {
           "organization": "CDC",
@@ -1869,12 +1842,10 @@
       ],
       "evidence_status": "reviewed",
       "mapping_status": "DIRECT",
-      "weight": 1,
+      "weight": null,
       "red_flag": false,
       "clinical_review_status": "pending",
-      "wording_review_status": "pending",
-      "dataset_version": "phase5-final-65-v1",
-      "description": "Does the child offer comfort to someone who is hurt or sad?"
+      "wording_review_status": "pending"
     }
   ]
 }

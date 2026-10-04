@@ -1,0 +1,1255 @@
+{
+  "dataset_version": "candidate-1",
+  "status": "evidence-screened development artifact; not production data",
+  "source_basis": "CDC age-specific milestone pages; see docs/developmental-content-evidence-ledger.md",
+  "items": [
+    {
+      "id": "la_2_02",
+      "domain": "language",
+      "source_age_months": 2,
+      "sparsh_age_months": null,
+      "description_en": "Responds to loud sounds.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 2 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/2-months.html",
+          "source_domain": "Language/Communication",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "so_2_01",
+      "domain": "social_emotional",
+      "source_age_months": 2,
+      "sparsh_age_months": null,
+      "description_en": "Settles when a caregiver speaks or picks the child up.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 2 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/2-months.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "so_2_02",
+      "domain": "social_emotional",
+      "source_age_months": 2,
+      "sparsh_age_months": null,
+      "description_en": "Looks at a caregiver's face.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 2 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/2-months.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "so_2_03",
+      "domain": "social_emotional",
+      "source_age_months": 2,
+      "sparsh_age_months": null,
+      "description_en": "Smiles in response to a caregiver talking or smiling.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 2 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/2-months.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "co_2_01",
+      "domain": "cognitive",
+      "source_age_months": 2,
+      "sparsh_age_months": null,
+      "description_en": "Watches a person as they move.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 2 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/2-months.html",
+          "source_domain": "Cognitive",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "co_2_02",
+      "domain": "cognitive",
+      "source_age_months": 2,
+      "sparsh_age_months": null,
+      "description_en": "Keeps looking at a toy for several seconds.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 2 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/2-months.html",
+          "source_domain": "Cognitive",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "la_4_02",
+      "domain": "language",
+      "source_age_months": 4,
+      "sparsh_age_months": null,
+      "description_en": "Turns toward the sound of a caregiver's voice.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 4 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/4-months.html",
+          "source_domain": "Language/Communication",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "so_4_01",
+      "domain": "social_emotional",
+      "source_age_months": 4,
+      "sparsh_age_months": null,
+      "description_en": "Smiles to gain a caregiver's attention.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 4 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/4-months.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "so_4_03",
+      "domain": "social_emotional",
+      "source_age_months": 4,
+      "sparsh_age_months": null,
+      "description_en": "Uses looks, movement, or sounds to get or keep attention.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 4 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/4-months.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "la_6_01",
+      "domain": "language",
+      "source_age_months": 6,
+      "sparsh_age_months": null,
+      "description_en": "Makes sounds back and forth with a caregiver.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 6 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/6-months.html",
+          "source_domain": "Language/Communication",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "la_6_02",
+      "domain": "language",
+      "source_age_months": 6,
+      "sparsh_age_months": null,
+      "description_en": "Blows to make raspberry sounds.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 6 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/6-months.html",
+          "source_domain": "Language/Communication",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "la_6_03",
+      "domain": "language",
+      "source_age_months": 6,
+      "sparsh_age_months": null,
+      "description_en": "Makes squealing sounds.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 6 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/6-months.html",
+          "source_domain": "Language/Communication",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "so_6_01",
+      "domain": "social_emotional",
+      "source_age_months": 6,
+      "sparsh_age_months": null,
+      "description_en": "Recognizes familiar people.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 6 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/6-months.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "so_6_02",
+      "domain": "social_emotional",
+      "source_age_months": 6,
+      "sparsh_age_months": null,
+      "description_en": "Enjoys looking at their reflection.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 6 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/6-months.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "so_6_03",
+      "domain": "social_emotional",
+      "source_age_months": 6,
+      "sparsh_age_months": null,
+      "description_en": "Shows laughter.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 6 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/6-months.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "co_6_01",
+      "domain": "cognitive",
+      "source_age_months": 6,
+      "sparsh_age_months": null,
+      "description_en": "Explores objects by mouthing them.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 6 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/6-months.html",
+          "source_domain": "Cognitive",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "co_6_02",
+      "domain": "cognitive",
+      "source_age_months": 6,
+      "sparsh_age_months": null,
+      "description_en": "Reaches for a wanted toy.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 6 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/6-months.html",
+          "source_domain": "Cognitive",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "co_6_03",
+      "domain": "cognitive",
+      "source_age_months": 6,
+      "sparsh_age_months": null,
+      "description_en": "Closes their lips to indicate they do not want more food.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 6 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/6-months.html",
+          "source_domain": "Cognitive",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "la_9_01",
+      "domain": "language",
+      "source_age_months": 9,
+      "sparsh_age_months": null,
+      "description_en": "Makes repeated babbling sounds.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 9 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/9-months.html",
+          "source_domain": "Language/Communication",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "la_9_02",
+      "domain": "language",
+      "source_age_months": 9,
+      "sparsh_age_months": null,
+      "description_en": "Raises their arms to ask to be picked up.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 9 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/9-months.html",
+          "source_domain": "Language/Communication",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "so_9_01",
+      "domain": "social_emotional",
+      "source_age_months": 9,
+      "sparsh_age_months": null,
+      "description_en": "Shows shyness, clinginess, or fear around strangers.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 9 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/9-months.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "co_9_01",
+      "domain": "cognitive",
+      "source_age_months": 9,
+      "sparsh_age_months": null,
+      "description_en": "Looks for an object after it goes out of view.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 9 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/9-months.html",
+          "source_domain": "Cognitive",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "la_12_01",
+      "domain": "language",
+      "source_age_months": 12,
+      "sparsh_age_months": null,
+      "description_en": "Uses a special name such as mama or dada for a parent.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 1 Year",
+          "url": "https://www.cdc.gov/act-early/milestones/1-year.html",
+          "source_domain": "Language/Communication",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "la_12_02",
+      "domain": "language",
+      "source_age_months": 12,
+      "sparsh_age_months": null,
+      "description_en": "Pauses or stops briefly after hearing ?no.?",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 1 Year",
+          "url": "https://www.cdc.gov/act-early/milestones/1-year.html",
+          "source_domain": "Language/Communication",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "la_12_03",
+      "domain": "language",
+      "source_age_months": 12,
+      "sparsh_age_months": null,
+      "description_en": "Waves to say goodbye.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 1 Year",
+          "url": "https://www.cdc.gov/act-early/milestones/1-year.html",
+          "source_domain": "Language/Communication",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "so_12_01",
+      "domain": "social_emotional",
+      "source_age_months": 12,
+      "sparsh_age_months": null,
+      "description_en": "Plays a caregiver game such as pat-a-cake.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 1 Year",
+          "url": "https://www.cdc.gov/act-early/milestones/1-year.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "co_12_01",
+      "domain": "cognitive",
+      "source_age_months": 12,
+      "sparsh_age_months": null,
+      "description_en": "Places an object inside a container.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 1 Year",
+          "url": "https://www.cdc.gov/act-early/milestones/1-year.html",
+          "source_domain": "Cognitive",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "co_12_02",
+      "domain": "cognitive",
+      "source_age_months": 12,
+      "sparsh_age_months": null,
+      "description_en": "Looks for an object the caregiver has hidden.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 1 Year",
+          "url": "https://www.cdc.gov/act-early/milestones/1-year.html",
+          "source_domain": "Cognitive",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "so_15_01",
+      "domain": "social_emotional",
+      "source_age_months": 15,
+      "sparsh_age_months": null,
+      "description_en": "Imitates other children during play.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 15 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/15-months.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "so_15_02",
+      "domain": "social_emotional",
+      "source_age_months": 15,
+      "sparsh_age_months": null,
+      "description_en": "Shows a caregiver an object they like.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 15 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/15-months.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "la_18_02",
+      "domain": "language",
+      "source_age_months": 18,
+      "sparsh_age_months": null,
+      "description_en": "Follows a one-step direction without a gesture.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 18 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/18-months.html",
+          "source_domain": "Language/Communication",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "so_18_01",
+      "domain": "social_emotional",
+      "source_age_months": 18,
+      "sparsh_age_months": null,
+      "description_en": "Moves away while checking that the caregiver is nearby.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 18 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/18-months.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "so_18_02",
+      "domain": "social_emotional",
+      "source_age_months": 18,
+      "sparsh_age_months": null,
+      "description_en": "Points to share interest in something.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 18 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/18-months.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "co_18_01",
+      "domain": "cognitive",
+      "source_age_months": 18,
+      "sparsh_age_months": null,
+      "description_en": "Copies a caregiver doing a task.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 18 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/18-months.html",
+          "source_domain": "Cognitive",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "la_24_01",
+      "domain": "language",
+      "source_age_months": 24,
+      "sparsh_age_months": null,
+      "description_en": "Uses at least two words together.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 2 Years",
+          "url": "https://www.cdc.gov/act-early/milestones/2-years.html",
+          "source_domain": "Language/Communication",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "so_24_01",
+      "domain": "social_emotional",
+      "source_age_months": 24,
+      "sparsh_age_months": null,
+      "description_en": "Notices when another person is hurt or upset.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 2 Years",
+          "url": "https://www.cdc.gov/act-early/milestones/2-years.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "so_24_02",
+      "domain": "social_emotional",
+      "source_age_months": 24,
+      "sparsh_age_months": null,
+      "description_en": "Looks to a caregiver?s face for a cue in a new situation.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 2 Years",
+          "url": "https://www.cdc.gov/act-early/milestones/2-years.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "la_36_03",
+      "domain": "language",
+      "source_age_months": 36,
+      "sparsh_age_months": null,
+      "description_en": "Is understood by other people most of the time.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 3 Years",
+          "url": "https://www.cdc.gov/act-early/milestones/3-years.html",
+          "source_domain": "Language/Communication",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "so_36_03",
+      "domain": "social_emotional",
+      "source_age_months": 36,
+      "sparsh_age_months": null,
+      "description_en": "Notices other children and joins their play.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 3 Years",
+          "url": "https://www.cdc.gov/act-early/milestones/3-years.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "co_36_01",
+      "domain": "cognitive",
+      "source_age_months": 36,
+      "sparsh_age_months": null,
+      "description_en": "Draws a circle after seeing how.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 3 Years",
+          "url": "https://www.cdc.gov/act-early/milestones/3-years.html",
+          "source_domain": "Cognitive",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "co_36_03",
+      "domain": "cognitive",
+      "source_age_months": 36,
+      "sparsh_age_months": null,
+      "description_en": "Avoids touching a hot object after being warned.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 3 Years",
+          "url": "https://www.cdc.gov/act-early/milestones/3-years.html",
+          "source_domain": "Cognitive",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "la_48_01",
+      "domain": "language",
+      "source_age_months": 48,
+      "sparsh_age_months": null,
+      "description_en": "Uses sentences with four or more words.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 4 Years",
+          "url": "https://www.cdc.gov/act-early/milestones/4-years.html",
+          "source_domain": "Language/Communication",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "so_48_01",
+      "domain": "social_emotional",
+      "source_age_months": 48,
+      "sparsh_age_months": null,
+      "description_en": "Pretends to be another person or character during play.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 4 Years",
+          "url": "https://www.cdc.gov/act-early/milestones/4-years.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "so_48_02",
+      "domain": "social_emotional",
+      "source_age_months": 48,
+      "sparsh_age_months": null,
+      "description_en": "Offers comfort to someone who is hurt or sad.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 4 Years",
+          "url": "https://www.cdc.gov/act-early/milestones/4-years.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "co_48_01",
+      "domain": "cognitive",
+      "source_age_months": 48,
+      "sparsh_age_months": null,
+      "description_en": "Names several colors.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 4 Years",
+          "url": "https://www.cdc.gov/act-early/milestones/4-years.html",
+          "source_domain": "Cognitive",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "so_60_01",
+      "domain": "social_emotional",
+      "source_age_months": 60,
+      "sparsh_age_months": null,
+      "description_en": "Follows game rules or takes turns with other children.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 5 Years",
+          "url": "https://www.cdc.gov/act-early/milestones/5-years.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "so_60_02",
+      "domain": "social_emotional",
+      "source_age_months": 60,
+      "sparsh_age_months": null,
+      "description_en": "Sings, dances, or performs for a caregiver.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 5 Years",
+          "url": "https://www.cdc.gov/act-early/milestones/5-years.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "co_60_01",
+      "domain": "cognitive",
+      "source_age_months": 60,
+      "sparsh_age_months": null,
+      "description_en": "Counts to ten.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 5 Years",
+          "url": "https://www.cdc.gov/act-early/milestones/5-years.html",
+          "source_domain": "Cognitive",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    }
+  ]
+}

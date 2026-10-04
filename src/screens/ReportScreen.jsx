@@ -275,7 +275,7 @@ export default function ReportScreen({ onNavigate }) {
                 <div className="flex items-center gap-2">
                   <h2 className="text-lg font-bold text-neutral-900">{currentChild?.name || 'Screened Child'}</h2>
                   <BadgePill tone="teal">
-                    {screeningResult.checkpoint_age_months ?? currentChild?.age_months ?? '—'} Months
+                    {screeningResult.checkpoint_age_months ?? currentChild?.age_months ?? '—'} Months at screening
                   </BadgePill>
                 </div>
                 <p className="text-xs text-neutral-500">

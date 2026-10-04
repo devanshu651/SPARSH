@@ -134,3 +134,7 @@ checks admin Firestore profiles and current Firebase disabled states and returns
 profile operations, but Firebase Auth state cannot participate in a Firestore
 transaction; direct out-of-band Firebase Admin/Console changes still require an
 operational recovery procedure.
+
+## Developmental content candidate
+
+The active production catalog is `backend/app/config/milestones.json` (`phase5-final-65-v1`): 65 questions, 13 per domain. Candidate source files and review artifacts remain available for audit. The questions and scoring have not been clinically validated; SPARSH provides screening/risk indication, not diagnosis. See `docs/active-developmental-content.md` for age evidence, scoring compatibility, limitations, and migration notes.

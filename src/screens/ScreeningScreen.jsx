@@ -230,10 +230,10 @@ export default function ScreeningScreen({ onNavigate }) {
                 <div className="grid h-8 w-8 place-items-center rounded-lg bg-primary-50 text-xs font-bold text-primary-800">
                   1
                 </div>
-                <h3 className="text-sm font-bold text-neutral-900">Child & Checkpoint</h3>
+                <h3 className="text-sm font-bold text-neutral-900">Child & Screening Age</h3>
               </div>
               <p className="mt-2 text-xs text-neutral-500 leading-relaxed">
-                Select an enrolled child. SPARSH uses the recorded date of birth to select the configured age checkpoint.
+                Select an enrolled child. SPARSH uses the recorded date of birth to record the screening age. The backend supplies the active 65-question set.
               </p>
             </div>
 
@@ -422,7 +422,7 @@ export default function ScreeningScreen({ onNavigate }) {
               <div className="text-xs text-neutral-600 leading-relaxed">
                 <h4 className="font-bold text-neutral-900">What happens after selecting a child?</h4>
                 <p className="mt-1">
-                  SPARSH determines the child&apos;s age-bracket checkpoint and loads their specific milestone questionnaire.
+                  SPARSH records the child&apos;s age and loads the active developmental questionnaire from the backend.
                   You can complete each domain at your own pace and save drafts offline. Screening scores and recommendations are calculated by the backend.
                 </p>
               </div>
@@ -466,7 +466,7 @@ export default function ScreeningScreen({ onNavigate }) {
 
   if (reviewing && pendingPayload) {
     return (
-      <AppLayout active="screening" onNavigate={onNavigate} backTo="dashboard" title="Review screening responses" subtitle={`${currentChild?.name || 'Child'} · ${pendingPayload.checkpoint_age_months} month checkpoint`}>
+      <AppLayout active="screening" onNavigate={onNavigate} backTo="dashboard" title="Review screening responses" subtitle={`${currentChild?.name || 'Child'} · ${pendingPayload.checkpoint_age_months} months at screening`}>
         <div className="mx-auto max-w-3xl space-y-5 p-4 sm:p-6">
           <p className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900">Review every response before continuing. Scores are calculated by the backend after submission.</p>
           {domains.map((domain) => (
@@ -518,7 +518,7 @@ export default function ScreeningScreen({ onNavigate }) {
                   <BadgePill tone="teal">{data.current_age_months} Months</BadgePill>
                 </div>
                 <p className="text-xs text-neutral-500">
-                  ID: {currentChild?.child_identifier || 'Not recorded'} · {data.checkpoint_age_months} month checkpoint
+                  ID: {currentChild?.child_identifier || 'Not recorded'} · {data.checkpoint_age_months} months at screening
                 </p>
               </div>
             </div>
@@ -636,7 +636,7 @@ export default function ScreeningScreen({ onNavigate }) {
                   </div>
 
                   <p className="mt-1 text-[11px] text-neutral-500">
-                    Ask the caregiver or observe the child directly in the Anganwadi centre.
+                    {task.administration_note || 'Ask the caregiver or observe the child directly in the Anganwadi centre.'}
                   </p>
 
                   {/* 3-WAY RESPONSE BUTTONS */}

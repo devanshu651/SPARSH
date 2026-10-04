@@ -24,7 +24,8 @@ class FoundationTests(unittest.TestCase):
         self.assertTrue(all(sum(item["domain"] == domain for item in data["milestones"]) > 1 for domain in domains))
         self.assertTrue(any(sum(item["domain"] == domain for item in items) > 1 for domain in domains))
         self.assertTrue(all(item["response_type"] == "YES_NO_UNSURE" for item in items))
-        self.assertTrue(all(item["source_reference"]["status"] == "unverified_in_repository" for item in items))
+        self.assertTrue(all(item["source_references"] for item in items))
+        self.assertTrue(all(item["dataset_version"] == "phase5-final-65-v1" for item in items))
         self.assertTrue(all(item["red_flag"] is False for item in items))
         self.assertEqual(checkpoint, 12)
 

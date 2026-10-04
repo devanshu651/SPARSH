@@ -65,7 +65,7 @@ def submit_screening(payload: ScreeningSubmit, user: CurrentUser = Depends(requi
         key: ({domain: score.model_dump(mode="json") for domain, score in value.items()} if key == "domain_scores" else value.value if hasattr(value, "value") else value)
         for key, value in result.items()
     }
-    milestone_snapshot = [{"id": item["id"], "domain": item.get("domain", "unknown"), "text": item.get("question", item.get("description", ""))} for item in expected]
+    milestone_snapshot = [{"id": item["id"], "domain": item.get("domain", "unknown"), "text": item.get("question", item.get("description", "")), "age": item.get("age_metadata")} for item in expected]
     screening = payload.model_dump(mode="json") | {"answers": answer_data, "milestone_snapshot": milestone_snapshot, **serialized, "checkpoint_age_months": expected_age, "milestone_dataset_version": dataset_version, "created_by": user.uid, "created_at": now, "ml_assessment": ml_assessment}
     ref = db.collection("screenings").document()
     submission_ref = db.collection("screening_submissions").document(

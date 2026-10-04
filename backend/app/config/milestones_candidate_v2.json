@@ -1,0 +1,2628 @@
+{
+  "dataset_version": "candidate-2",
+  "status": "NON-PRODUCTION evidence-screened development artifact; clinical and wording review pending",
+  "source_basis": "48 unchanged SOURCE_SUPPORTED records from candidate-1 plus paraphrased candidates based on AAP and WHO sources; see evidence ledger and coverage report",
+  "items": [
+    {
+      "id": "la_2_02",
+      "domain": "language",
+      "source_age_months": 2,
+      "sparsh_age_months": null,
+      "description_en": "Responds to loud sounds.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 2 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/2-months.html",
+          "source_domain": "Language/Communication",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "so_2_01",
+      "domain": "social_emotional",
+      "source_age_months": 2,
+      "sparsh_age_months": null,
+      "description_en": "Settles when a caregiver speaks or picks the child up.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 2 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/2-months.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "so_2_02",
+      "domain": "social_emotional",
+      "source_age_months": 2,
+      "sparsh_age_months": null,
+      "description_en": "Looks at a caregiver's face.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 2 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/2-months.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "so_2_03",
+      "domain": "social_emotional",
+      "source_age_months": 2,
+      "sparsh_age_months": null,
+      "description_en": "Smiles in response to a caregiver talking or smiling.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 2 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/2-months.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "co_2_01",
+      "domain": "cognitive",
+      "source_age_months": 2,
+      "sparsh_age_months": null,
+      "description_en": "Watches a person as they move.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 2 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/2-months.html",
+          "source_domain": "Cognitive",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "co_2_02",
+      "domain": "cognitive",
+      "source_age_months": 2,
+      "sparsh_age_months": null,
+      "description_en": "Keeps looking at a toy for several seconds.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 2 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/2-months.html",
+          "source_domain": "Cognitive",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "la_4_02",
+      "domain": "language",
+      "source_age_months": 4,
+      "sparsh_age_months": null,
+      "description_en": "Turns toward the sound of a caregiver's voice.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 4 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/4-months.html",
+          "source_domain": "Language/Communication",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "so_4_01",
+      "domain": "social_emotional",
+      "source_age_months": 4,
+      "sparsh_age_months": null,
+      "description_en": "Smiles to gain a caregiver's attention.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 4 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/4-months.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "so_4_03",
+      "domain": "social_emotional",
+      "source_age_months": 4,
+      "sparsh_age_months": null,
+      "description_en": "Uses looks, movement, or sounds to get or keep attention.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 4 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/4-months.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "la_6_01",
+      "domain": "language",
+      "source_age_months": 6,
+      "sparsh_age_months": null,
+      "description_en": "Makes sounds back and forth with a caregiver.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 6 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/6-months.html",
+          "source_domain": "Language/Communication",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "la_6_02",
+      "domain": "language",
+      "source_age_months": 6,
+      "sparsh_age_months": null,
+      "description_en": "Blows to make raspberry sounds.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 6 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/6-months.html",
+          "source_domain": "Language/Communication",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "la_6_03",
+      "domain": "language",
+      "source_age_months": 6,
+      "sparsh_age_months": null,
+      "description_en": "Makes squealing sounds.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 6 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/6-months.html",
+          "source_domain": "Language/Communication",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "so_6_01",
+      "domain": "social_emotional",
+      "source_age_months": 6,
+      "sparsh_age_months": null,
+      "description_en": "Recognizes familiar people.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 6 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/6-months.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "so_6_02",
+      "domain": "social_emotional",
+      "source_age_months": 6,
+      "sparsh_age_months": null,
+      "description_en": "Enjoys looking at their reflection.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 6 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/6-months.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "so_6_03",
+      "domain": "social_emotional",
+      "source_age_months": 6,
+      "sparsh_age_months": null,
+      "description_en": "Shows laughter.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 6 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/6-months.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "co_6_01",
+      "domain": "cognitive",
+      "source_age_months": 6,
+      "sparsh_age_months": null,
+      "description_en": "Explores objects by mouthing them.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 6 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/6-months.html",
+          "source_domain": "Cognitive",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "co_6_02",
+      "domain": "cognitive",
+      "source_age_months": 6,
+      "sparsh_age_months": null,
+      "description_en": "Reaches for a wanted toy.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 6 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/6-months.html",
+          "source_domain": "Cognitive",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "co_6_03",
+      "domain": "cognitive",
+      "source_age_months": 6,
+      "sparsh_age_months": null,
+      "description_en": "Closes their lips to indicate they do not want more food.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 6 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/6-months.html",
+          "source_domain": "Cognitive",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "la_9_01",
+      "domain": "language",
+      "source_age_months": 9,
+      "sparsh_age_months": null,
+      "description_en": "Makes repeated babbling sounds.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 9 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/9-months.html",
+          "source_domain": "Language/Communication",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "la_9_02",
+      "domain": "language",
+      "source_age_months": 9,
+      "sparsh_age_months": null,
+      "description_en": "Raises their arms to ask to be picked up.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 9 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/9-months.html",
+          "source_domain": "Language/Communication",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "so_9_01",
+      "domain": "social_emotional",
+      "source_age_months": 9,
+      "sparsh_age_months": null,
+      "description_en": "Shows shyness, clinginess, or fear around strangers.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 9 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/9-months.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "co_9_01",
+      "domain": "cognitive",
+      "source_age_months": 9,
+      "sparsh_age_months": null,
+      "description_en": "Looks for an object after it goes out of view.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 9 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/9-months.html",
+          "source_domain": "Cognitive",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "la_12_01",
+      "domain": "language",
+      "source_age_months": 12,
+      "sparsh_age_months": null,
+      "description_en": "Uses a special name such as mama or dada for a parent.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 1 Year",
+          "url": "https://www.cdc.gov/act-early/milestones/1-year.html",
+          "source_domain": "Language/Communication",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "la_12_02",
+      "domain": "language",
+      "source_age_months": 12,
+      "sparsh_age_months": null,
+      "description_en": "Pauses or stops briefly after hearing ?no.?",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 1 Year",
+          "url": "https://www.cdc.gov/act-early/milestones/1-year.html",
+          "source_domain": "Language/Communication",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "la_12_03",
+      "domain": "language",
+      "source_age_months": 12,
+      "sparsh_age_months": null,
+      "description_en": "Waves to say goodbye.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 1 Year",
+          "url": "https://www.cdc.gov/act-early/milestones/1-year.html",
+          "source_domain": "Language/Communication",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "so_12_01",
+      "domain": "social_emotional",
+      "source_age_months": 12,
+      "sparsh_age_months": null,
+      "description_en": "Plays a caregiver game such as pat-a-cake.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 1 Year",
+          "url": "https://www.cdc.gov/act-early/milestones/1-year.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "co_12_01",
+      "domain": "cognitive",
+      "source_age_months": 12,
+      "sparsh_age_months": null,
+      "description_en": "Places an object inside a container.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 1 Year",
+          "url": "https://www.cdc.gov/act-early/milestones/1-year.html",
+          "source_domain": "Cognitive",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "co_12_02",
+      "domain": "cognitive",
+      "source_age_months": 12,
+      "sparsh_age_months": null,
+      "description_en": "Looks for an object the caregiver has hidden.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 1 Year",
+          "url": "https://www.cdc.gov/act-early/milestones/1-year.html",
+          "source_domain": "Cognitive",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "so_15_01",
+      "domain": "social_emotional",
+      "source_age_months": 15,
+      "sparsh_age_months": null,
+      "description_en": "Imitates other children during play.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 15 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/15-months.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "so_15_02",
+      "domain": "social_emotional",
+      "source_age_months": 15,
+      "sparsh_age_months": null,
+      "description_en": "Shows a caregiver an object they like.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 15 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/15-months.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "la_18_02",
+      "domain": "language",
+      "source_age_months": 18,
+      "sparsh_age_months": null,
+      "description_en": "Follows a one-step direction without a gesture.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 18 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/18-months.html",
+          "source_domain": "Language/Communication",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "so_18_01",
+      "domain": "social_emotional",
+      "source_age_months": 18,
+      "sparsh_age_months": null,
+      "description_en": "Moves away while checking that the caregiver is nearby.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 18 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/18-months.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "so_18_02",
+      "domain": "social_emotional",
+      "source_age_months": 18,
+      "sparsh_age_months": null,
+      "description_en": "Points to share interest in something.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 18 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/18-months.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "co_18_01",
+      "domain": "cognitive",
+      "source_age_months": 18,
+      "sparsh_age_months": null,
+      "description_en": "Copies a caregiver doing a task.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 18 Months",
+          "url": "https://www.cdc.gov/act-early/milestones/18-months.html",
+          "source_domain": "Cognitive",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "la_24_01",
+      "domain": "language",
+      "source_age_months": 24,
+      "sparsh_age_months": null,
+      "description_en": "Uses at least two words together.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 2 Years",
+          "url": "https://www.cdc.gov/act-early/milestones/2-years.html",
+          "source_domain": "Language/Communication",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "so_24_01",
+      "domain": "social_emotional",
+      "source_age_months": 24,
+      "sparsh_age_months": null,
+      "description_en": "Notices when another person is hurt or upset.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 2 Years",
+          "url": "https://www.cdc.gov/act-early/milestones/2-years.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "so_24_02",
+      "domain": "social_emotional",
+      "source_age_months": 24,
+      "sparsh_age_months": null,
+      "description_en": "Looks to a caregiver?s face for a cue in a new situation.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 2 Years",
+          "url": "https://www.cdc.gov/act-early/milestones/2-years.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "la_36_03",
+      "domain": "language",
+      "source_age_months": 36,
+      "sparsh_age_months": null,
+      "description_en": "Is understood by other people most of the time.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 3 Years",
+          "url": "https://www.cdc.gov/act-early/milestones/3-years.html",
+          "source_domain": "Language/Communication",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "so_36_03",
+      "domain": "social_emotional",
+      "source_age_months": 36,
+      "sparsh_age_months": null,
+      "description_en": "Notices other children and joins their play.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 3 Years",
+          "url": "https://www.cdc.gov/act-early/milestones/3-years.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "co_36_01",
+      "domain": "cognitive",
+      "source_age_months": 36,
+      "sparsh_age_months": null,
+      "description_en": "Draws a circle after seeing how.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 3 Years",
+          "url": "https://www.cdc.gov/act-early/milestones/3-years.html",
+          "source_domain": "Cognitive",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "co_36_03",
+      "domain": "cognitive",
+      "source_age_months": 36,
+      "sparsh_age_months": null,
+      "description_en": "Avoids touching a hot object after being warned.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 3 Years",
+          "url": "https://www.cdc.gov/act-early/milestones/3-years.html",
+          "source_domain": "Cognitive",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "la_48_01",
+      "domain": "language",
+      "source_age_months": 48,
+      "sparsh_age_months": null,
+      "description_en": "Uses sentences with four or more words.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 4 Years",
+          "url": "https://www.cdc.gov/act-early/milestones/4-years.html",
+          "source_domain": "Language/Communication",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "so_48_01",
+      "domain": "social_emotional",
+      "source_age_months": 48,
+      "sparsh_age_months": null,
+      "description_en": "Pretends to be another person or character during play.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 4 Years",
+          "url": "https://www.cdc.gov/act-early/milestones/4-years.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "so_48_02",
+      "domain": "social_emotional",
+      "source_age_months": 48,
+      "sparsh_age_months": null,
+      "description_en": "Offers comfort to someone who is hurt or sad.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 4 Years",
+          "url": "https://www.cdc.gov/act-early/milestones/4-years.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "co_48_01",
+      "domain": "cognitive",
+      "source_age_months": 48,
+      "sparsh_age_months": null,
+      "description_en": "Names several colors.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 4 Years",
+          "url": "https://www.cdc.gov/act-early/milestones/4-years.html",
+          "source_domain": "Cognitive",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "so_60_01",
+      "domain": "social_emotional",
+      "source_age_months": 60,
+      "sparsh_age_months": null,
+      "description_en": "Follows game rules or takes turns with other children.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 5 Years",
+          "url": "https://www.cdc.gov/act-early/milestones/5-years.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "so_60_02",
+      "domain": "social_emotional",
+      "source_age_months": 60,
+      "sparsh_age_months": null,
+      "description_en": "Sings, dances, or performs for a caregiver.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 5 Years",
+          "url": "https://www.cdc.gov/act-early/milestones/5-years.html",
+          "source_domain": "Social/Emotional",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "co_60_01",
+      "domain": "cognitive",
+      "source_age_months": 60,
+      "sparsh_age_months": null,
+      "description_en": "Counts to ten.",
+      "source_references": [
+        {
+          "organization": "CDC",
+          "title": "Milestones by 5 Years",
+          "url": "https://www.cdc.gov/act-early/milestones/5-years.html",
+          "source_domain": "Cognitive",
+          "evidence_status": "reviewed",
+          "review_note": "CDC supports this concept at the source age/category. CDC milestones support monitoring, not a validated SPARSH screening item; wording and clinical review remain pending."
+        }
+      ],
+      "dataset_version": "candidate-1",
+      "weight": null,
+      "red_flag": false,
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "mapping_status": "DIRECT"
+    },
+    {
+      "id": "gm_aap13_02_head_lift",
+      "domain": "gross_motor",
+      "source_age_months": 2,
+      "sparsh_age_months": 2,
+      "description_en": "While lying on the tummy, lifts the head and upper chest.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Gross motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Gross motor column at 2 months. The table describes mean ages for surveillance, not screening thresholds. WHO source supports gross motor broadly; AAP explicitly labels this gross motor."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "gm_aap13_04_roll_prone_supine",
+      "domain": "gross_motor",
+      "source_age_months": 4,
+      "sparsh_age_months": 4,
+      "description_en": "Rolls from tummy to back.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Gross motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Gross motor column at 4 months. The table describes mean ages for surveillance, not screening thresholds. AAP explicitly labels this gross motor."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "gm_aap13_04_prone_support",
+      "domain": "gross_motor",
+      "source_age_months": 4,
+      "sparsh_age_months": 4,
+      "description_en": "While on the tummy, props the upper body on the elbows or wrists.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Gross motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Gross motor column at 4 months. The table describes mean ages for surveillance, not screening thresholds. AAP explicitly labels this gross motor."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "gm_aap13_06_roll_supine_prone",
+      "domain": "gross_motor",
+      "source_age_months": 6,
+      "sparsh_age_months": 6,
+      "description_en": "Rolls from back to tummy.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Gross motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Gross motor column at 6 months. The table describes mean ages for surveillance, not screening thresholds. AAP explicitly labels this gross motor."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "gm_aap13_06_sit_unsupported",
+      "domain": "gross_motor",
+      "source_age_months": 6,
+      "sparsh_age_months": 6,
+      "description_en": "Sits without another person holding the child.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Gross motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Gross motor column at 6 months. The table describes mean ages for surveillance, not screening thresholds. AAP explicitly labels this gross motor."
+        },
+        {
+          "organization": "WHO Multicentre Growth Reference Study Group",
+          "title": "WHO Motor Development Study: Windows of achievement for six gross motor development milestones",
+          "url": "https://www.who.int/docs/default-source/child-growth/child-growth-standards/indicators/motor-development-milestones/who-motor-development-study-windows-of-achievement-for-six-gross-motor-development-milestones.pdf",
+          "source_domain": "Gross motor development",
+          "evidence_status": "reviewed",
+          "review_note": "WHO independently reports this gross-motor behavior in a broad attainment window of 3.8?9.2 months (1st?99th percentile bounds); this is not a checkpoint or cutoff."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "source_age_range_months": [
+        3.8,
+        9.2
+      ]
+    },
+    {
+      "id": "gm_aap13_09_pull_stand",
+      "domain": "gross_motor",
+      "source_age_months": 9,
+      "sparsh_age_months": 9,
+      "description_en": "Pulls up to stand while holding support.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Gross motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Gross motor column at 9 months. The table describes mean ages for surveillance, not screening thresholds. AAP explicitly labels this gross motor."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "gm_aap13_09_lie_to_sit",
+      "domain": "gross_motor",
+      "source_age_months": 9,
+      "sparsh_age_months": 9,
+      "description_en": "Moves from lying down into a sitting position.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Gross motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Gross motor column at 9 months. The table describes mean ages for surveillance, not screening thresholds. AAP explicitly labels this gross motor."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "gm_aap13_09_crawl",
+      "domain": "gross_motor",
+      "source_age_months": 9,
+      "sparsh_age_months": 9,
+      "description_en": "Moves along the floor by crawling.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Gross motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Gross motor column at 9 months. The table describes mean ages for surveillance, not screening thresholds. AAP explicitly labels this gross motor."
+        },
+        {
+          "organization": "WHO Multicentre Growth Reference Study Group",
+          "title": "WHO Motor Development Study: Windows of achievement for six gross motor development milestones",
+          "url": "https://www.who.int/docs/default-source/child-growth/child-growth-standards/indicators/motor-development-milestones/who-motor-development-study-windows-of-achievement-for-six-gross-motor-development-milestones.pdf",
+          "source_domain": "Gross motor development",
+          "evidence_status": "reviewed",
+          "review_note": "WHO independently reports this gross-motor behavior in a broad attainment window of 5.2?13.5 months (1st?99th percentile bounds); this is not a checkpoint or cutoff."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "source_age_range_months": [
+        5.2,
+        13.5
+      ]
+    },
+    {
+      "id": "gm_aap13_12_stand",
+      "domain": "gross_motor",
+      "source_age_months": 12,
+      "sparsh_age_months": 12,
+      "description_en": "Stands without being held.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Gross motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Gross motor column at 12 months. The table describes mean ages for surveillance, not screening thresholds. AAP explicitly labels this gross motor."
+        },
+        {
+          "organization": "WHO Multicentre Growth Reference Study Group",
+          "title": "WHO Motor Development Study: Windows of achievement for six gross motor development milestones",
+          "url": "https://www.who.int/docs/default-source/child-growth/child-growth-standards/indicators/motor-development-milestones/who-motor-development-study-windows-of-achievement-for-six-gross-motor-development-milestones.pdf",
+          "source_domain": "Gross motor development",
+          "evidence_status": "reviewed",
+          "review_note": "WHO independently reports this gross-motor behavior in a broad attainment window of 6.9?16.9 months (1st?99th percentile bounds); this is not a checkpoint or cutoff."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "source_age_range_months": [
+        6.9,
+        16.9
+      ]
+    },
+    {
+      "id": "gm_aap13_12_walk",
+      "domain": "gross_motor",
+      "source_age_months": 12,
+      "sparsh_age_months": 12,
+      "description_en": "Walks independently.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Gross motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Gross motor column at 12 months. The table describes mean ages for surveillance, not screening thresholds. AAP explicitly labels this gross motor."
+        },
+        {
+          "organization": "WHO Multicentre Growth Reference Study Group",
+          "title": "WHO Motor Development Study: Windows of achievement for six gross motor development milestones",
+          "url": "https://www.who.int/docs/default-source/child-growth/child-growth-standards/indicators/motor-development-milestones/who-motor-development-study-windows-of-achievement-for-six-gross-motor-development-milestones.pdf",
+          "source_domain": "Gross motor development",
+          "evidence_status": "reviewed",
+          "review_note": "WHO independently reports this gross-motor behavior in a broad attainment window of 8.2?17.6 months (1st?99th percentile bounds); this is not a checkpoint or cutoff."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      },
+      "source_age_range_months": [
+        8.2,
+        17.6
+      ]
+    },
+    {
+      "id": "gm_aap13_15_walk_backward",
+      "domain": "gross_motor",
+      "source_age_months": 15,
+      "sparsh_age_months": 15,
+      "description_en": "Walks backward.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Gross motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Gross motor column at 15 months. The table describes mean ages for surveillance, not screening thresholds. AAP explicitly labels this gross motor."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "gm_aap13_15_run",
+      "domain": "gross_motor",
+      "source_age_months": 15,
+      "sparsh_age_months": 15,
+      "description_en": "Runs.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Gross motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Gross motor column at 15 months. The table describes mean ages for surveillance, not screening thresholds. AAP explicitly labels this gross motor."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "gm_aap13_18_steps_hand_held",
+      "domain": "gross_motor",
+      "source_age_months": 18,
+      "sparsh_age_months": 18,
+      "description_en": "Walks up steps while holding an adult?s hand.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Gross motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Gross motor column at 18 months. The table describes mean ages for surveillance, not screening thresholds. AAP explicitly labels this gross motor."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "gm_aap13_24_jump",
+      "domain": "gross_motor",
+      "source_age_months": 24,
+      "sparsh_age_months": 24,
+      "description_en": "Jumps upward.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Gross motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Gross motor column at 24 months. The table describes mean ages for surveillance, not screening thresholds. AAP explicitly labels this gross motor."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "gm_aap13_30_stairs_alternate",
+      "domain": "gross_motor",
+      "source_age_months": 30,
+      "sparsh_age_months": 30,
+      "description_en": "Begins to go up steps, alternating feet.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Gross motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Gross motor column at 30 months. The table describes mean ages for surveillance, not screening thresholds. AAP explicitly labels this gross motor."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "gm_aap13_36_pedal",
+      "domain": "gross_motor",
+      "source_age_months": 36,
+      "sparsh_age_months": 36,
+      "description_en": "Pedals a ride-on toy.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Gross motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Gross motor column at 36 months. The table describes mean ages for surveillance, not screening thresholds. AAP explicitly labels this gross motor."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "gm_aap13_36_climb_furniture",
+      "domain": "gross_motor",
+      "source_age_months": 36,
+      "sparsh_age_months": 36,
+      "description_en": "Climbs onto and down from furniture.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Gross motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Gross motor column at 36 months. The table describes mean ages for surveillance, not screening thresholds. AAP explicitly labels this gross motor."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "gm_aap13_48_stairs_unsupported",
+      "domain": "gross_motor",
+      "source_age_months": 48,
+      "sparsh_age_months": 48,
+      "description_en": "Goes up stairs without support.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Gross motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Gross motor column at 48 months. The table describes mean ages for surveillance, not screening thresholds. AAP explicitly labels this gross motor."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "gm_aap13_48_skip_one_foot",
+      "domain": "gross_motor",
+      "source_age_months": 48,
+      "sparsh_age_months": 48,
+      "description_en": "Skips on one foot.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Gross motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Gross motor column at 48 months. The table describes mean ages for surveillance, not screening thresholds. AAP explicitly labels this gross motor."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "gm_who06_stand_assisted",
+      "domain": "gross_motor",
+      "source_age_months": null,
+      "source_age_range_months": [
+        4.8,
+        11.4
+      ],
+      "sparsh_age_months": null,
+      "description_en": "Stands while holding support.",
+      "source_references": [
+        {
+          "organization": "WHO Multicentre Growth Reference Study Group",
+          "title": "WHO Motor Development Study: Windows of achievement for six gross motor development milestones",
+          "url": "https://www.who.int/docs/default-source/child-growth/child-growth-standards/indicators/motor-development-milestones/who-motor-development-study-windows-of-achievement-for-six-gross-motor-development-milestones.pdf",
+          "source_domain": "Gross motor development",
+          "evidence_status": "reviewed",
+          "review_note": "WHO explicitly identifies this as gross motor and reports an attainment window of 4.8?11.4 months (1st?99th percentile bounds). A window does not select a discrete SPARSH checkpoint."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "gm_who06_walk_assisted",
+      "domain": "gross_motor",
+      "source_age_months": null,
+      "source_age_range_months": [
+        5.9,
+        13.7
+      ],
+      "sparsh_age_months": null,
+      "description_en": "Takes steps while holding a person or support.",
+      "source_references": [
+        {
+          "organization": "WHO Multicentre Growth Reference Study Group",
+          "title": "WHO Motor Development Study: Windows of achievement for six gross motor development milestones",
+          "url": "https://www.who.int/docs/default-source/child-growth/child-growth-standards/indicators/motor-development-milestones/who-motor-development-study-windows-of-achievement-for-six-gross-motor-development-milestones.pdf",
+          "source_domain": "Gross motor development",
+          "evidence_status": "reviewed",
+          "review_note": "WHO explicitly identifies this as gross motor and reports an attainment window of 5.9?13.7 months (1st?99th percentile bounds). A window does not select a discrete SPARSH checkpoint."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "fm_aap13_04_hands_open",
+      "domain": "fine_motor",
+      "source_age_months": 4,
+      "sparsh_age_months": 4,
+      "description_en": "Often keeps the hands open.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Fine motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Fine motor column at 4 months. The table describes mean ages for surveillance, not screening thresholds. The AAP table explicitly assigns this hand/finger or visual-motor task to its Fine Motor column; this does not establish local norms or screening validity."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "fm_aap13_04_finger_play",
+      "domain": "fine_motor",
+      "source_age_months": 4,
+      "sparsh_age_months": 4,
+      "description_en": "Plays with fingers near the middle of the body.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Fine motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Fine motor column at 4 months. The table describes mean ages for surveillance, not screening thresholds. The AAP table explicitly assigns this hand/finger or visual-motor task to its Fine Motor column; this does not establish local norms or screening validity."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "fm_aap13_04_grasp",
+      "domain": "fine_motor",
+      "source_age_months": 4,
+      "sparsh_age_months": 4,
+      "description_en": "Grasps an object placed within reach.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Fine motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Fine motor column at 4 months. The table describes mean ages for surveillance, not screening thresholds. The AAP table explicitly assigns this hand/finger or visual-motor task to its Fine Motor column; this does not establish local norms or screening validity."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "fm_aap13_06_reach_cube",
+      "domain": "fine_motor",
+      "source_age_months": 6,
+      "sparsh_age_months": 6,
+      "description_en": "Reaches for a small block or cube.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Fine motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Fine motor column at 6 months. The table describes mean ages for surveillance, not screening thresholds. The AAP table explicitly assigns this hand/finger or visual-motor task to its Fine Motor column; this does not establish local norms or screening validity."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "fm_aap13_06_transfer",
+      "domain": "fine_motor",
+      "source_age_months": 6,
+      "sparsh_age_months": 6,
+      "description_en": "Moves an object from one hand to the other.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Fine motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Fine motor column at 6 months. The table describes mean ages for surveillance, not screening thresholds. The AAP table explicitly assigns this hand/finger or visual-motor task to its Fine Motor column; this does not establish local norms or screening validity."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "fm_aap13_06_rake",
+      "domain": "fine_motor",
+      "source_age_months": 6,
+      "sparsh_age_months": 6,
+      "description_en": "Uses several fingers together to gather a small object.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Fine motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Fine motor column at 6 months. The table describes mean ages for surveillance, not screening thresholds. The AAP table explicitly assigns this hand/finger or visual-motor task to its Fine Motor column; this does not establish local norms or screening validity."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "fm_aap13_09_three_finger_pickup",
+      "domain": "fine_motor",
+      "source_age_months": 9,
+      "sparsh_age_months": 9,
+      "description_en": "Picks up a small object using several fingers.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Fine motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Fine motor column at 9 months. The table describes mean ages for surveillance, not screening thresholds. The AAP table explicitly assigns this hand/finger or visual-motor task to its Fine Motor column; this does not establish local norms or screening validity."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "fm_aap13_12_pincer",
+      "domain": "fine_motor",
+      "source_age_months": 12,
+      "sparsh_age_months": 12,
+      "description_en": "Picks up a small object between the thumb and index finger.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Fine motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Fine motor column at 12 months. The table describes mean ages for surveillance, not screening thresholds. The AAP table explicitly assigns this hand/finger or visual-motor task to its Fine Motor column; this does not establish local norms or screening validity."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "fm_aap13_12_block_cup",
+      "domain": "fine_motor",
+      "source_age_months": 12,
+      "sparsh_age_months": 12,
+      "description_en": "Places a block inside a cup or container.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Fine motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Fine motor column at 12 months. The table describes mean ages for surveillance, not screening thresholds. The AAP table explicitly assigns this hand/finger or visual-motor task to its Fine Motor column; this does not establish local norms or screening validity."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "fm_aap13_12_bang_objects",
+      "domain": "fine_motor",
+      "source_age_months": 12,
+      "sparsh_age_months": 12,
+      "description_en": "Holds and bangs two objects together.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Fine motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Fine motor column at 12 months. The table describes mean ages for surveillance, not screening thresholds. The AAP table explicitly assigns this hand/finger or visual-motor task to its Fine Motor column; this does not establish local norms or screening validity."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "fm_aap13_15_scribble_imitation",
+      "domain": "fine_motor",
+      "source_age_months": 15,
+      "sparsh_age_months": 15,
+      "description_en": "Makes a scribble after seeing someone demonstrate.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Fine motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Fine motor column at 15 months. The table describes mean ages for surveillance, not screening thresholds. The AAP table explicitly assigns this hand/finger or visual-motor task to its Fine Motor column; this does not establish local norms or screening validity."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "fm_aap13_15_dump_demo",
+      "domain": "fine_motor",
+      "source_age_months": 15,
+      "sparsh_age_months": 15,
+      "description_en": "Turns over a container to take out a small object after a demonstration.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Fine motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Fine motor column at 15 months. The table describes mean ages for surveillance, not screening thresholds. The AAP table explicitly assigns this hand/finger or visual-motor task to its Fine Motor column; this does not establish local norms or screening validity."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "fm_aap13_18_dump_spontaneous",
+      "domain": "fine_motor",
+      "source_age_months": 18,
+      "sparsh_age_months": 18,
+      "description_en": "Turns over a container to take out a small object without a demonstration.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Fine motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Fine motor column at 18 months. The table describes mean ages for surveillance, not screening thresholds. The AAP table explicitly assigns this hand/finger or visual-motor task to its Fine Motor column; this does not establish local norms or screening validity."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "fm_aap13_18_two_block_tower",
+      "domain": "fine_motor",
+      "source_age_months": 18,
+      "sparsh_age_months": 18,
+      "description_en": "Stacks two blocks.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Fine motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Fine motor column at 18 months. The table describes mean ages for surveillance, not screening thresholds. The AAP table explicitly assigns this hand/finger or visual-motor task to its Fine Motor column; this does not establish local norms or screening validity."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "fm_aap13_18_scribble",
+      "domain": "fine_motor",
+      "source_age_months": 18,
+      "sparsh_age_months": 18,
+      "description_en": "Makes scribble marks spontaneously.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Fine motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Fine motor column at 18 months. The table describes mean ages for surveillance, not screening thresholds. The AAP table explicitly assigns this hand/finger or visual-motor task to its Fine Motor column; this does not establish local norms or screening validity."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "fm_aap13_18_blocks_container",
+      "domain": "fine_motor",
+      "source_age_months": 18,
+      "sparsh_age_months": 18,
+      "description_en": "Places multiple small blocks into a container.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Fine motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Fine motor column at 18 months. The table describes mean ages for surveillance, not screening thresholds. The AAP table explicitly assigns this hand/finger or visual-motor task to its Fine Motor column; this does not establish local norms or screening validity."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "fm_aap13_24_three_block_tower",
+      "domain": "fine_motor",
+      "source_age_months": 24,
+      "sparsh_age_months": 24,
+      "description_en": "Stacks three blocks.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Fine motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Fine motor column at 24 months. The table describes mean ages for surveillance, not screening thresholds. The AAP table explicitly assigns this hand/finger or visual-motor task to its Fine Motor column; this does not establish local norms or screening validity."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "fm_aap13_24_block_train",
+      "domain": "fine_motor",
+      "source_age_months": 24,
+      "sparsh_age_months": 24,
+      "description_en": "Arranges three blocks in a row like a train.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Fine motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Fine motor column at 24 months. The table describes mean ages for surveillance, not screening thresholds. The AAP table explicitly assigns this hand/finger or visual-motor task to its Fine Motor column; this does not establish local norms or screening validity."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "fm_aap13_30_lines",
+      "domain": "fine_motor",
+      "source_age_months": 30,
+      "sparsh_age_months": 30,
+      "description_en": "Copies a horizontal line and a vertical line.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Fine motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Fine motor column at 30 months. The table describes mean ages for surveillance, not screening thresholds. The AAP table explicitly assigns this hand/finger or visual-motor task to its Fine Motor column; this does not establish local norms or screening validity."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "fm_aap13_30_four_block_train",
+      "domain": "fine_motor",
+      "source_age_months": 30,
+      "sparsh_age_months": 30,
+      "description_en": "Arranges four blocks to make a train with a chimney.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Fine motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Fine motor column at 30 months. The table describes mean ages for surveillance, not screening thresholds. The AAP table explicitly assigns this hand/finger or visual-motor task to its Fine Motor column; this does not establish local norms or screening validity."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "fm_aap13_36_circle",
+      "domain": "fine_motor",
+      "source_age_months": 36,
+      "sparsh_age_months": 36,
+      "description_en": "Copies a circle shape.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Fine motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Fine motor column at 36 months. The table describes mean ages for surveillance, not screening thresholds. The AAP table explicitly assigns this hand/finger or visual-motor task to its Fine Motor column; this does not establish local norms or screening validity."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "fm_aap13_36_person_two_parts",
+      "domain": "fine_motor",
+      "source_age_months": 36,
+      "sparsh_age_months": 36,
+      "description_en": "Draws a person with a head and one other body part.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Fine motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Fine motor column at 36 months. The table describes mean ages for surveillance, not screening thresholds. The AAP table explicitly assigns this hand/finger or visual-motor task to its Fine Motor column; this does not establish local norms or screening validity."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "fm_aap13_36_block_bridge",
+      "domain": "fine_motor",
+      "source_age_months": 36,
+      "sparsh_age_months": 36,
+      "description_en": "Arranges three blocks to make a bridge.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Fine motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Fine motor column at 36 months. The table describes mean ages for surveillance, not screening thresholds. The AAP table explicitly assigns this hand/finger or visual-motor task to its Fine Motor column; this does not establish local norms or screening validity."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "fm_aap13_48_person_six_parts",
+      "domain": "fine_motor",
+      "source_age_months": 48,
+      "sparsh_age_months": 48,
+      "description_en": "Draws a person with several body parts.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Fine motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Fine motor column at 48 months. The table describes mean ages for surveillance, not screening thresholds. The AAP table explicitly assigns this hand/finger or visual-motor task to its Fine Motor column; this does not establish local norms or screening validity."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "fm_aap13_48_cross",
+      "domain": "fine_motor",
+      "source_age_months": 48,
+      "sparsh_age_months": 48,
+      "description_en": "Copies a simple cross shape.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Fine motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Fine motor column at 48 months. The table describes mean ages for surveillance, not screening thresholds. The AAP table explicitly assigns this hand/finger or visual-motor task to its Fine Motor column; this does not establish local norms or screening validity."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    },
+    {
+      "id": "fm_aap13_48_buttons",
+      "domain": "fine_motor",
+      "source_age_months": 48,
+      "sparsh_age_months": 48,
+      "description_en": "Buttons medium-sized buttons.",
+      "source_references": [
+        {
+          "organization": "American Academy of Pediatrics",
+          "title": "Motor Delays: Early Identification and Evaluation",
+          "url": "https://publications.aap.org/pediatrics/article/131/6/e2016/31072/Motor-Delays-Early-Identification-and-Evaluation",
+          "source_domain": "Fine motor",
+          "evidence_status": "reviewed",
+          "review_note": "AAP Table 1 places this paraphrased behavior in its Fine motor column at 48 months. The table describes mean ages for surveillance, not screening thresholds. The AAP table explicitly assigns this hand/finger or visual-motor task to its Fine Motor column; this does not establish local norms or screening validity."
+        }
+      ],
+      "dataset_version": "candidate-2",
+      "weight": null,
+      "red_flag": false,
+      "mapping_status": "DIRECT",
+      "wording_review_status": "pending",
+      "clinical_review_status": "pending",
+      "localization_status": {
+        "en": "pending",
+        "hi": "pending"
+      }
+    }
+  ]
+}
