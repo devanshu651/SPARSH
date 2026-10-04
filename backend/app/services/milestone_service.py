@@ -3,6 +3,65 @@ from functools import lru_cache
 from pathlib import Path
 from app.services.milestone_content_service import checkpoint_items_for_age, parse_milestone_content
 CONFIG_PATH = Path(__file__).resolve().parents[1] / "config" / "milestones.json"
+DRAFT_QUESTIONNAIRE_PATH = Path(__file__).resolve().parents[1] / "config" / "sparsh_screening_questionnaire_draft.json"
+DRAFT_AGE_BANDS_PATH = Path(__file__).resolve().parents[1] / "config" / "sparsh_screening_age_bands_draft.json"
+PROTOTYPE_DISCLAIMER = "Prototype screening questionnaire. Content is based on referenced developmental milestone sources and is pending professional review. This is not a diagnostic assessment."
+PROTOTYPE_DOMAINS = ("gross_motor", "fine_motor", "language", "cognitive", "social_emotional")
+
+
+@lru_cache
+def load_prototype_age_bands() -> tuple[dict, dict[str, dict]]:
+    """Load the unvalidated questionnaire draft and its review-ready age mapping."""
+    bands = json.loads(DRAFT_AGE_BANDS_PATH.read_text(encoding="utf-8"))
+    questionnaire = json.loads(DRAFT_QUESTIONNAIRE_PATH.read_text(encoding="utf-8"))
+    return bands, {item["id"]: item for item in questionnaire["items"]}
+
+
+def prototype_milestones_for_age(age_months: int) -> tuple[int | None, list[dict], dict | None]:
+    """Return references in the age band's draft, excluding future source ages."""
+    if age_months < 0:
+        raise ValueError("age_months must be non-negative")
+    bands, questions_by_id = load_prototype_age_bands()
+    band = next((candidate for candidate in bands["age_bands"] if candidate["min_months"] <= age_months <= candidate["max_months"]), None)
+    if band is None:
+        return None, [], None
+    selected = []
+    for domain in PROTOTYPE_DOMAINS:
+        for ref in band["questions"].get(domain, []):
+            source_floor = ref.get("source_age_months")
+            source_range = ref.get("source_age_range_months")
+            if source_floor is None and source_range:
+                source_floor = source_range[0]
+            if source_floor is not None and float(source_floor) > age_months:
+                continue
+            item = dict(questions_by_id[ref["item_id"]])
+            item.update({
+                "domain": domain,
+                "description": item["question"],
+                "weight": 1,
+                "response_type": "YES_NO_UNSURE",
+                "red_flag": False,
+                "risk_factor_ids": [],
+                "dataset_version": bands["version"],
+                "age_metadata": {
+                    "source_age_months": ref.get("source_age_months"),
+                    "source_age_range_months": source_range,
+                    "source_age_semantics": ref["source_age_semantics"],
+                    "age_applicability_review_required": True,
+                    "rights_status": ref["rights_status"],
+                },
+                "age_applicability_review_required": True,
+                "clinical_validation": False,
+                "review_status": bands["review_status"],
+            })
+            selected.append(item)
+    band_metadata = {"min_months": band["min_months"], "max_months": band["max_months"], "label": f"{band['min_months']}–{band['max_months']} months"}
+    return band["min_months"], selected, band_metadata
+
+
+def prototype_milestones_by_id() -> dict[str, dict]:
+    _, questions_by_id = load_prototype_age_bands()
+    return {item_id: dict(item, weight=1, red_flag=False, risk_factor_ids=[]) for item_id, item in questions_by_id.items()}
 @lru_cache
 def load_milestone_config() -> dict:
     config = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))

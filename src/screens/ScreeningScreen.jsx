@@ -24,6 +24,8 @@ const domainDescriptions = {
   cognitive: 'Curiosity, object permanence, exploration, and spatial reasoning.'
 }
 
+const prototypeDisclaimer = 'Prototype screening questionnaire. Content is based on referenced developmental milestone sources and is pending professional review. This is not a diagnostic assessment.'
+
 export default function ScreeningScreen({ onNavigate }) {
   const { currentChild, setCurrentChild, setPendingScreening } = useApp()
   const [data, setData] = useState(null)
@@ -470,12 +472,13 @@ export default function ScreeningScreen({ onNavigate }) {
         active="screening"
         onNavigate={onNavigate}
         backTo="dashboard"
-        title="No supported screening checkpoint"
+        title="Prototype questionnaire coverage"
         subtitle={`${currentChild?.name || 'Child'} · ${data.current_age_months} months`}
       >
         <div className="mx-auto max-w-2xl p-4 sm:p-6">
           <div className="rounded-xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-950">
-            No checkpoint-supported questions are configured for this age. Questions with WHO attainment ranges or pending age review are not selected automatically. No screening can be submitted from this question set.
+            <p>{data.question_count ?? 0} draft questions are available for this age. No future source-age questions are included.</p>
+            <p className="mt-2 text-xs text-neutral-600">{data.prototype_disclaimer || prototypeDisclaimer}</p>
           </div>
         </div>
       </AppLayout>
@@ -536,7 +539,7 @@ export default function ScreeningScreen({ onNavigate }) {
                   <BadgePill tone="teal">{data.current_age_months} Months</BadgePill>
                 </div>
                 <p className="text-xs text-neutral-500">
-                  ID: {currentChild?.child_identifier || 'Not recorded'} · {data.checkpoint_age_months}-month checkpoint · {totalMilestones} questions
+                  ID: {currentChild?.child_identifier || 'Not recorded'} · {data.age_band?.label || `${data.checkpoint_age_months}-month checkpoint`} · {totalMilestones} questions
                 </p>
               </div>
             </div>
@@ -560,11 +563,13 @@ export default function ScreeningScreen({ onNavigate }) {
           </div>
         </div>
 
+        <p className="rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2 text-xs leading-relaxed text-neutral-600">{data.prototype_disclaimer || prototypeDisclaimer}</p>
+
         {data.coverage?.shortfall > 0 && (
           <div role="status" aria-live="polite" className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
             <p className="font-semibold">
-              Age-supported coverage: {totalMilestones} of {data.coverage.target_question_count} target questions.
-              {' '}{data.coverage.shortfall} slots lack source-supported, age-applicable questions.
+              Available prototype draft questions: {totalMilestones} of {data.coverage.target_question_count} target questions.
+              {' '}{data.coverage.shortfall} questions are not available in this age-band draft.
             </p>
             {data.coverage.missing_domains?.length > 0 && (
               <p className="mt-1">

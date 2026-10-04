@@ -44,7 +44,7 @@ class ScreeningRulesTests(unittest.TestCase):
         self.assertTrue(all(item["age_metadata"] for item in catalog))
         self.assertLess(len(milestones_for_age(13)[1]), len(catalog))
 
-    def test_child_milestone_api_returns_active_backend_set(self):
+    def test_child_milestone_api_returns_prototype_backend_set(self):
         class Snapshot:
             id = "child-1"
 
@@ -69,15 +69,17 @@ class ScreeningRulesTests(unittest.TestCase):
              patch.object(children, "age_months", return_value=13):
             response = children.child_milestones("child-1", worker)
 
-        self.assertEqual(response["dataset_version"], "phase5-expanded-v1")
+        self.assertEqual(response["dataset_version"], "draft-age-bands-v1")
         self.assertEqual(response["current_age_months"], 13)
         self.assertEqual(response["checkpoint_age_months"], 12)
-        self.assertEqual(response["question_count"], 5)
-        self.assertEqual(response["coverage"]["target_question_count"], 13)
-        self.assertEqual(response["coverage"]["shortfall"], 8)
-        self.assertEqual(response["coverage"]["missing_domains"], ["fine_motor", "gross_motor"])
-        self.assertEqual(len(response["milestones"]), 5)
-        self.assertEqual(response["milestones"][0]["dataset_version"], "phase5-expanded-v1")
+        self.assertEqual(response["question_count"], 34)
+        self.assertEqual(response["coverage"]["target_question_count"], 40)
+        self.assertEqual(response["coverage"]["shortfall"], 6)
+        self.assertEqual(response["coverage"]["missing_domains"], [])
+        self.assertEqual(len(response["milestones"]), 34)
+        self.assertEqual(response["milestones"][0]["dataset_version"], "draft-age-bands-v1")
+        self.assertFalse(response["clinical_validation"])
+        self.assertEqual(response["review_status"], "pending_professional_review")
 
     def test_submit_rejects_previous_fixed_set_version(self):
         class Snapshot:

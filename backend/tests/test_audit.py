@@ -234,7 +234,7 @@ def test_screening_invokes_audit_after_write():
          patch.object(screenings, "milestones_by_id", return_value={"m1": Mock(weight=1)}), \
          patch.object(screenings, "validate_checkpoint_answers", return_value=None), \
              patch.object(screenings, "calculate_risk", return_value={"risk_level": RiskLevel.GREEN, "risk_label": "LOW", "total_missed_weight": 0.0, "domain_scores": {"gross_motor": DomainScore(missed_weight=0.0, missed_count=0, unsure_count=0, status="OK")}, "recommendation": "ok"}), \
-         patch.object(screenings, "load_milestone_config", return_value={"version": "draft-1"}), \
+         patch.object(screenings, "load_prototype_age_bands", return_value=({"version": "draft-1", "review_status": "pending_professional_review"}, {})), \
          _with_audit_db(audit_db):
         payload = ScreeningSubmit(
             child_id="child-1",
@@ -267,7 +267,7 @@ def test_duplicate_screening_409_no_audit():
          patch.object(screenings, "age_months", return_value=12), \
          patch.object(screenings, "milestones_for_age", return_value=(12, [])), \
          patch.object(screenings, "validate_checkpoint_answers", return_value=None), \
-         patch.object(screenings, "load_milestone_config", return_value={"version": "draft-1"}), \
+         patch.object(screenings, "load_prototype_age_bands", return_value=({"version": "draft-1", "review_status": "pending_professional_review"}, {})), \
          _with_audit_db(audit_db):
         with pytest.raises(HTTPException) as exc:
             screenings.submit_screening(
@@ -300,7 +300,7 @@ def test_checkpoint_conflict_has_distinct_code_from_duplicate_submission():
     with patch.object(screenings, "get_firestore_client", return_value=data_db), \
          patch.object(screenings, "age_months", return_value=13), \
          patch.object(screenings, "milestones_for_age", return_value=(18, [])), \
-         patch.object(screenings, "load_milestone_config", return_value={"version": "draft-1"}):
+         patch.object(screenings, "load_prototype_age_bands", return_value=({"version": "draft-1", "review_status": "pending_professional_review"}, {})):
         with pytest.raises(HTTPException) as error:
             screenings.submit_screening(payload, _user())
     assert error.value.status_code == 409

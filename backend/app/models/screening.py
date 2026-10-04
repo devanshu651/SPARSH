@@ -96,6 +96,9 @@ class RiskScoreResponse(BaseModel):
     red_flag_ids: list[str] = Field(default_factory=list)
     risk_factor_ids: list[str] = Field(default_factory=list)
     ml_assessment: dict | None = None
+    prototype: bool = False
+    clinical_validation: bool = False
+    review_status: str | None = None
 
 
 class ScreeningHistoryItem(BaseModel):

@@ -297,6 +297,12 @@ export default function ReportScreen({ onNavigate }) {
           </div>
         </div>
 
+        {screeningResult.prototype && (
+          <p className="rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2 text-xs leading-relaxed text-neutral-600">
+            Prototype screening questionnaire. Content is based on referenced developmental milestone sources and is pending professional review. This is not a diagnostic assessment.
+          </p>
+        )}
+
         {/* CLINICAL RISK TRIAGE BANNER */}
         <div className={`rounded-xl border p-5 ${risk.banner}`}>
           <div className="flex items-start gap-4">
