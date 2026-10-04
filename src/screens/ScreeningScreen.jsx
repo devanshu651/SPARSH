@@ -233,7 +233,7 @@ export default function ScreeningScreen({ onNavigate }) {
                 <h3 className="text-sm font-bold text-neutral-900">Child & Screening Age</h3>
               </div>
               <p className="mt-2 text-xs text-neutral-500 leading-relaxed">
-                Select an enrolled child. SPARSH uses the recorded date of birth to record the screening age. The backend supplies the active 65-question set.
+                Select an enrolled child. The backend calculates age and chooses the latest supported checkpoint. WHO ranges and ages pending review are not selected automatically.
               </p>
             </div>
 
@@ -464,9 +464,27 @@ export default function ScreeningScreen({ onNavigate }) {
     )
   }
 
+  if (data.milestones.length === 0) {
+    return (
+      <AppLayout
+        active="screening"
+        onNavigate={onNavigate}
+        backTo="dashboard"
+        title="No supported screening checkpoint"
+        subtitle={`${currentChild?.name || 'Child'} · ${data.current_age_months} months`}
+      >
+        <div className="mx-auto max-w-2xl p-4 sm:p-6">
+          <div className="rounded-xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-950">
+            No checkpoint-supported questions are configured for this age. Questions with WHO attainment ranges or pending age review are not selected automatically. No screening can be submitted from this question set.
+          </div>
+        </div>
+      </AppLayout>
+    )
+  }
+
   if (reviewing && pendingPayload) {
     return (
-      <AppLayout active="screening" onNavigate={onNavigate} backTo="dashboard" title="Review screening responses" subtitle={`${currentChild?.name || 'Child'} · ${pendingPayload.checkpoint_age_months} months at screening`}>
+      <AppLayout active="screening" onNavigate={onNavigate} backTo="dashboard" title="Review screening responses" subtitle={`${currentChild?.name || 'Child'} · ${pendingPayload.checkpoint_age_months}-month checkpoint`}>
         <div className="mx-auto max-w-3xl space-y-5 p-4 sm:p-6">
           <p className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900">Review every response before continuing. Scores are calculated by the backend after submission.</p>
           {domains.map((domain) => (
@@ -518,7 +536,7 @@ export default function ScreeningScreen({ onNavigate }) {
                   <BadgePill tone="teal">{data.current_age_months} Months</BadgePill>
                 </div>
                 <p className="text-xs text-neutral-500">
-                  ID: {currentChild?.child_identifier || 'Not recorded'} · {data.checkpoint_age_months} months at screening
+                  ID: {currentChild?.child_identifier || 'Not recorded'} · {data.checkpoint_age_months}-month checkpoint · {totalMilestones} questions
                 </p>
               </div>
             </div>

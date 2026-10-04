@@ -66,7 +66,7 @@ Admins can access all centre records on endpoints whose role guards admit Admin;
 
 ## Screening engine
 
-The active production engine reads `backend/app/config/milestones.json` (`phase5-final-65-v1`) and `backend/app/config/scoring_rules.json`. It calculates the child's completed age in months and returns the fixed, versioned set of 65 questions. The backend recomputes age and dataset version at submission and rejects stale age/version submissions. It requires each expected milestone ID exactly once. Per-question source age metadata remains explicit; age bands and review-required ages are not converted to checkpoints.
+The active production engine reads `backend/app/config/milestones.json` (`phase5-final-65-v2`) and `backend/app/config/scoring_rules.json`. It calculates the child's completed age in months and returns the items assigned to the latest explicit checkpoint at or below that age. The backend recomputes age/checkpoint and dataset version at submission and rejects stale submissions. It requires each expected milestone ID exactly once. WHO attainment ranges and review-required items remain in the 65-item catalog but are excluded from automatic checkpoint selection.
 
 ## Developmental content and provenance
 

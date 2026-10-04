@@ -275,7 +275,7 @@ export default function ReportScreen({ onNavigate }) {
                 <div className="flex items-center gap-2">
                   <h2 className="text-lg font-bold text-neutral-900">{currentChild?.name || 'Screened Child'}</h2>
                   <BadgePill tone="teal">
-                    {screeningResult.checkpoint_age_months ?? currentChild?.age_months ?? '—'} Months at screening
+                    {screeningResult.checkpoint_age_months ?? currentChild?.age_months ?? '—'} {screeningResult.milestone_dataset_version === 'phase5-final-65-v1' ? 'Months at screening' : 'Month checkpoint'}
                   </BadgePill>
                 </div>
                 <p className="text-xs text-neutral-500">
@@ -318,6 +318,12 @@ export default function ReportScreen({ onNavigate }) {
               <p className="mt-1 text-xs sm:text-sm leading-relaxed opacity-90">
                 {screeningResult.recommendation}
               </p>
+
+              {screeningResult.rule_findings?.length > 0 && (
+                <ul className="mt-3 space-y-1 rounded-lg border border-white/50 bg-white/70 p-3 text-xs leading-relaxed text-neutral-800">
+                  {screeningResult.rule_findings.map((finding, index) => <li key={`${index}-${finding}`}>{finding}</li>)}
+                </ul>
+              )}
 
               {screeningResult.risk_level === 'RED' && (
                 <div className="mt-4 flex flex-wrap gap-2.5">

@@ -1,4 +1,4 @@
-"""Load and select typed content without changing production screening behavior."""
+"""Load and select typed age-aware content for production screening."""
 
 from __future__ import annotations
 
@@ -72,7 +72,9 @@ def checkpoint_items_for_age(
 
     Legacy catalogs retain their historic youngest-checkpoint fallback. New
     age-aware catalogs return an empty set when no checkpoint is yet applicable.
-    This function is not wired into production routes in this architecture phase.
+    Production structured catalogs use this selector. Ranges remain excluded
+    until a reviewed policy defines screening applicability separately from
+    attainment evidence.
     """
     if chronological_age_months < 0:
         raise ValueError("chronological age must be non-negative")

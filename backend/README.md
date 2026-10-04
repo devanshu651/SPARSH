@@ -137,4 +137,4 @@ operational recovery procedure.
 
 ## Developmental content candidate
 
-The active production catalog is `backend/app/config/milestones.json` (`phase5-final-65-v1`): 65 questions, 13 per domain. Candidate source files and review artifacts remain available for audit. The questions and scoring have not been clinically validated; SPARSH provides screening/risk indication, not diagnosis. See `docs/active-developmental-content.md` for age evidence, scoring compatibility, limitations, and migration notes.
+The active production catalog is `backend/app/config/milestones.json` (`phase5-final-65-v2`): 65 questions, 13 per domain. The backend selects only the exact supported checkpoint for the child's completed age. WHO ranges and review-required items remain in the catalog but are not selected automatically. Candidate source files and review artifacts remain available for audit. The questions and scoring have not been clinically validated; SPARSH provides screening/risk indication, not diagnosis. See `docs/active-developmental-content.md` for age evidence, scoring compatibility, limitations, and migration notes.

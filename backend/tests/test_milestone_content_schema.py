@@ -147,7 +147,13 @@ def test_active_final_65_is_schema_valid_versioned_and_preserves_age_semantics()
     active = milestones_by_id()
     from collections import Counter
 
-    assert config["version"] == "phase5-final-65-v1"
+    assert config["version"] == "phase5-final-65-v2"
+    legacy = json.loads(
+        PRODUCTION_MILESTONES_PATH.with_name("milestones_legacy_155.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert config["red_flags"] == legacy["red_flags"]
     assert dataset.version == config["version"]
     assert len(dataset.items) == 65
     assert Counter(item.domain.value for item in dataset.items) == {
@@ -191,7 +197,7 @@ def test_duplicate_ids_are_rejected_without_rewriting_stable_ids():
         )
 
 
-def test_existing_screening_submission_shape_and_answer_validation_remain_unchanged():
+def test_age_aware_screening_submission_shape_and_answer_validation():
     checkpoint, expected = milestones_for_age(13)
     expected_ids = [item["id"] for item in expected]
     payload = ScreeningSubmit.model_validate(
@@ -201,13 +207,54 @@ def test_existing_screening_submission_shape_and_answer_validation_remain_unchan
                 {"milestone_id": item_id, "response": "YES"} for item_id in expected_ids
             ],
             "checkpoint_age_months": checkpoint,
-            "milestone_dataset_version": "phase5-final-65-v1",
+            "milestone_dataset_version": "phase5-final-65-v2",
             "client_submission_id": "content-schema-regression",
             "screened_at": "2026-10-04T00:00:00Z",
         }
     )
 
     validate_checkpoint_answers(expected, [answer.milestone_id for answer in payload.answers])
-    assert payload.checkpoint_age_months == 13
-    assert len(expected_ids) == 65
-    assert payload.milestone_dataset_version == "phase5-final-65-v1"
+    assert payload.checkpoint_age_months == 12
+    assert len(expected_ids) == 5
+    assert payload.milestone_dataset_version == "phase5-final-65-v2"
+
+
+@pytest.mark.parametrize(
+    "age,expected_checkpoint,expected_count",
+    [(0, None, 0), (2, 2, 5), (12, 12, 5), (24, 24, 2), (36, 36, 2), (60, 60, 1)],
+)
+def test_production_selection_matches_explicit_checkpoint_metadata(age, expected_checkpoint, expected_count):
+    dataset = parse_milestone_content(
+        json.loads(PRODUCTION_MILESTONES_PATH.read_text(encoding="utf-8"))
+    )
+    expected_checkpoint_from_metadata, content_items = checkpoint_items_for_age(dataset, age)
+    actual_checkpoint, actual_items = milestones_for_age(age)
+
+    assert actual_checkpoint == expected_checkpoint_from_metadata == expected_checkpoint
+    assert [item["id"] for item in actual_items] == [item.id for item in content_items]
+    assert len(actual_items) == expected_count
+
+
+def test_who_ranges_and_review_required_items_are_never_age_cutoffs():
+    catalog = load_milestone_config()["milestones"]
+    content = {item["id"]: item for item in catalog}
+    range_ids = {item_id for item_id, item in content.items() if item["age"]["type"] == "range"}
+    review_ids = {item_id for item_id, item in content.items() if item["age"]["type"] == "review_required"}
+    assert len(range_ids) == 3
+    assert len(review_ids) == 26
+    assert (content["gm_aap13_06_sit_unsupported"]["age"]["min_months"], content["gm_aap13_06_sit_unsupported"]["age"]["max_months"]) == (3.8, 9.2)
+    assert "AAP surveillance mean" in content["gm_aap13_02_head_lift"]["age"]["basis"]
+
+    for age in (2, 4, 6, 9, 12, 18, 24, 36, 48, 60):
+        _, selected = milestones_for_age(age)
+        selected_ids = {item["id"] for item in selected}
+        assert not (selected_ids & range_ids)
+        assert not (selected_ids & review_ids)
+
+
+def test_representative_checkpoint_distribution_is_source_derived():
+    expected_counts = {2: 5, 12: 5, 24: 2, 36: 2, 60: 1}
+    for age, count in expected_counts.items():
+        _, selected = milestones_for_age(age)
+        assert len(selected) == count
+        assert all(item["age"]["type"] == "checkpoint" and item["age"]["months"] == age for item in selected)

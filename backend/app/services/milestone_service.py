@@ -1,7 +1,7 @@
 ﻿import json
 from functools import lru_cache
 from pathlib import Path
-from app.services.milestone_content_service import parse_milestone_content
+from app.services.milestone_content_service import checkpoint_items_for_age, parse_milestone_content
 CONFIG_PATH = Path(__file__).resolve().parents[1] / "config" / "milestones.json"
 @lru_cache
 def load_milestone_config() -> dict:
@@ -43,11 +43,14 @@ def load_milestone_config() -> dict:
 def milestones_for_age(age_months: int) -> tuple[int, list[dict]]:
     config = load_milestone_config()
     milestones = config["milestones"]
-    if config.get("selection_policy") == "all_items_as_one_versioned_65_question_set":
-        # The active manifest is a fixed 65-item set with mixed age evidence.
-        # Return the whole manifest while retaining the child's authoritative
-        # completed age as the screening age captured by the legacy wire field.
-        return age_months, milestones
+    if "items" in config:
+        # Only explicit source checkpoints participate in automatic selection.
+        # WHO attainment ranges and review-required items remain in the active
+        # catalog but cannot become age cutoffs or join a set by fallback.
+        dataset = parse_milestone_content(config)
+        checkpoint, selected_content = checkpoint_items_for_age(dataset, age_months)
+        by_id = {item["id"]: item for item in milestones}
+        return checkpoint, [by_id[item.id] for item in selected_content]
     checkpoints = sorted({item["age_months"] for item in milestones})
     checkpoint = max((item for item in checkpoints if item <= age_months), default=checkpoints[0])
     return checkpoint, [item for item in milestones if item["age_months"] == checkpoint]

@@ -86,6 +86,7 @@ def child_milestones(child_id: str, user: CurrentUser = Depends(require_roles(Ro
         "dataset_version": load_milestone_config()["version"],
         "current_age_months": current_age,
         "checkpoint_age_months": checkpoint,
+        "question_count": len(milestones),
         "milestones": milestones,
     }
 

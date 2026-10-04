@@ -29,7 +29,7 @@ def history_item_from_data(screening_id: str, data: dict, current_version: str, 
 @router.get("/milestones")
 def get_milestones(age_months: int, user: CurrentUser = Depends(require_roles(Role.WORKER, Role.SUPERVISOR))):
     checkpoint, milestones = milestones_for_age(age_months)
-    return {"dataset_version": load_milestone_config()["version"], "requested_age_months": age_months, "checkpoint_age_months": checkpoint, "milestones": milestones}
+    return {"dataset_version": load_milestone_config()["version"], "requested_age_months": age_months, "checkpoint_age_months": checkpoint, "question_count": len(milestones), "milestones": milestones}
 @router.post("/screenings", response_model=RiskScoreResponse, status_code=status.HTTP_201_CREATED)
 def submit_screening(payload: ScreeningSubmit, user: CurrentUser = Depends(require_roles(Role.WORKER))):
     db = get_firestore_client(); child = child_from_snapshot(db.collection("children").document(payload.child_id).get()); ensure_centre_access(user, child["centre_id"])
