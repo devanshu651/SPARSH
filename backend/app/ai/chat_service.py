@@ -49,6 +49,45 @@ def _normalize_message(text: str) -> str:
     return " ".join(_repair_mojibake(text).casefold().replace("’", "'").replace("=", "").split())
 
 
+def _normalize_intent_text(text: str) -> str:
+    """Normalize common Roman Marathi/Hinglish variants for bounded routing."""
+    normalized = _normalize_message(text)
+    # Narrow spelling variants of the Marathi question word; leave all other
+    # text intact for history and Gemini context.
+    return re.sub(r"\b(?:ksa|ksha|kse|kas)\b", "kasa", normalized)
+
+
+def _has_token_family(tokens: set[str], family: tuple[str, ...]) -> bool:
+    return any(
+        token == stem or (len(token) >= len(stem) + 1 and token.startswith(stem))
+        for token in tokens for stem in family
+    )
+
+
+def _is_app_usage_request(text: str) -> bool:
+    """Match app/workflow how-to requests using narrow token families."""
+    normalized = _normalize_intent_text(text)
+    tokens = set(re.findall(r"[a-z]+|[\u0900-\u097f]+", normalized))
+    app_terms = {"app", "application", "sparsh", "\u0905\u092a", "\u090f\u092a", "\u0910\u092a", "\u0972\u092a", "\u0945\u092a", "\u0905\u0945\u092a"}
+    usage_terms = ("use", "chal", "vapr", "\u0935\u093e\u092a\u0930", "\u091a\u093e\u0932")
+    action_terms = ("kasa", "kashi", "kasha", "kaise", "how", "karay", "karu", "kare", "karna", "chalu", "sur", "add", "register", "\u0915\u0938\u0947", "\u0915\u0936\u0940", "\u0915\u0938\u093e")
+    has_app = bool(tokens & app_terms) or any(app in normalized for app in ("\u0905\u0945\u092a", "\u0945\u092a", "\u0910\u092a", "\u090f\u092a"))
+
+    # Operational how-tos for named SPARSH workflows are also handled here.
+    workflow = bool(tokens & {"screening", "child", "mul", "mool", "baccha", "bacha", "bachcha"})
+    if workflow and _has_token_family(tokens, ("kasa", "kashi", "kaise", "how", "karay", "karu", "kare", "sur")):
+        return True
+
+    usage = _has_token_family(tokens, usage_terms)
+    action = _has_token_family(tokens, action_terms)
+    if has_app and usage and action:
+        return True
+    return has_app and any(phrase in normalized for phrase in (
+        "how to use", "how do i use", "how does this app work", "how does sparsh work",
+        "how sparsh works", "what can i do here", "what can i do in this app",
+    ))
+
+
 def _is_negative_language_request(message: str) -> bool:
     text = _normalize_message(message)
     negative_phrases = (
@@ -130,6 +169,16 @@ def classify_intent(message: str) -> str:
         return "greeting"
     if any(term in text for term in ("what is sparsh", "about sparsh", "tell me about sparsh", "sparsh kya hai", "स्पर्श क्या है")):
         return "sparsh_identity"
+    # Keep result interpretation distinct from the follow-up referral action.
+    result_words = ("matlab", "meaning", "samjha", "samjhao", "samjha do", "samjaycha", "baghaycha", "kaise dekhe")
+    if "result" in text and any(word in text for word in result_words):
+        return "result_explanation"
+    if any(phrase in text for phrase in ("red ala tar kay", "red aala tar kay", "red result ala tar kay", "red result aala tar kay", "red result ke baad", "what to do after red")):
+        return "referral"
+    if "referral" in text and any(word in text for word in ("kasa", "kashi", "karay", "karu", "kaise", "kare")):
+        return "referral"
+    if _is_app_usage_request(text):
+        return "app_usage"
     if any(term in text for term in (
         "how to use", "how do i use", "how does sparsh work", "how sparsh works",
         "what can i do here", "use this app", "use the app", "app kasa use",

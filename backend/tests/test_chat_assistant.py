@@ -149,7 +149,6 @@ def test_hinglish_and_marathi_roman_workflow_phrases_route_narrowly():
         "app kasa chalavaycha",
         "screening kasa karaycha",
         "screening kas karu",
-        "result kasa baghaycha",
         "child add kasa karaycha",
         "mul register kasa karaycha",
         "baccha kaise add kare",
@@ -161,6 +160,43 @@ def test_hinglish_and_marathi_roman_workflow_phrases_route_narrowly():
 
     assert classify_intent("red ala tar kay") == "referral"
     assert classify_intent("referral kasa karaycha") == "referral"
+    assert classify_intent("result kasa baghaycha") == "result_explanation"
+
+
+def test_reported_roman_marathi_app_usage_language_persistence_regression():
+    selected = _get_local_grounded_reply(request("speak in marathi"))
+    assert selected.selected_language == "mr"
+    for message in ("app ksha chalvaycha", "app ksa chalu", "how to use this app"):
+        response = _get_local_grounded_reply(request(message, language="en", context={"selected_language": selected.selected_language}))
+        assert response.language == "mr"
+        assert response.selected_language == "mr"
+        assert response.intent == "app_usage"
+        assert "1." in response.reply and "9." in response.reply
+        assert "नेव्हिगेशन" not in response.reply
+    result = _get_local_grounded_reply(request("red result ka matlab kya hai", language="en", context={"selected_language": "mr"}))
+    assert result.language == "mr"
+    assert result.intent == "result_explanation"
+
+
+def test_requested_roman_marathi_hinglish_and_devanagari_workflow_families():
+    app_usage = (
+        "how to use this app", "how do I use SPARSH", "how does this app work", "how to use sparsh",
+        "app kasa chalvaycha", "app ksa chalvaycha", "app ksha chalvaycha", "app kasa chalu",
+        "app ksa chalu", "app kas chalu", "app kasa use karaycha", "app ksa use karaycha",
+        "app kas use karaycha", "app kasa use karu", "app kas use karu", "app kasa vapraycha",
+        "app kas vapraycha", "app kasha vapraycha", "app kasa chalavaycha", "app kas chalavaycha",
+        "ॲप कसे चालवायचे", "अॅप कसे वापरायचे", "ॲप कसे वापरायचे", "हे ॲप कसे चालते",
+        "app kaise chalaye", "app kaise use kare", "app kaise chalana hai", "app kaise use karu", "ye app kaise chalta hai",
+        "screening kasa karaycha", "screening kashi karaychi", "screening kas karu", "screening kaise kare", "screening kasa suru karu",
+        "child kasa add karaycha", "mul kasa add karaycha", "mul register kasa karaycha", "baccha kaise add kare", "child kaise register kare",
+    )
+    for message in app_usage:
+        assert classify_intent(message) == "app_usage", message
+
+    for message in ("result kasa baghaycha", "result kasa samjaycha", "result ka matlab kya hai", "result samjha do"):
+        assert classify_intent(message) == "result_explanation", message
+    for message in ("referral kasa karaycha", "referral kas karu", "referral kaise kare", "red ala tar kay", "red result ala tar kay"):
+        assert classify_intent(message) == "referral", message
 
 
 def test_exact_marathi_language_memory_conversation_regression():
@@ -199,11 +235,12 @@ def test_hindi_language_command_and_hinglish_app_workflows():
         "app kaise chalana hai",
         "screening kaise kare",
         "screening kaise karu",
-        "result kaise dekhe",
         "baccha kaise add kare",
         "bachcha kaise register kare",
     ):
         assert classify_intent(message) == "app_usage", message
+
+    assert classify_intent("result kaise dekhe") == "result_explanation"
 
     follow_up = _get_local_grounded_reply(request(
         "app kaise chalaye",
