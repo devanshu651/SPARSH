@@ -10,8 +10,10 @@ class Settings(BaseSettings):
     cors_origins_raw: str = Field(
         default="", validation_alias="CORS_ORIGINS"
     )
+    gemini_api_key: str | None = Field(default=None, validation_alias="GEMINI_API_KEY")
+    gemini_model: str = Field(default="gemini-2.5-flash-lite", validation_alias="GEMINI_MODEL")
 
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    model_config = SettingsConfigDict(env_file=(".env", "backend/.env"), extra="ignore")
 
     @property
     def cors_origins(self) -> list[str]:

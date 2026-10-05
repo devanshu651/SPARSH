@@ -23,6 +23,7 @@ import AlertsScreen from './screens/AlertsScreen'
 import SettingsScreen from './screens/SettingsScreen'
 import AdminConsoleScreen from './screens/AdminConsoleScreen'
 import ChildProfileScreen from './screens/ChildProfileScreen'
+import AssistantChat from './components/assistant/AssistantChat'
 
 const getInitialScreen = () => {
   if (typeof window !== 'undefined' && window.history.state && window.history.state.screen) {
@@ -229,6 +230,10 @@ function AppContent() {
         <AdminConsoleScreen
           onNavigate={navigate}
         />
+      )}
+
+      {screen !== 'splash' && (
+        <AssistantChat currentScreen={screen} onNavigate={navigate} />
       )}
 
     </ErrorBoundary>
