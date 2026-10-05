@@ -31,4 +31,5 @@ class ChatAssistantResponse(BaseModel):
     follow_up_prompt: str | None = None
     provider: str = "gemini-2.5-flash-lite"
     language: str = "en"
+    selected_language: str = "en"
     intent: str = "general"

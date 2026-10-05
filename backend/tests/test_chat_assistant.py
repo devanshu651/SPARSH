@@ -15,12 +15,13 @@ from main import app
 client = TestClient(app)
 
 
-def request(message, language="en", history=None, current_screen=None):
+def request(message, language="en", history=None, current_screen=None, context=None):
     return ChatAssistantRequest(
         message=message,
         language=language,
         history=history or [],
         current_screen=current_screen,
+        context=context,
     )
 
 
@@ -46,7 +47,7 @@ def test_language_change_intents_and_responses():
         assert response.language == "mr"
         assert "मराठीत" in response.reply
 
-    hindi_requests = ["मुझसे हिंदी में बात करो", "हिंदी में बताओ", "speak Hindi"]
+    hindi_requests = ["मुझसे हिंदी में बात करो", "हिंदी में बताओ", "speak Hindi", "Hindi me baat karo", "hindi mai bolo"]
     for message in hindi_requests:
         response = _get_local_grounded_reply(request(message))
         assert response.intent == "language_change"
@@ -56,6 +57,54 @@ def test_language_change_intents_and_responses():
     english = _get_local_grounded_reply(request("English please", "mr"))
     assert english.language == "en"
     assert "English" in english.reply
+    assert classify_intent("use English") == "language_change"
+    assert classify_intent("I want English") == "language_change"
+    assert classify_intent("अंग्रेज़ी") == "language_change"
+
+    for message in (
+        "change language to Marathi",
+        "chnage language to marathi",
+        "Marathi me baat karo",
+        "mujhse Marathi mein baat karo",
+        "marathi mai baat karo",
+        "marathi mai bolo",
+        "maraythi me bolo",
+        "Marathi madhye bola",
+        "माझ्याशी मराठीत बोला",
+        "मराठीत उत्तर द्या",
+        "मराठीत बोलायचं आहे",
+    ):
+        result = _get_local_grounded_reply(request(message))
+        assert result.intent == "language_change"
+        assert result.selected_language == "mr"
+    assert classify_intent("मराठी") == "language_change"
+
+
+def test_negative_english_comprehension_does_not_switch_language():
+    selected_context = {"selected_language": "mr"}
+    history = [
+        ChatMessage(role="user", content="talk in marathi"),
+        ChatMessage(role="assistant", content="नक्की. आता पुढे माझी उत्तरे मराठीत असतील."),
+    ]
+    for message in (
+        "I don't understand English",
+        "I dont understand english",
+        "English samajh nahi aati",
+        "mujhe English samajh nahi aati",
+        "मला इंग्रजी समजत नाही",
+        "English nahi samajhta",
+        "English samjat nahi",
+    ):
+        result = _get_local_grounded_reply(request(message, language="en", history=history, context=selected_context))
+        assert result.intent == "language_confusion"
+        assert result.selected_language == "mr"
+        assert "मराठीत" in result.reply
+        assert "English" not in result.reply
+
+    no_selection = _get_local_grounded_reply(request("I don't understand English"))
+    assert no_selection.intent == "language_confusion"
+    assert no_selection.selected_language == "en"
+    assert "Which language" in no_selection.reply
 
 
 def test_mojibake_language_request_is_repaired():
@@ -89,6 +138,80 @@ def test_app_usage_is_not_a_developmental_intent():
 
     marathi = _get_local_grounded_reply(request("SPARSH kasa use karaycha?", "mr"))
     assert "अंगणवाडी" in marathi.reply
+
+
+def test_hinglish_and_marathi_roman_workflow_phrases_route_narrowly():
+    app_phrases = (
+        "app kse chalvaycha",
+        "app kasa use karaycha",
+        "app kasa vapraycha",
+        "app kas use karu",
+        "app kasa chalavaycha",
+        "screening kasa karaycha",
+        "screening kas karu",
+        "result kasa baghaycha",
+        "child add kasa karaycha",
+        "mul register kasa karaycha",
+        "baccha kaise add kare",
+        "app kaise chalaye",
+        "screening kaise kare",
+    )
+    for message in app_phrases:
+        assert classify_intent(message) == "app_usage", message
+
+    assert classify_intent("red ala tar kay") == "referral"
+    assert classify_intent("referral kasa karaycha") == "referral"
+
+
+def test_exact_marathi_language_memory_conversation_regression():
+    history = []
+    context = {"selected_language": "en"}
+
+    selected = _get_local_grounded_reply(request("chnage language to marathi", history=history, context=context))
+    assert selected.selected_language == "mr"
+    history.extend([
+        ChatMessage(role="user", content="chnage language to marathi"),
+        ChatMessage(role="assistant", content=selected.reply),
+    ])
+    context = {"selected_language": selected.selected_language}
+
+    for message, expected_intent in (
+        ("app kse chalvaycha", "app_usage"),
+        ("how to use this app", "app_usage"),
+        ("i dont understand english", "language_confusion"),
+    ):
+        result = _get_local_grounded_reply(request(message, language="en", history=history, context=context))
+        assert result.intent == expected_intent
+        assert result.selected_language == "mr"
+        assert "अंगणवाडी" in result.reply or "मराठीत" in result.reply
+        if expected_intent == "app_usage":
+            assert all(any("\u0900" <= char <= "\u097f" for char in suggestion) for suggestion in result.suggestions)
+        history.extend([ChatMessage(role="user", content=message), ChatMessage(role="assistant", content=result.reply)])
+
+
+def test_hindi_language_command_and_hinglish_app_workflows():
+    hindi = _get_local_grounded_reply(request("change language to Hindi"))
+    assert hindi.selected_language == "hi"
+    assert classify_intent("Hindi me baat karo") == "language_change"
+
+    for message in (
+        "app kaise chalaye",
+        "app kaise chalana hai",
+        "screening kaise kare",
+        "screening kaise karu",
+        "result kaise dekhe",
+        "baccha kaise add kare",
+        "bachcha kaise register kare",
+    ):
+        assert classify_intent(message) == "app_usage", message
+
+    follow_up = _get_local_grounded_reply(request(
+        "app kaise chalaye",
+        language="en",
+        history=[ChatMessage(role="user", content="change language to Hindi")],
+    ))
+    assert follow_up.selected_language == "hi"
+    assert "आंगनवाड़ी" in follow_up.reply
 
 
 def test_screening_result_and_referral_intents_are_grounded():
@@ -137,6 +260,7 @@ def test_chat_endpoint_returns_local_response_with_intent_and_language():
     assert response.status_code == 200
     data = response.json()
     assert data["language"] == "mr"
+    assert data["selected_language"] == "mr"
     assert data["intent"] == "language_change"
     assert "मराठीत" in data["reply"]
     assert data["provider"] == "local_grounded"

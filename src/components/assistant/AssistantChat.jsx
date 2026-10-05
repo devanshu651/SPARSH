@@ -142,7 +142,11 @@ export default function AssistantChat({ currentScreen = 'dashboard', onNavigate 
         context: { selected_language: currentLang },
       })
 
-      const responseLanguage = ['en', 'hi', 'mr'].includes(response.language) ? response.language : currentLang
+      const responseLanguage = ['en', 'hi', 'mr'].includes(response.selected_language)
+        ? response.selected_language
+        : ['en', 'hi', 'mr'].includes(response.language)
+        ? response.language
+        : currentLang
       setAssistantLanguage(responseLanguage)
       try {
         window.sessionStorage.setItem('sparsh-assistant-language', responseLanguage)

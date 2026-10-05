@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from typing import Any
 
 import httpx
@@ -26,7 +27,7 @@ SPARSH is a developmental screening and follow-up support platform. It records a
 
 Use only these confirmed result follow-ups: GREEN: continue routine monitoring. YELLOW: monitor affected domains and re-screen after one month. RED: the configured recommendation is to generate a referral to the Primary Health Centre. The existing referral workflow accepts RED screenings only. Do not invent destinations, appointments, thresholds, clinical advice, or app features. Never override a result shown by SPARSH.
 
-Answer the user's current intent directly. Use prior turns as conversation context, including the language the user requested. Do not restart with an introduction or repeat the previous answer. Treat informal Hinglish and mixed-language phrasing charitably. If the user requests a language, acknowledge it and keep using it until asked to switch. The required response language is {language} (en=English, hi=Hindi, mr=Marathi).
+Answer the user's current intent directly. Use prior turns as conversation context, including the language the user requested. The selected response language is authoritative: the language used to type the latest message must not override it. A statement that the user does not understand a language is not a request to switch to that language; keep the selected language, or ask which language they prefer if none was selected. Do not restart with an introduction or repeat the previous answer. Treat informal Hinglish and mixed-language phrasing charitably. If the user requests a language, acknowledge it and keep using it until asked to switch. The required response language is {language} (en=English, hi=Hindi, mr=Marathi).
 
 For child-development questions, give general, cautious screening guidance only. Do not diagnose or prescribe. Say when you cannot confirm a platform detail.
 
@@ -45,31 +46,81 @@ def _repair_mojibake(text: str) -> str:
 
 
 def _normalize_message(text: str) -> str:
-    return " ".join(_repair_mojibake(text).casefold().split())
+    return " ".join(_repair_mojibake(text).casefold().replace("’", "'").replace("=", "").split())
+
+
+def _is_negative_language_request(message: str) -> bool:
+    text = _normalize_message(message)
+    negative_phrases = (
+        "i don't understand english", "i dont understand english", "i do not understand english",
+        "english samajh nahi aati", "english samajh nahi aata", "mujhe english samajh nahi aati",
+        "english nahi samajhta", "english nahi samajhti", "english samjat nahi",
+        "मला इंग्रजी समजत नाही", "इंग्रजी समजत नाही", "मला इंग्रजी कळत नाही",
+    )
+    return any(phrase in text for phrase in negative_phrases)
+
+
+def _has_language_cue(text: str, cues: tuple[str, ...]) -> bool:
+    for cue in cues:
+        if cue.isascii() and cue.replace(" ", "").isalpha():
+            if re.search(rf"\b{re.escape(cue)}\b", text):
+                return True
+        elif cue in text:
+            return True
+    return False
 
 
 def _requested_language(message: str) -> str | None:
     text = _normalize_message(message)
     compact = "".join(char for char in text if char.isalnum())
-    if any(token in text for token in ("मराठी", "मराठीत", "मराठीमध्ये")):
+    plain = text.strip(" ?!.,")
+    if _is_negative_language_request(text):
+        return None
+
+    if plain in {"मराठी", "मराठीत", "मराठीमध्ये"}:
         return "mr"
-    if any(token in text for token in ("हिंदी", "हिन्दी", "हिंदी में", "हिंदीमें")):
+    if plain in {"हिंदी", "हिन्दी", "हिंदीमें"}:
         return "hi"
-    if any(token in text for token in ("इंग्रजी", "इंग्लिश", "अंग्रेज़ी", "अंग्रेजी")):
+    if plain in {"इंग्रजी", "इंग्लिश", "अंग्रेज़ी", "अंग्रेजी"}:
         return "en"
-    if "english" in text or "speakenglish" in compact or "talkinenglish" in compact:
-        return "en"
-    # Tolerate common spelling slips such as "maray=thi" and short requests.
-    if "marathi" in text or "maraythi" in compact or compact in {"mr", "marati"}:
+
+    english_cues = ("change", "chnage", "switch", "set", "talk", "speak", "reply", "respond", "use", "want", "please", "me baat", "me bolo", "mein bolo", "mai bolo", "में बात", "में बोल")
+    hindi_cues = ("change", "chnage", "switch", "set", "talk", "speak", "reply", "respond", "use", "want", "please", "baat", "bolo", "bol", "me", "mein", "mai", "में", "बात", "बोल", "बताओ", "मुझसे")
+    marathi_cues = ("change", "chnage", "switch", "set", "talk", "speak", "reply", "respond", "use", "want", "please", "baat", "bolo", "bol", "me", "mein", "mai", "madhye", "madhe", "माझ्याशी", "मराठीत", "मध्ये", "बोला", "बोल", "उत्तर", "सांगा", "बोलायचं")
+
+    has_english = any(token in text for token in ("english", "इंग्रजी", "इंग्लिश", "अंग्रेज़ी", "अंग्रेजी"))
+    has_hindi = any(token in text for token in ("hindi", "हिंदी", "हिन्दी"))
+    has_marathi = any(token in text for token in ("marathi", "maraythi", "marati", "मराठी"))
+
+    if compact in {"mr", "marathi", "maraythi", "marati"} or (has_marathi and _has_language_cue(text, marathi_cues)):
         return "mr"
-    if "hindi" in text or compact in {"hi", "hindii"}:
+    if compact in {"hi", "hindi", "hindii"} or (has_hindi and _has_language_cue(text, hindi_cues)):
         return "hi"
+    if compact in {"en", "english"} or (has_english and _has_language_cue(text, english_cues)):
+        return "en"
     return None
+
+
+def _selected_language(req: ChatAssistantRequest) -> str:
+    explicit = _requested_language(req.message)
+    if explicit:
+        return explicit
+    context_language = (req.context or {}).get("selected_language")
+    if context_language in {"en", "hi", "mr"}:
+        return context_language
+    for message in reversed(req.history):
+        if message.role == "user":
+            previous_selection = _requested_language(message.content)
+            if previous_selection:
+                return previous_selection
+    return req.language
 
 
 def classify_intent(message: str) -> str:
     """Classify common conversational and SPARSH intents before topic routing."""
     text = _normalize_message(message)
+    if _is_negative_language_request(text):
+        return "language_confusion"
     language = _requested_language(text)
     if language:
         return "language_change"
@@ -84,6 +135,13 @@ def classify_intent(message: str) -> str:
         "what can i do here", "use this app", "use the app", "app kasa use",
         "sparsh kasa vapraycha", "app kasa vapraycha", "app कैसे", "ऐप कैसे",
         "हे app कसे", "हे अॅप कसे", "इस ऐप को कैसे", "इस app को कैसे",
+        "app kse chalvaycha", "app kas chalvaycha", "app kasa chalvaycha", "app kasa chalavaycha",
+        "app kas use karu", "app kasa use karaycha", "app kasa vapraycha", "app kaise chalaye",
+        "screening kasa karaycha", "screening kas karu", "screening kaise kare",
+        "result kasa baghaycha", "child add kasa karaycha", "mul register kasa karaycha",
+        "baccha kaise add kare", "app kaise chalana hai", "app kaise chalate hai",
+        "screening kaise karu", "result kaise dekhe", "bacha kaise add kare",
+        "bachcha kaise register kare", "ऐप कैसे चलाएं", "स्क्रीनिंग कैसे करें", "बच्चे को कैसे जोड़ें",
     )) or ("sparsh" in text and any(word in text for word in ("use", "work", "vapray", "वापर"))):
         return "app_usage"
     if any(term in text for term in ("screening kya", "what is screening", "what does screening", "screening kaise", "why screening", "developmental screening", "स्क्रीनिंग क्या", "स्क्रीनिंग म्हणजे काय")):
@@ -113,6 +171,20 @@ def _reply(req: ChatAssistantRequest, intent: str, language: str) -> ChatAssista
     """Short, grounded replies for intents that must work without an LLM."""
     en = language == "en"
     hi = language == "hi"
+    if intent == "language_confusion":
+        replies = {
+            "en": "Sorry about that. Which language would you prefer: Marathi, Hindi, or English? I’ll keep using it until you ask me to switch.",
+            "hi": "समझ गया। मैं हिंदी में जवाब देता रहूँगा। अगर आप दूसरी भाषा चाहते हैं, तो उसका नाम बताइए।",
+            "mr": "समजलं. मी मराठीतच उत्तर देत राहीन. तुम्हाला दुसरी भाषा हवी असल्यास तिचे नाव सांगा.",
+        }
+        suggestions = {
+            "en": ["Marathi", "Hindi", "English"],
+            "hi": ["मराठी", "हिंदी", "अंग्रेज़ी"],
+            "mr": ["मराठी", "हिंदी", "इंग्रजी"],
+        }
+        prompt = "Which language should I use?" if en else ("कौन-सी भाषा इस्तेमाल करूँ?" if hi else "कोणती भाषा वापरू?")
+        return ChatAssistantResponse(reply=replies[language], suggestions=suggestions[language], follow_up_prompt=prompt, provider="local_grounded", language=language, selected_language=language, intent=intent)
+
     if intent == "language_change":
         reply = {
             "en": "Sure. I’ll reply in English from now on. Ask me about using SPARSH, screening, results, or referrals.",
@@ -124,7 +196,7 @@ def _reply(req: ChatAssistantRequest, intent: str, language: str) -> ChatAssista
             "hi": ["SPARSH कैसे इस्तेमाल करें", "स्क्रीनिंग शुरू करें", "परिणाम समझें", "रेफ़रल प्रक्रिया"],
             "mr": ["SPARSH कसे वापरायचे", "स्क्रीनिंग सुरू करा", "निकाल समजून घ्या", "रेफरल प्रक्रिया"],
         }[language]
-        return ChatAssistantResponse(reply=reply, suggestions=suggestions, follow_up_prompt="What would you like help with?" if en else ("आपको किस बारे में मदद चाहिए?" if hi else "तुम्हाला कशाबद्दल मदत हवी आहे?"), provider="local_grounded", language=language, intent=intent)
+        return ChatAssistantResponse(reply=reply, suggestions=suggestions, follow_up_prompt="What would you like help with?" if en else ("आपको किस बारे में मदद चाहिए?" if hi else "तुम्हाला कशाबद्दल मदत हवी आहे?"), provider="local_grounded", language=language, selected_language=language, intent=intent)
 
     if intent == "app_usage":
         reply = {
@@ -132,7 +204,12 @@ def _reply(req: ChatAssistantRequest, intent: str, language: str) -> ChatAssista
             "hi": "SPARSH आंगनवाड़ी कार्यकर्ताओं को विकासात्मक स्क्रीनिंग और फॉलो-अप दर्ज करने में मदद करता है:\n1. साइन इन करें।\n2. अपना आंगनवाड़ी केंद्र खोलें; ऐप पूछे तो उसे चुनें।\n3. बच्चे को चुनें या नए बच्चे का पंजीकरण करें।\n4. फ़ॉर्म में मांगी गई बच्चे और स्वास्थ्य की जानकारी भरें।\n5. उम्र के अनुसार स्क्रीनिंग शुरू करने के लिए Screening खोलें।\n6. हर अवलोकन के लिए हाँ, नहीं या पता नहीं दर्ज करें।\n7. SPARSH में दिखाया गया स्क्रीनिंग परिणाम देखें।\n8. RED परिणाम हो तो मौजूदा रेफ़रल प्रक्रिया खोलकर उसके चरणों का पालन करें।\n9. पिछली स्क्रीनिंग और फॉलो-अप के लिए History/Records देखें।",
             "mr": "SPARSH अंगणवाडी सेविकांना विकासात्मक स्क्रीनिंग आणि फॉलो-अप नोंदवण्यास मदत करते:\n1. साइन इन करा.\n2. आपले अंगणवाडी केंद्र उघडा; अॅपने विचारल्यास ते निवडा.\n3. मुलाची नोंद निवडा किंवा नवीन मुलाची नोंदणी करा.\n4. फॉर्ममध्ये विचारलेली मुलाची आणि आरोग्याची माहिती भरा.\n5. वयानुसार स्क्रीनिंग सुरू करण्यासाठी Screening उघडा.\n6. प्रत्येक निरीक्षणासाठी होय, नाही किंवा खात्री नाही नोंदवा.\n7. SPARSH मध्ये दाखवलेला स्क्रीनिंग निकाल पाहा.\n8. RED निकाल असल्यास उपलब्ध रेफरल प्रक्रिया उघडून तिच्या सूचना पाळा.\n9. मागील स्क्रीनिंग आणि फॉलो-अपसाठी History/Records पाहा.",
         }[language]
-        return ChatAssistantResponse(reply=reply, suggestions=_reply(req, "navigation", language).suggestions, follow_up_prompt="Would you like help with a specific step?" if en else ("किसी चरण में मदद चाहिए?" if hi else "एखाद्या टप्प्यासाठी मदत हवी आहे का?"), provider="local_grounded", language=language, intent=intent)
+        suggestions = {
+            "en": ["Start screening", "Understand results", "Referral process"],
+            "hi": ["स्क्रीनिंग शुरू करें", "परिणाम समझें", "रेफ़रल प्रक्रिया"],
+            "mr": ["स्क्रीनिंग सुरू करा", "निकाल समजून घ्या", "रेफरल प्रक्रिया"],
+        }[language]
+        return ChatAssistantResponse(reply=reply, suggestions=suggestions, follow_up_prompt="Would you like help with a specific step?" if en else ("किसी चरण में मदद चाहिए?" if hi else "एखाद्या टप्प्यासाठी मदत हवी आहे का?"), provider="local_grounded", language=language, selected_language=language, intent=intent)
 
     content: dict[str, tuple[str, list[str], str]] = {
         "screening_explanation": (
@@ -168,6 +245,7 @@ def _reply(req: ChatAssistantRequest, intent: str, language: str) -> ChatAssista
     }
     localized: dict[str, dict[str, tuple[str, list[str], str]]] = {
         "hi": {
+            "language_confusion": ("समझ गया। मैं हिंदी में जवाब देता रहूँगा। अगर आप दूसरी भाषा चाहते हैं, तो उसका नाम बताइए।", ["मराठी", "हिंदी", "अंग्रेज़ी"], "कौन-सी भाषा इस्तेमाल करूँ?"),
             "screening_explanation": ("SPARSH बच्चे की उम्र के अनुसार निर्धारित विकासात्मक क्षेत्रों के प्रश्न पूछता है और दर्ज उत्तरों से स्क्रीनिंग संकेत दिखाता है। यह स्क्रीनिंग है, निदान नहीं।", ["SPARSH कैसे इस्तेमाल करें", "परिणाम समझें", "रेफ़रल प्रक्रिया"], "क्या स्क्रीनिंग के किसी चरण में मदद चाहिए?"),
             "result_explanation": ("SPARSH स्क्रीनिंग संकेत दिखाता है, निदान नहीं। GREEN: नियमित निगरानी जारी रखें। YELLOW: प्रभावित क्षेत्रों पर नज़र रखें और एक महीने बाद फिर स्क्रीनिंग करें। RED: निर्धारित सुझाव के अनुसार मौजूदा प्रक्रिया से Primary Health Centre के लिए रेफ़रल बनाएँ।", ["GREEN का क्या अर्थ है?", "YELLOW का क्या अर्थ है?", "RED के बाद क्या करें?"], "किस रंग के परिणाम को समझना चाहेंगे?"),
             "referral": ("SPARSH में RED स्क्रीनिंग परिणाम पर रेफ़रल बनाया जा सकता है। परिणाम/रेफ़रल प्रक्रिया खोलकर दिए गए चरणों का पालन करें; निर्धारित सुझाव Primary Health Centre के लिए रेफ़रल है। स्क्रीनिंग निदान नहीं है।", ["परिणाम समझें", "SPARSH कैसे इस्तेमाल करें", "स्क्रीनिंग समझें"], "क्या किसी परिणाम को समझने में मदद चाहिए?"),
@@ -180,6 +258,7 @@ def _reply(req: ChatAssistantRequest, intent: str, language: str) -> ChatAssista
             "unsupported": ("मैं SPARSH नेविगेशन, स्क्रीनिंग, परिणाम, रेफ़रल और सामान्य विकासात्मक स्क्रीनिंग प्रश्नों में मदद कर सकता हूँ। इस अनुरोध की पुष्टि नहीं कर सकता। SPARSH में क्या करना है?", ["SPARSH कैसे इस्तेमाल करें", "स्क्रीनिंग समझें", "परिणाम समझें"], "SPARSH के किस काम में मदद चाहिए?"),
         },
         "mr": {
+            "language_confusion": ("समजलं. मी मराठीतच उत्तर देत राहीन. तुम्हाला दुसरी भाषा हवी असल्यास तिचे नाव सांगा.", ["मराठी", "हिंदी", "इंग्रजी"], "कोणती भाषा वापरू?"),
             "screening_explanation": ("SPARSH मुलाच्या वयानुसार ठरवलेल्या विकास क्षेत्रांतील प्रश्न विचारते आणि नोंदवलेल्या उत्तरांवरून स्क्रीनिंगचा संकेत देते. ही स्क्रीनिंग आहे, निदान नाही.", ["SPARSH कसे वापरायचे", "निकाल समजून घ्या", "रेफरल प्रक्रिया"], "स्क्रीनिंगच्या कोणत्या टप्प्यात मदत हवी आहे?"),
             "result_explanation": ("SPARSH स्क्रीनिंगचा संकेत देते, निदान नाही. GREEN: नियमित निरीक्षण सुरू ठेवा. YELLOW: संबंधित विकास क्षेत्रांचे निरीक्षण करा आणि एका महिन्यानंतर पुन्हा स्क्रीनिंग करा. RED: ठरवलेल्या सूचनेनुसार उपलब्ध प्रक्रियेतून Primary Health Centre साठी रेफरल तयार करा.", ["GREEN चा अर्थ काय?", "YELLOW चा अर्थ काय?", "RED नंतर काय करावे?"], "कोणता रंगाचा निकाल समजावून सांगू?"),
             "referral": ("SPARSH मध्ये RED स्क्रीनिंग निकालासाठी रेफरल तयार करता येते. निकाल/रेफरल प्रक्रिया उघडून दिलेल्या पायऱ्या पाळा; ठरवलेली सूचना Primary Health Centre साठी रेफरलची आहे. स्क्रीनिंग म्हणजे निदान नाही.", ["निकाल समजून घ्या", "SPARSH कसे वापरायचे", "स्क्रीनिंग समजून घ्या"], "निकाल समजून घेण्यासाठी मदत हवी आहे का?"),
@@ -193,13 +272,13 @@ def _reply(req: ChatAssistantRequest, intent: str, language: str) -> ChatAssista
         },
     }
     reply, suggestions, follow_up = localized.get(language, {}).get(intent, content.get(intent, content["unsupported"]))
-    return ChatAssistantResponse(reply=reply, suggestions=suggestions, follow_up_prompt=follow_up, provider="local_grounded", language=language, intent=intent)
+    return ChatAssistantResponse(reply=reply, suggestions=suggestions, follow_up_prompt=follow_up, provider="local_grounded", language=language, selected_language=language, intent=intent)
 
 
 def _get_local_grounded_reply(req: ChatAssistantRequest) -> ChatAssistantResponse:
     message = _repair_mojibake(req.message.strip())
     intent = classify_intent(message)
-    language = _requested_language(message) or req.language
+    language = _selected_language(req)
     normalized = req.model_copy(update={"message": message, "language": language})
     return _reply(normalized, intent, language)
 
@@ -208,7 +287,7 @@ async def call_gemini_chat(req: ChatAssistantRequest) -> ChatAssistantResponse:
     """Call Google Generative AI API with safety and grounding."""
     message = _repair_mojibake(req.message.strip())
     intent = classify_intent(message)
-    language = _requested_language(message) or req.language
+    language = _selected_language(req)
     req = req.model_copy(update={"message": message, "language": language})
 
     # Obvious conversational and SPARSH intents are handled deterministically,
@@ -305,6 +384,7 @@ async def call_gemini_chat(req: ChatAssistantRequest) -> ChatAssistantResponse:
                     follow_up_prompt=follow_up,
                     provider=model,
                     language=language,
+                    selected_language=language,
                     intent=intent,
                 )
             except Exception:
@@ -314,6 +394,7 @@ async def call_gemini_chat(req: ChatAssistantRequest) -> ChatAssistantResponse:
                         suggestions=[],
                         provider=model,
                         language=language,
+                        selected_language=language,
                         intent=intent,
                     )
                 return _get_local_grounded_reply(req)
