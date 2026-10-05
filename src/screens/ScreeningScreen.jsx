@@ -127,10 +127,10 @@ export default function ScreeningScreen({ onNavigate }) {
 
   const language = (i18n.resolvedLanguage || i18n.language || 'en').split('-')[0]
   const missingTranslation = useMemo(() => data?.milestones?.find((item) => {
-    const value = i18n.getResource(language, 'translation', `screeningQuestions.${item.id}`)
+    const value = i18n.getResource(language, 'translation', `screeningQuestions.${item.id}.${language}`)
     return typeof value !== 'string' || !value.trim()
   }), [data, i18n, language])
-  const questionText = (item) => i18n.getResource(language, 'translation', `screeningQuestions.${item.id}`)
+  const questionText = (item) => i18n.getResource(language, 'translation', `screeningQuestions.${item.id}.${language}`)
   const domainLabel = (domain) => t(`screening.domains.${domain}`, { defaultValue: domain })
   const answerLabel = (response) => t(`screening.${response.toLowerCase()}`)
 
