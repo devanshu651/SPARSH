@@ -236,5 +236,26 @@
     "referrals": "Referrals",
     "noAlerts": "No alerts in this category",
     "noAlertsDesc": "All children in this filter currently have normal development status."
+  },
+  "assistant": {
+    "title": "SPARSH Assistant",
+    "subtitle": "Developmental & Platform Guide",
+    "placeholder": "Type your question...",
+    "send": "Send",
+    "clearChat": "Clear chat",
+    "close": "Close assistant",
+    "open": "Open SPARSH Assistant",
+    "thinking": "SPARSH Assistant is typing...",
+    "error": "I'm having trouble responding right now. Please try again.",
+    "defaultGreeting": "Hello! I am your SPARSH Assistant. I can help you understand developmental screening, age checkpoints, audio-visual assessments, and the referral workflow.",
+    "defaultPrompt": "How can I assist you with SPARSH today?",
+    "suggestions": {
+      "startScreening": "Start Screening",
+      "understandResults": "Understand Results",
+      "childRegistration": "Child Registration",
+      "alertsReferrals": "Alerts & Referrals",
+      "speechConcern": "Speech & Language Concern",
+      "motorDevelopment": "Motor & Physical Development"
+    }
   }
 }
