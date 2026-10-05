@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   Radar,
   RadarChart,
@@ -13,25 +14,26 @@ import Button from '../components/Button'
 import BadgePill from '../components/BadgePill'
 import Icon from '../components/Icon'
 import { EmptyState } from '../components/AsyncState'
+import ScreeningLanguageSelector from '../components/ScreeningLanguageSelector'
 
 const riskStyles = {
   GREEN: {
     badge: 'normal',
-    title: 'Follow-up threshold not reached',
+    titleKey: 'riskGreen',
     banner: 'border-emerald-200 bg-emerald-50/70 text-emerald-900',
     iconColor: 'text-emerald-700',
     icon: 'checkCircle'
   },
   YELLOW: {
     badge: 'moderate',
-    title: 'Review recommended',
+    titleKey: 'riskYellow',
     banner: 'border-amber-200 bg-amber-50/70 text-amber-900',
     iconColor: 'text-amber-700',
     icon: 'alertTriangle'
   },
   RED: {
     badge: 'high',
-    title: 'Follow-up recommended',
+    titleKey: 'riskRed',
     banner: 'border-red-200 bg-red-50/70 text-red-900',
     iconColor: 'text-red-700',
     icon: 'alertCircle'
@@ -39,6 +41,7 @@ const riskStyles = {
 }
 
 export default function ReportScreen({ onNavigate }) {
+  const { t } = useTranslation()
   const { screeningResult, currentChild } = useApp()
   const [notes, setNotes] = useState('')
   const [notesSaved, setNotesSaved] = useState(false)
@@ -46,9 +49,7 @@ export default function ReportScreen({ onNavigate }) {
   const chartData = useMemo(() => {
     if (!screeningResult?.domain_scores) return []
     return Object.entries(screeningResult.domain_scores).map(([domain, value]) => {
-      const formattedDomain = domain
-        .replace('_', ' ')
-        .replace(/\b\w/g, (l) => l.toUpperCase())
+      const formattedDomain = t(`screening.domains.${domain}`, { defaultValue: domain.replace('_', ' ') })
 
       const denominator = value.answered_count || 0
       const score = denominator > 0 ? Math.round(((denominator - (value.missed_count || 0) - (value.unsure_count || 0)) / denominator) * 100) : null
@@ -61,7 +62,7 @@ export default function ReportScreen({ onNavigate }) {
         status: value.status
       }
     })
-  }, [screeningResult])
+  }, [screeningResult, t])
 
   if (!screeningResult) {
     return (
@@ -69,8 +70,8 @@ export default function ReportScreen({ onNavigate }) {
         active="screening"
         onNavigate={onNavigate}
         backTo="dashboard"
-        title="Developmental Screening Report"
-        subtitle="Screening indication and follow-up information"
+        title={t('screening.reportTitle')}
+        subtitle={`${t('screening.result')} · ${t('screening.screeningIndication')}`}
         actions={
           <div className="flex items-center gap-2">
             <Button
@@ -79,7 +80,7 @@ export default function ReportScreen({ onNavigate }) {
               onClick={() => onNavigate?.('children')}
             >
               <Icon name="children" className="h-4 w-4 text-primary-800" />
-              <span>Browse Cohort</span>
+              <span>{t('screening.selectChild')}</span>
             </Button>
             <Button
               variant="primary"
@@ -87,12 +88,13 @@ export default function ReportScreen({ onNavigate }) {
               onClick={() => onNavigate?.('screening')}
             >
               <Icon name="screening" className="h-4 w-4" />
-              <span>Start Screening</span>
+              <span>{t('screening.selectToStart')}</span>
             </Button>
           </div>
         }
       >
         <div className="mx-auto max-w-4xl space-y-6 p-4 sm:p-6 lg:p-8">
+          <div className="flex justify-end"><ScreeningLanguageSelector /></div>
 
           {/* REPORT HEADER BANNER */}
           <section className="rounded-xl border border-primary-900/10 bg-gradient-to-r from-primary-900 via-primary-800 to-primary-900 p-5 text-white shadow-card sm:p-6">
@@ -108,7 +110,7 @@ export default function ReportScreen({ onNavigate }) {
                   </span>
                 </div>
                 <h1 className="mt-2 text-xl font-bold tracking-tight text-white sm:text-2xl">
-                  Developmental Screening Report
+                  {t('screening.reportTitle')}
                 </h1>
                 <p className="mt-1 text-xs text-primary-100/90 sm:text-sm max-w-2xl leading-relaxed">
                   A summary of recorded screening responses, domain scores, and the configured follow-up recommendation.
@@ -121,7 +123,7 @@ export default function ReportScreen({ onNavigate }) {
                 className="shrink-0"
               >
                 <Icon name="screening" className="h-4 w-4" />
-                <span>+ New Screening</span>
+                <span>{t('screening.selectToStart')}</span>
               </Button>
             </div>
           </section>
@@ -249,8 +251,8 @@ export default function ReportScreen({ onNavigate }) {
       active="screening"
       onNavigate={onNavigate}
       backTo="dashboard"
-        title="Developmental Screening Report"
-        subtitle={`Screening Reference: ${screeningResult.screening_id || '—'}`}
+        title={t('screening.reportTitle')}
+        subtitle={`${t('screening.reportReference')}: ${screeningResult.screening_id || '—'}`}
       actions={
         <Button
           variant="secondary"
@@ -258,11 +260,12 @@ export default function ReportScreen({ onNavigate }) {
           onClick={() => window.print()}
         >
           <Icon name="report" className="h-4 w-4 text-neutral-600" />
-          <span>Print / Export PDF</span>
+          <span>{t('screening.printReport')}</span>
         </Button>
       }
     >
       <div className="mx-auto max-w-4xl space-y-6 p-4 sm:p-6 lg:p-8">
+        <div className="flex justify-end"><ScreeningLanguageSelector /></div>
 
         {/* PATIENT SUMMARY BANNER */}
         <div className="rounded-xl border border-neutral-200/80 bg-white p-5 shadow-card">
@@ -273,9 +276,9 @@ export default function ReportScreen({ onNavigate }) {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h2 className="text-lg font-bold text-neutral-900">{currentChild?.name || 'Screened Child'}</h2>
+                  <h2 className="text-lg font-bold text-neutral-900">{currentChild?.name || t('screening.screenedChild')}</h2>
                   <BadgePill tone="teal">
-                    {screeningResult.checkpoint_age_months ?? currentChild?.age_months ?? '—'} {screeningResult.milestone_dataset_version === 'phase5-final-65-v1' ? 'Months at screening' : 'Month checkpoint'}
+                    {screeningResult.checkpoint_age_months ?? currentChild?.age_months ?? '—'} {screeningResult.milestone_dataset_version === 'phase5-final-65-v1' ? t('screening.screeningAge') : t('screening.monthCheckpoint')}
                   </BadgePill>
                 </div>
                 <p className="text-xs text-neutral-500">
@@ -285,7 +288,7 @@ export default function ReportScreen({ onNavigate }) {
             </div>
 
             <div className="flex flex-wrap items-center gap-2 text-xs">
-              <span className="text-neutral-400">Date Evaluated:</span>
+              <span className="text-neutral-400">{t('screening.dateEvaluated')}:</span>
               <span className="font-semibold text-neutral-700">
                 {new Date(screeningResult.screened_at || Date.now()).toLocaleDateString('en-IN', {
                   day: 'numeric',
@@ -312,14 +315,14 @@ export default function ReportScreen({ onNavigate }) {
             <div className="flex-1">
               <div className="flex items-center gap-2.5">
                 <span className="text-xs font-bold uppercase tracking-wider">
-                  Screening indication: {screeningResult.risk_level}
+                  {t('screening.screeningIndication')}: {screeningResult.risk_level}
                 </span>
                 <BadgePill tone={risk.badge} dot>
-                  {risk.title}
+                  {t(`screening.${risk.titleKey}`)}
                 </BadgePill>
               </div>
               <h3 className="mt-1 text-base font-bold">
-                {risk.title}
+                {t(`screening.${risk.titleKey}`)}
               </h3>
               <p className="mt-1 text-xs sm:text-sm leading-relaxed opacity-90">
                 {screeningResult.recommendation}
@@ -339,7 +342,7 @@ export default function ReportScreen({ onNavigate }) {
                     onClick={() => onNavigate('referral')}
                   >
                     <Icon name="hospital" className="h-4 w-4" />
-                    <span>Generate referral →</span>
+                    <span>{t('screening.generateReferral')}</span>
                   </Button>
                 </div>
               )}
@@ -348,7 +351,7 @@ export default function ReportScreen({ onNavigate }) {
         </div>
 
         <p className="text-xs text-neutral-500" role="status">
-          ML risk model is not configured. This report uses the server’s rule based screening result only.
+          {t('screening.modelUnavailable')}
         </p>
 
         {/* DOMAIN EVALUATION SECTION */}
@@ -356,8 +359,8 @@ export default function ReportScreen({ onNavigate }) {
 
           {/* RADAR CHART VISUALIZATION */}
           <Card
-            title="Developmental Domain Profile"
-            subtitle="YES responses as a share of answered items"
+            title={t('screening.domainProfile')}
+            subtitle={t('screening.yesResponsesShare')}
           >
             <div className="h-64 w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -381,8 +384,8 @@ export default function ReportScreen({ onNavigate }) {
 
           {/* DOMAIN SCORE BREAKDOWN TABLE */}
           <Card
-            title="Milestone Competencies"
-            subtitle="Individual domain performance"
+            title={t('screening.milestoneCompetencies')}
+            subtitle={t('screening.individualDomain')}
           >
             <div className="divide-y divide-neutral-100">
               {chartData.map((item) => (

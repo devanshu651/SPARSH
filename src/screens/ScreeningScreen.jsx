@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import AppLayout from '../components/AppLayout'
+import ScreeningLanguageSelector from '../components/ScreeningLanguageSelector'
 import Button from '../components/Button'
 import BadgePill from '../components/BadgePill'
 import Icon from '../components/Icon'
@@ -8,25 +10,8 @@ import { screeningsApi, childrenApi } from '../services/api'
 import { cacheMilestones, clearDraft, getCachedMilestones, loadDraft, saveDraft } from '../services/offline'
 import { useApp } from '../context/AppContext'
 
-const domainLabels = {
-  gross_motor: 'Gross Motor Skills',
-  fine_motor: 'Fine Motor Skills',
-  language: 'Language & Communication',
-  social_emotional: 'Social & Emotional Development',
-  cognitive: 'Cognitive & Problem Solving'
-}
-
-const domainDescriptions = {
-  gross_motor: 'Large muscle movements, posture, sitting, crawling, and walking coordination.',
-  fine_motor: 'Small muscle control, grasping, finger-thumb coordination, and object manipulation.',
-  language: 'Speech sounds, vocal cues, responsive listening, and word understanding.',
-  social_emotional: 'Interactions with caregivers, smiles, eye contact, and emotional reactions.',
-  cognitive: 'Curiosity, object permanence, exploration, and spatial reasoning.'
-}
-
-const prototypeDisclaimer = 'Prototype screening questionnaire. Content is based on referenced developmental milestone sources and is pending professional review. This is not a diagnostic assessment.'
-
 export default function ScreeningScreen({ onNavigate }) {
+  const { t, i18n } = useTranslation()
   const { currentChild, setCurrentChild, setPendingScreening } = useApp()
   const [data, setData] = useState(null)
   const [error, setError] = useState(null)
@@ -47,13 +32,13 @@ export default function ScreeningScreen({ onNavigate }) {
       const result = typeof mCall === 'function' ? await mCall(currentChild.id) : await mCall
       cacheMilestones(currentChild.id, result)
       setData(result)
-    } catch (e) {
+    } catch {
       const cached = getCachedMilestones(currentChild.id)
       if (cached) {
         setData(cached)
-        setError(new Error('Working offline. Using previously cached milestone questionnaire.'))
+        setError(new Error(t('screening.offlineCached', { defaultValue: t('screening.loadError') })))
       } else {
-        setError(e)
+        setError(new Error(t('screening.loadError')))
       }
     }
   }
@@ -140,6 +125,15 @@ export default function ScreeningScreen({ onNavigate }) {
   const [cohortError, setCohortError] = useState(null)
   const [cohortSearch, setCohortSearch] = useState('')
 
+  const language = (i18n.resolvedLanguage || i18n.language || 'en').split('-')[0]
+  const missingTranslation = useMemo(() => data?.milestones?.find((item) => {
+    const value = i18n.getResource(language, 'translation', `screeningQuestions.${item.id}`)
+    return typeof value !== 'string' || !value.trim()
+  }), [data, i18n, language])
+  const questionText = (item) => i18n.getResource(language, 'translation', `screeningQuestions.${item.id}`)
+  const domainLabel = (domain) => t(`screening.domains.${domain}`, { defaultValue: domain })
+  const answerLabel = (response) => t(`screening.${response.toLowerCase()}`)
+
   useEffect(() => {
     if (!currentChild) {
       setLoadingCohort(true)
@@ -177,8 +171,8 @@ export default function ScreeningScreen({ onNavigate }) {
         active="screening"
         onNavigate={onNavigate}
         backTo="dashboard"
-        title="Child Developmental Screening"
-        subtitle="Age-based developmental screening across five domains"
+        title={t('screening.title')}
+        subtitle={t('screening.subtitle')}
         actions={
           <Button
             variant="primary"
@@ -186,7 +180,7 @@ export default function ScreeningScreen({ onNavigate }) {
             onClick={() => onNavigate?.('register')}
           >
             <Icon name="plus" className="h-4 w-4" />
-            <span>Register New Child</span>
+            <span>{t('screening.registerNewChild')}</span>
           </Button>
         }
       >
@@ -199,20 +193,21 @@ export default function ScreeningScreen({ onNavigate }) {
                 <div className="flex items-center gap-2">
                   <span className="inline-flex items-center gap-1.5 rounded-md bg-teal-500/20 px-2.5 py-0.5 text-xs font-semibold text-teal-200 ring-1 ring-inset ring-teal-400/30">
                     <Icon name="screening" className="h-3.5 w-3.5" />
-                    Screening workflow
+                    {t('screening.screeningWorkflow')}
                   </span>
                   <span className="text-xs text-primary-200">
-                    Developmental screening
+                    {t('screening.developmentalScreening')}
                   </span>
                 </div>
                 <h1 className="mt-2 text-xl font-bold tracking-tight text-white sm:text-2xl">
-                  Child Developmental Screening
+                  {t('screening.title')}
                 </h1>
                 <p className="mt-1 text-xs text-primary-100/90 sm:text-sm max-w-2xl leading-relaxed">
-                  Record screening observations and identify areas that may need follow-up.
-                  Select a child from your registered cohort to start age-based milestone questions.
+                  {t('screening.intro')}
                 </p>
               </div>
+
+              <ScreeningLanguageSelector />
 
               <Button
                 variant="teal"
@@ -220,7 +215,7 @@ export default function ScreeningScreen({ onNavigate }) {
                 className="shrink-0"
               >
                 <Icon name="plus" className="h-4 w-4" />
-                <span>+ Register New Child</span>
+                <span>{t('screening.registerNewChild')}</span>
               </Button>
             </div>
           </section>
@@ -232,10 +227,10 @@ export default function ScreeningScreen({ onNavigate }) {
                 <div className="grid h-8 w-8 place-items-center rounded-lg bg-primary-50 text-xs font-bold text-primary-800">
                   1
                 </div>
-                <h3 className="text-sm font-bold text-neutral-900">Child & Screening Age</h3>
+                <h3 className="text-sm font-bold text-neutral-900">{t('screening.childAndAge')}</h3>
               </div>
               <p className="mt-2 text-xs text-neutral-500 leading-relaxed">
-                Select an enrolled child. The backend calculates age and chooses the latest supported checkpoint. WHO ranges and ages pending review are not selected automatically.
+                {t('screening.childAndAgeDetail')}
               </p>
             </div>
 
@@ -244,10 +239,10 @@ export default function ScreeningScreen({ onNavigate }) {
                 <div className="grid h-8 w-8 place-items-center rounded-lg bg-teal-50 text-xs font-bold text-teal-800">
                   2
                 </div>
-                <h3 className="text-sm font-bold text-neutral-900">5-Domain Observation</h3>
+                <h3 className="text-sm font-bold text-neutral-900">{t('screening.fiveDomains')}</h3>
               </div>
               <p className="mt-2 text-xs text-neutral-500 leading-relaxed">
-                Record caregiver reports and frontline observations across Gross Motor, Fine Motor, Language, Social-Emotional, and Cognitive skills.
+                {t('screening.fiveDomainsDetail')}
               </p>
             </div>
 
@@ -256,10 +251,10 @@ export default function ScreeningScreen({ onNavigate }) {
                 <div className="grid h-8 w-8 place-items-center rounded-lg bg-amber-50 text-xs font-bold text-amber-800">
                   3
                 </div>
-                <h3 className="text-sm font-bold text-neutral-900">Screening follow-up</h3>
+                <h3 className="text-sm font-bold text-neutral-900">{t('screening.followUp')}</h3>
               </div>
               <p className="mt-2 text-xs text-neutral-500 leading-relaxed">
-                The backend applies configured screening rules and provides follow-up recommendations. An Anganwadi Worker reviews and initiates referrals when appropriate.
+                {t('screening.followUpDetail')}
               </p>
             </div>
           </section>
@@ -268,9 +263,9 @@ export default function ScreeningScreen({ onNavigate }) {
           <section className="rounded-xl border border-neutral-200/80 bg-white p-5 shadow-card space-y-4">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-neutral-100 pb-4">
               <div>
-                <h2 className="text-base font-bold text-neutral-900">Select Child to Screen</h2>
+                <h2 className="text-base font-bold text-neutral-900">{t('screening.selectChild')}</h2>
                 <p className="text-xs text-neutral-500">
-                  {cohort.length} children registered in your assigned centre
+                  {t('screening.childrenCount', { count: cohort.length })}
                 </p>
               </div>
 
@@ -281,7 +276,7 @@ export default function ScreeningScreen({ onNavigate }) {
                     type="search"
                     value={cohortSearch}
                     onChange={(e) => setCohortSearch(e.target.value)}
-                    placeholder="Search by name or ID..."
+                    placeholder={t('screening.searchChildren')}
                     className="h-9 w-full rounded-lg border border-neutral-300 bg-neutral-50/50 pl-9 pr-3 text-xs text-neutral-900 outline-none placeholder:text-neutral-400 focus:border-primary-700 focus:bg-white"
                   />
                 </div>
@@ -289,17 +284,17 @@ export default function ScreeningScreen({ onNavigate }) {
             </div>
 
             {loadingCohort ? (
-              <LoadingState label="Loading registered children cohort..." />
+              <LoadingState label={t('screening.loadingChildren')} />
             ) : cohortError ? (
-              <ErrorState error={cohortError} onRetry={() => {
+              <ErrorState error={new Error(t('screening.loadError'))} title={t('screening.loadError')} retryLabel={t('screening.retry')} onRetry={() => {
                 setLoadingCohort(true)
                 setCohortError(null)
                 childrenApi.list().then((items) => setCohort(Array.isArray(items) ? items : [])).catch(setCohortError).finally(() => setLoadingCohort(false))
               }} />
             ) : cohort.length === 0 ? (
               <EmptyState
-                title="No children registered yet"
-                detail="Developmental screening requires a registered child profile with a date of birth. Enrol a child to begin age-based questions."
+                title={t('screening.noChildren')}
+                detail={t('screening.noChildrenDetail')}
                 icon="children"
                 action={
                   <div className="flex flex-wrap items-center justify-center gap-2.5">
@@ -308,25 +303,25 @@ export default function ScreeningScreen({ onNavigate }) {
                       onClick={() => onNavigate?.('register')}
                     >
                       <Icon name="plus" className="h-4 w-4" />
-                      <span>Register Child</span>
+                      <span>{t('screening.registerChild')}</span>
                     </Button>
                     <Button
                       variant="secondary"
                       onClick={() => onNavigate?.('dashboard')}
                     >
-                      Return to Dashboard
+                      {t('screening.returnDashboard')}
                     </Button>
                   </div>
                 }
               />
             ) : filteredCohort.length === 0 ? (
               <EmptyState
-                title="No matching children found"
-                detail="Try adjusting your search query or clear the filter to view all enrolled children."
+                title={t('screening.noMatchingChildren')}
+                detail={t('screening.adjustSearch')}
                 icon="search"
                 action={
                   <Button variant="secondary" size="sm" onClick={() => setCohortSearch('')}>
-                    Clear Search
+                    {t('screening.clearSearch')}
                   </Button>
                 }
               />
@@ -344,12 +339,12 @@ export default function ScreeningScreen({ onNavigate }) {
 
                   const riskLabel =
                     child.latest_risk === 'RED'
-                      ? 'High Risk'
+                      ? t('screening.highRisk')
                       : child.latest_risk === 'YELLOW'
-                      ? 'Moderate'
+                      ? t('screening.moderateRisk')
                       : child.latest_risk === 'GREEN'
-                      ? 'On Track'
-                      : 'Screening Due'
+                      ? t('screening.onTrack')
+                      : t('screening.screeningDue')
 
                   return (
                     <div
@@ -364,12 +359,12 @@ export default function ScreeningScreen({ onNavigate }) {
                             </div>
                             <div className="min-w-0">
                               <h4 className="text-sm font-bold text-neutral-900 truncate">
-                                {child.name || 'Unnamed Child'}
+                                {child.name || t('screening.unnamedChild')}
                               </h4>
                               <p className="text-[11px] text-neutral-500">
                                 {child.age_months !== null && child.age_months !== undefined
                                   ? `${child.age_months}m`
-                                  : 'Age not logged'}
+                                  : t('screening.ageNotRecorded')}
                                 {child.sex ? ` · ${child.sex}` : ''}
                               </p>
                             </div>
@@ -382,11 +377,11 @@ export default function ScreeningScreen({ onNavigate }) {
 
                         <div className="mt-3 border-t border-neutral-100 pt-2 text-[11px] text-neutral-500 space-y-0.5">
                           <p>
-                            <span className="text-neutral-400">ID:</span>{' '}
+                            <span className="text-neutral-400">{t('screening.childId')}:</span>{' '}
                             <span className="font-medium text-neutral-700">{child.child_identifier || '—'}</span>
                           </p>
                           <p className="truncate">
-                            <span className="text-neutral-400">Guardian:</span>{' '}
+                            <span className="text-neutral-400">{t('screening.guardian')}:</span>{' '}
                             <span className="font-medium text-neutral-700">{child.guardian_name || '—'}</span>
                           </p>
                         </div>
@@ -405,7 +400,7 @@ export default function ScreeningScreen({ onNavigate }) {
                           }}
                         >
                           <Icon name="screening" className="h-3.5 w-3.5 mr-1" />
-                          <span>Select & Start Screening</span>
+                          <span>{t('screening.selectAndStart')}</span>
                         </Button>
                       </div>
                     </div>
@@ -422,10 +417,9 @@ export default function ScreeningScreen({ onNavigate }) {
                 <Icon name="info" className="h-4 w-4" />
               </div>
               <div className="text-xs text-neutral-600 leading-relaxed">
-                <h4 className="font-bold text-neutral-900">What happens after selecting a child?</h4>
+                <h4 className="font-bold text-neutral-900">{t('screening.whatNext')}</h4>
                 <p className="mt-1">
-                  SPARSH records the child&apos;s age and loads the active developmental questionnaire from the backend.
-                  You can complete each domain at your own pace and save drafts offline. Screening scores and recommendations are calculated by the backend.
+                  {t('screening.whatNextDetail')}
                 </p>
               </div>
             </div>
@@ -442,10 +436,13 @@ export default function ScreeningScreen({ onNavigate }) {
         active="screening"
         onNavigate={onNavigate}
         backTo="dashboard"
-        title="Child Developmental Screening"
-        subtitle={`Loading milestone checklist for ${currentChild?.name || 'child'}...`}
+        title={t('screening.title')}
+        subtitle={t('screening.loadingQuestions', { name: currentChild?.name || t('screening.child') })}
       >
-        <LoadingState label={`Loading age-appropriate milestone questions for ${currentChild?.name || 'selected child'}...`} />
+        <div className="mx-auto max-w-4xl space-y-4 p-4 sm:p-6">
+          <ScreeningLanguageSelector />
+          <LoadingState label={t('screening.loadingQuestions', { name: currentChild?.name || t('screening.child') })} />
+        </div>
       </AppLayout>
     )
   }
@@ -456,11 +453,26 @@ export default function ScreeningScreen({ onNavigate }) {
         active="screening"
         onNavigate={onNavigate}
         backTo="dashboard"
-        title="Child Developmental Screening"
-        subtitle="Error loading milestone checklist"
+        title={t('screening.title')}
+        subtitle={t('screening.loadError')}
       >
         <div className="mx-auto max-w-lg p-6">
-          <ErrorState error={error} onRetry={load} />
+          <div className="space-y-4">
+            <ScreeningLanguageSelector />
+            <ErrorState error={new Error(t('screening.loadError'))} title={t('screening.loadError')} retryLabel={t('screening.retry')} onRetry={load} />
+          </div>
+        </div>
+      </AppLayout>
+    )
+  }
+
+  if (missingTranslation) {
+    const languageName = ({ en: 'English', hi: 'हिन्दी', mr: 'मराठी' })[language] || language
+    return (
+      <AppLayout active="screening" onNavigate={onNavigate} backTo="dashboard" title={t('screening.title')} subtitle={t('screening.loadError')}>
+        <div className="mx-auto max-w-2xl space-y-4 p-4 sm:p-6">
+          <ScreeningLanguageSelector />
+          <ErrorState error={new Error(t('screening.validationMissing', { id: missingTranslation.id, language: languageName }))} title={t('screening.loadError')} />
         </div>
       </AppLayout>
     )
@@ -472,13 +484,14 @@ export default function ScreeningScreen({ onNavigate }) {
         active="screening"
         onNavigate={onNavigate}
         backTo="dashboard"
-        title="Prototype questionnaire coverage"
+        title={t('screening.coverageTitle')}
         subtitle={`${currentChild?.name || 'Child'} · ${data.current_age_months} months`}
       >
-        <div className="mx-auto max-w-2xl p-4 sm:p-6">
+        <div className="mx-auto max-w-2xl space-y-4 p-4 sm:p-6">
+          <ScreeningLanguageSelector />
           <div className="rounded-xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-950">
-            <p>{data.question_count ?? 0} draft questions are available for this age. No future source-age questions are included.</p>
-            <p className="mt-2 text-xs text-neutral-600">{data.prototype_disclaimer || prototypeDisclaimer}</p>
+            <p>{t('screening.noQuestions')}</p>
+            <p className="mt-2 text-xs text-neutral-600">{t('screening.prototypeDisclaimer')}</p>
           </div>
         </div>
       </AppLayout>
@@ -487,29 +500,30 @@ export default function ScreeningScreen({ onNavigate }) {
 
   if (reviewing && pendingPayload) {
     return (
-      <AppLayout active="screening" onNavigate={onNavigate} backTo="dashboard" title="Review screening responses" subtitle={`${currentChild?.name || 'Child'} · ${pendingPayload.checkpoint_age_months}-month checkpoint`}>
+      <AppLayout active="screening" onNavigate={onNavigate} backTo="dashboard" title={t('screening.reviewAnswers')} subtitle={t('screening.reviewCheckpoint', { name: currentChild?.name || t('screening.child'), age: pendingPayload.checkpoint_age_months })}>
         <div className="mx-auto max-w-3xl space-y-5 p-4 sm:p-6">
-          <p className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900">Review every response before continuing. Scores are calculated by the backend after submission.</p>
+          <ScreeningLanguageSelector />
+          <p className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900">{t('screening.reviewPrompt')}</p>
           {domains.map((domain) => (
             <section key={domain} className="rounded-xl border border-neutral-200 bg-white p-4">
-              <h2 className="mb-3 font-bold text-neutral-900">{domainLabels[domain] || domain}</h2>
+              <h2 className="mb-3 font-bold text-neutral-900">{domainLabel(domain)}</h2>
               <ul className="space-y-2">
                 {data.milestones.filter((item) => item.domain === domain).map((item) => (
                   <li key={item.id} className="flex items-start justify-between gap-3 border-t border-neutral-100 pt-2 text-sm">
-                    <span>{item.question || item.description}</span><strong className="shrink-0">{answers[item.id]}</strong>
+                  <span>{questionText(item)}</span><strong className="shrink-0">{answerLabel(answers[item.id])}</strong>
                   </li>
                 ))}
               </ul>
             </section>
           ))}
           <div className="flex flex-wrap justify-between gap-3">
-            <Button variant="secondary" onClick={() => setReviewing(false)}>Edit responses</Button>
+            <Button variant="secondary" onClick={() => setReviewing(false)}>{t('screening.editAnswers')}</Button>
             <Button variant="primary" onClick={() => {
               setPendingScreening?.(pendingPayload)
               sessionStorage.setItem('sparsh:pending-screening', JSON.stringify(pendingPayload))
               clearDraft()
               onNavigate('av-assessment')
-            }}>Continue to next step</Button>
+            }}>{t('screening.continue')}</Button>
           </div>
         </div>
       </AppLayout>
@@ -521,10 +535,14 @@ export default function ScreeningScreen({ onNavigate }) {
       active="screening"
       onNavigate={onNavigate}
       backTo="dashboard"
-      title="Child Development Screening"
-      subtitle="Age-based milestone questions"
+      title={t('screening.title')}
+      subtitle={t('screening.subtitle')}
     >
       <div className="mx-auto max-w-4xl space-y-6 p-4 sm:p-6 lg:p-8">
+
+        <div className="flex justify-end">
+          <ScreeningLanguageSelector />
+        </div>
 
         {/* PATIENT CONTEXT RIBBON */}
         <div className="rounded-xl border border-neutral-200/90 bg-white p-4 shadow-card">
@@ -536,10 +554,10 @@ export default function ScreeningScreen({ onNavigate }) {
               <div>
                 <div className="flex items-center gap-2">
                   <h2 className="text-base font-bold text-neutral-900">{currentChild?.name || 'Child'}</h2>
-                  <BadgePill tone="teal">{data.current_age_months} Months</BadgePill>
+                  <BadgePill tone="teal">{data.current_age_months} {t('screening.months')}</BadgePill>
                 </div>
                 <p className="text-xs text-neutral-500">
-                  ID: {currentChild?.child_identifier || 'Not recorded'} · {data.age_band?.label || `${data.checkpoint_age_months}-month checkpoint`} · {totalMilestones} questions
+                  {t('screening.childId')}: {currentChild?.child_identifier || t('screening.notRecorded')} · {data.age_band?.label || `${data.checkpoint_age_months} ${t('screening.months')}`} · {totalMilestones} {t('screening.question')}
                 </p>
               </div>
             </div>
@@ -547,9 +565,9 @@ export default function ScreeningScreen({ onNavigate }) {
             <div className="flex items-center gap-3">
               <div className="text-right">
                 <span className="text-xs font-bold text-neutral-900">
-                  {answeredCount} / {totalMilestones} Completed
+                  {answeredCount} / {totalMilestones} {t('screening.completed')}
                 </span>
-                <p className="text-[11px] text-neutral-500">{progressPercent}% of screening answered</p>
+                <p className="text-[11px] text-neutral-500">{t('screening.progress')}: {progressPercent}%</p>
               </div>
             </div>
           </div>
@@ -563,17 +581,17 @@ export default function ScreeningScreen({ onNavigate }) {
           </div>
         </div>
 
-        <p className="rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2 text-xs leading-relaxed text-neutral-600">{data.prototype_disclaimer || prototypeDisclaimer}</p>
+        <p className="rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2 text-xs leading-relaxed text-neutral-600">{t('screening.prototypeDisclaimer')}</p>
 
         {data.coverage?.shortfall > 0 && (
           <div role="status" aria-live="polite" className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
             <p className="font-semibold">
-              Available prototype draft questions: {totalMilestones} of {data.coverage.target_question_count} target questions.
-              {' '}{data.coverage.shortfall} questions are not available in this age-band draft.
+              {t('screening.ageCoverage', { available: totalMilestones, target: data.coverage.target_question_count })}
+              {' '}{t('screening.coverageShortfall', { count: data.coverage.shortfall })}
             </p>
             {data.coverage.missing_domains?.length > 0 && (
               <p className="mt-1">
-                Domains not assessed: {data.coverage.missing_domains.map((key) => domainLabels[key] || key).join(', ')}.
+                {t('screening.domainsNotAssessed')} {data.coverage.missing_domains.map((key) => domainLabel(key)).join(', ')}.
               </p>
             )}
           </div>
@@ -608,7 +626,7 @@ export default function ScreeningScreen({ onNavigate }) {
                 }`}
               >
                 {isComplete && <Icon name="check" className="h-3.5 w-3.5 text-teal-600" />}
-                <span>{domainLabels[dKey] || dKey}</span>
+                <span>{domainLabel(dKey)}</span>
               </button>
             )
           })}
@@ -619,17 +637,17 @@ export default function ScreeningScreen({ onNavigate }) {
           <div>
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold uppercase tracking-wider text-teal-700">
-                Domain {domainIndex + 1} of {domains.length}
+                {t('screening.domain')} {domainIndex + 1} {t('screening.of')} {domains.length}
               </span>
               <span className="text-xs text-neutral-400">
-                {currentTasks.filter((t) => answers[t.id]).length} of {currentTasks.length} answered
+                {currentTasks.filter((task) => answers[task.id]).length} {t('screening.of')} {currentTasks.length} {t('screening.answered')}
               </span>
             </div>
             <h2 className="mt-1 text-lg font-bold text-neutral-900">
-              {domainLabels[currentDomainKey] || currentDomainKey}
+              {domainLabel(currentDomainKey)}
             </h2>
             <p className="mt-0.5 text-xs text-neutral-500">
-              {domainDescriptions[currentDomainKey] || 'Observe and verify child responses'}
+              {t(`screening.domainDescriptions.${currentDomainKey}`, { defaultValue: t('screening.domainDescriptions.default') })}
             </p>
           </div>
 
@@ -637,7 +655,7 @@ export default function ScreeningScreen({ onNavigate }) {
           <div className="mt-6 space-y-4">
             {currentTasks.map((task, index) => {
               const currentAnswer = answers[task.id]
-              const taskText = task.task || task.description || task.label || 'Task description unavailable'
+              const taskText = questionText(task)
 
               return (
                 <div
@@ -654,7 +672,7 @@ export default function ScreeningScreen({ onNavigate }) {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <p className="text-sm font-semibold text-neutral-900 leading-snug">
-                      <span className="mr-1.5 font-bold text-neutral-400">Question {index + 1} of {currentTasks.length}.</span>
+                      <span className="mr-1.5 font-bold text-neutral-400">{t('screening.question')} {index + 1} {t('screening.of')} {currentTasks.length}.</span>
                       {taskText}
                     </p>
                     {currentAnswer && (
@@ -667,13 +685,13 @@ export default function ScreeningScreen({ onNavigate }) {
                             : 'moderate'
                         }
                       >
-                        {currentAnswer === 'YES' ? 'Achieved' : currentAnswer === 'NO' ? 'Not Yet' : 'Unsure'}
+                        {t(`screening.${currentAnswer === 'YES' ? 'achieved' : currentAnswer === 'NO' ? 'notYet' : 'unsure'}`)}
                       </BadgePill>
                     )}
                   </div>
 
                   <p className="mt-1 text-[11px] text-neutral-500">
-                    {task.administration_note || 'Ask the caregiver or observe the child directly in the Anganwadi centre.'}
+                    {t('screening.caregiverNote')}
                   </p>
 
                   {/* 3-WAY RESPONSE BUTTONS */}
@@ -688,7 +706,7 @@ export default function ScreeningScreen({ onNavigate }) {
                       }`}
                     >
                       <Icon name="check" className="h-4 w-4" />
-                      <span>Yes (Achieved)</span>
+                      <span>{t('screening.yes')}</span>
                     </button>
 
                     <button
@@ -701,7 +719,7 @@ export default function ScreeningScreen({ onNavigate }) {
                       }`}
                     >
                       <Icon name="cross" className="h-4 w-4" />
-                      <span>No (Not Yet)</span>
+                      <span>{t('screening.no')}</span>
                     </button>
 
                     <button
@@ -714,7 +732,7 @@ export default function ScreeningScreen({ onNavigate }) {
                       }`}
                     >
                       <Icon name="info" className="h-4 w-4" />
-                      <span>Unsure</span>
+                      <span>{t('screening.unsure')}</span>
                     </button>
                   </div>
                 </div>
@@ -732,7 +750,7 @@ export default function ScreeningScreen({ onNavigate }) {
                 window.scrollTo({ top: 0, behavior: 'smooth' })
               }}
             >
-              Previous Domain
+              {t('screening.previous')}
             </Button>
 
             <Button
@@ -742,15 +760,15 @@ export default function ScreeningScreen({ onNavigate }) {
             >
               <span>
                 {domainIndex === domains.length - 1
-                  ? 'Complete & Continue to A/V Check →'
-                  : 'Next Domain →'}
+                  ? t('screening.continue')
+                  : t('screening.next')}
               </span>
             </Button>
           </div>
 
           {!isCurrentDomainComplete && (
             <p className="mt-3 text-center text-xs font-medium text-amber-700">
-              Please answer all {currentTasks.length} questions in this domain to proceed.
+              {t('screening.validationAllAnswered', { count: currentTasks.length })}
             </p>
           )}
         </div>

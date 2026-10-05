@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { screeningsApi } from '../services/api'
 import { enqueueScreening } from '../services/offline'
 import { useApp } from '../context/AppContext'
@@ -7,15 +8,12 @@ import Card from '../components/Card'
 import Button from '../components/Button'
 import Icon from '../components/Icon'
 import { ErrorState, EmptyState } from '../components/AsyncState'
+import ScreeningLanguageSelector from '../components/ScreeningLanguageSelector'
 
-const steps = [
-  'Verifying recorded milestone responses',
-  'Submitting screening responses securely',
-  'Applying configured screening rules',
-  'Preparing the screening summary'
-]
+const steps = ['verify', 'submit', 'rules', 'summary']
 
 export default function AnalysisScreen({ onNavigate }) {
+  const { t } = useTranslation()
   const { setScreeningResult, currentChild, pendingScreening, setPendingScreening } = useApp()
   const [error, setError] = useState(null)
   const [currentStep, setCurrentStep] = useState(0)
@@ -66,17 +64,17 @@ export default function AnalysisScreen({ onNavigate }) {
       if (e?.status === 409 && e?.code === 'duplicate_submission') {
         setPendingScreening?.(null)
         sessionStorage.removeItem('sparsh:pending-screening')
-        setError(new Error('This screening was already submitted. Open the child history to view it.'))
+        setError(new Error(t('screening.alreadySubmitted')))
       } else if (!navigator.onLine || e?.status === 0) {
         try {
           await enqueueScreening(payload)
         } catch {
-          setError(new Error('You are offline. This screening could not be queued.'))
+          setError(new Error(t('screening.offlineNotQueued')))
           return
         }
         setPendingScreening?.(null)
         sessionStorage.removeItem('sparsh:pending-screening')
-        setError(new Error('Waiting to sync. This screening is stored on this device and has not been confirmed by the SPARSH server.'))
+        setError(new Error(t('screening.offlineQueued')))
       } else {
         setError(e)
       }
@@ -228,27 +226,28 @@ export default function AnalysisScreen({ onNavigate }) {
       active="screening"
       onNavigate={onNavigate}
       backTo="screening"
-      title="Screening Result Review"
-      subtitle="Applying configured screening rules"
+      title={t('screening.result')}
+      subtitle={t('screening.analysisProgress')}
     >
       <div className="mx-auto max-w-xl p-4 sm:p-8">
+        <div className="mb-4 flex justify-end"><ScreeningLanguageSelector /></div>
         {error ? (
           <div className="space-y-4">
-            <ErrorState error={error} onRetry={runAnalysis} />
+            <ErrorState error={error} title={t('screening.loadError')} retryLabel={t('screening.retry')} onRetry={runAnalysis} />
             <div className="flex gap-2">
               <Button
                 variant="primary"
                 className="flex-1"
                 onClick={() => onNavigate('screening')}
               >
-                Return to Screening
+                {t('screening.analysisReturn')}
               </Button>
               <Button
                 variant="secondary"
                 className="flex-1"
                 onClick={() => onNavigate('dashboard')}
               >
-                Dashboard
+                {t('screening.dashboard')}
               </Button>
             </div>
           </div>
@@ -261,10 +260,10 @@ export default function AnalysisScreen({ onNavigate }) {
             </div>
 
             <h1 className="mt-5 text-lg font-bold text-neutral-900">
-              Evaluating Developmental Milestones
+              {t('screening.analysisTitle')}
             </h1>
             <p className="mt-1 text-xs text-neutral-500">
-              Child: {currentChild?.name || 'Selected Child'} · Applying backend screening rules
+              {t('screening.analysisChild', { name: currentChild?.name || t('screening.child') })}
             </p>
 
             {/* Step checklist */}
@@ -295,7 +294,7 @@ export default function AnalysisScreen({ onNavigate }) {
                           : 'text-neutral-400'
                       }`}
                     >
-                      {text}
+                      {t(`screening.analysisSteps.${text}`)}
                     </span>
                   </div>
                 )
@@ -303,7 +302,7 @@ export default function AnalysisScreen({ onNavigate }) {
             </div>
 
             <p className="mt-6 text-[11px] text-neutral-400">
-              SPARSH deterministic screening rules
+              {t('screening.analysisFooter')}
             </p>
           </div>
         )}

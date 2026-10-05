@@ -1,0 +1,252 @@
+{
+  "gm_aap13_02_head_lift": {
+    "en": "Can the child lift their head and upper chest while lying on their tummy?",
+    "hi": "क्या बच्चा पेट के बल लेटे हुए अपना सिर और छाती का ऊपरी हिस्सा उठा सकता है?",
+    "mr": "बाळ पोटावर झोपलेले असताना डोके आणि छातीचा वरचा भाग उचलू शकते का?"
+  },
+  "gm_aap13_04_roll_prone_supine": {
+    "en": "Can the child roll from tummy to back?",
+    "hi": "क्या बच्चा पेट से पीठ के बल पलट सकता है?",
+    "mr": "बाळ पोटावरून पाठीवर पलटी होऊ शकते का?"
+  },
+  "gm_aap13_04_prone_support": {
+    "en": "While on their tummy, can the child prop their upper body on their elbows or wrists?",
+    "hi": "पेट के बल रहते हुए, क्या बच्चा अपनी कोहनियों या कलाइयों के सहारे शरीर का ऊपरी हिस्सा उठा सकता है?",
+    "mr": "पोटावर असताना, बाळ कोपरांवर किंवा मनगटांवर भार देऊन शरीराचा वरचा भाग उचलू शकते का?"
+  },
+  "gm_aap13_06_roll_supine_prone": {
+    "en": "Can the child roll from back to tummy?",
+    "hi": "क्या बच्चा पीठ से पेट के बल पलट सकता है?",
+    "mr": "बाळ पाठीवरून पोटावर पलटी होऊ शकते का?"
+  },
+  "gm_aap13_06_sit_unsupported": {
+    "en": "Can the child sit without another person holding them?",
+    "hi": "क्या बच्चा किसी के सहारे के बिना बैठ सकता है?",
+    "mr": "दुसऱ्या व्यक्तीचा आधार न घेता बाळ बसू शकते का?"
+  },
+  "gm_aap13_09_crawl": {
+    "en": "Moves along the floor by crawling.",
+    "hi": "क्या बच्चा घुटनों और हाथों के सहारे रेंगकर आगे बढ़ता है?",
+    "mr": "बाळ हात आणि गुडघ्यांवर रांगत पुढे जाते का?"
+  },
+  "gm_aap13_12_stand": {
+    "en": "Can the child stand without being held?",
+    "hi": "क्या बच्चा बिना पकड़े खड़ा रह सकता है?",
+    "mr": "बाळाला धरून न ठेवता ते उभे राहू शकते का?"
+  },
+  "gm_aap13_12_walk": {
+    "en": "Can the child walk independently?",
+    "hi": "क्या बच्चा अपने आप चल सकता है?",
+    "mr": "बाळ स्वतः चालू शकते का?"
+  },
+  "gm_who06_stand_assisted": {
+    "en": "Stands while holding support.",
+    "hi": "क्या बच्चा किसी चीज़ को पकड़कर खड़ा होता है?",
+    "mr": "बाळ आधार धरून उभे राहते का?"
+  },
+  "gm_who06_walk_assisted": {
+    "en": "Takes steps while holding a person or support.",
+    "hi": "क्या बच्चा किसी व्यक्ति या सहारे को पकड़कर कदम चलता है?",
+    "mr": "बाळ एखाद्या व्यक्तीचा किंवा आधाराचा हात धरून पावले टाकते का?"
+  },
+  "fm_aap13_04_grasp": {
+    "en": "Can the child grasp an object placed within reach?",
+    "hi": "क्या बच्चा पास रखी चीज़ को हाथ से पकड़ सकता है?",
+    "mr": "जवळ ठेवलेली वस्तू बाळ हाताने पकडू शकते का?"
+  },
+  "fm_aap13_06_reach_cube": {
+    "en": "Reaches for a small block or cube.",
+    "hi": "क्या बच्चा छोटे घन या ब्लॉक की ओर हाथ बढ़ाता है?",
+    "mr": "बाळ छोट्या ठोकळ्याकडे किंवा घनाकडे हात पोहोचवते का?"
+  },
+  "fm_aap13_06_transfer": {
+    "en": "Can the child move an object from one hand to the other?",
+    "hi": "क्या बच्चा एक हाथ से चीज़ लेकर दूसरे हाथ में दे सकता है?",
+    "mr": "बाळ एका हातातील वस्तू दुसऱ्या हातात घेऊ शकते का?"
+  },
+  "fm_aap13_06_rake": {
+    "en": "Can the child use several fingers together to gather a small object?",
+    "hi": "क्या बच्चा कई उंगलियों को साथ लगाकर छोटी चीज़ अपनी ओर खींचता है?",
+    "mr": "बाळ अनेक बोटे एकत्र वापरून छोटी वस्तू स्वतःकडे ओढते का?"
+  },
+  "fm_aap13_09_three_finger_pickup": {
+    "en": "Can the child pick up a small object using several fingers?",
+    "hi": "क्या बच्चा कई उंगलियों से छोटी चीज़ उठा सकता है?",
+    "mr": "बाळ अनेक बोटांचा वापर करून छोटी वस्तू उचलू शकते का?"
+  },
+  "fm_aap13_12_pincer": {
+    "en": "Can the child pick up a small object between the thumb and index finger?",
+    "hi": "क्या बच्चा अंगूठे और तर्जनी के बीच छोटी चीज़ उठा सकता है?",
+    "mr": "बाळ अंगठा आणि तर्जनी यांच्या चिमटीत छोटी वस्तू उचलू शकते का?"
+  },
+  "fm_aap13_12_bang_objects": {
+    "en": "Holds and bangs two objects together.",
+    "hi": "क्या बच्चा दो चीज़ें पकड़कर उन्हें आपस में बजाता है?",
+    "mr": "बाळ दोन वस्तू हातात धरून एकमेकांवर आपटते का?"
+  },
+  "fm_aap13_15_scribble_imitation": {
+    "en": "Can the child make a scribble after seeing someone demonstrate?",
+    "hi": "किसी को करके दिखाने के बाद, क्या बच्चा कागज़ पर लकीरें बना सकता है?",
+    "mr": "कोणी करून दाखवल्यानंतर बाळ कागदावर रेघोट्या काढू शकते का?"
+  },
+  "fm_aap13_18_two_block_tower": {
+    "en": "Can the child stack two blocks?",
+    "hi": "क्या बच्चा दो ब्लॉक एक के ऊपर एक रख सकता है?",
+    "mr": "बाळ दोन ठोकळे एकावर एक ठेवू शकते का?"
+  },
+  "fm_aap13_36_circle": {
+    "en": "Can the child copy a circle shape?",
+    "hi": "क्या बच्चा देखकर गोल आकार बना सकता है?",
+    "mr": "बाळ वर्तुळाचा आकार पाहून तसाच काढू शकते का?"
+  },
+  "la_2_02": {
+    "en": "Does the child respond to loud sounds?",
+    "hi": "क्या बच्चा तेज़ आवाज़ सुनकर प्रतिक्रिया देता है?",
+    "mr": "मोठा आवाज ऐकल्यावर बाळ प्रतिक्रिया देते का?"
+  },
+  "la_4_02": {
+    "en": "Does the child turn toward the sound of a caregiver's voice?",
+    "hi": "क्या बच्चा देखभाल करने वाले की आवाज़ की ओर मुड़ता है?",
+    "mr": "काळजी घेणाऱ्या व्यक्तीचा आवाज आल्यावर बाळ त्या दिशेने वळते का?"
+  },
+  "la_6_01": {
+    "en": "Does the child make sounds back and forth with a caregiver?",
+    "hi": "क्या बच्चा देखभाल करने वाले के साथ बारी-बारी से आवाज़ें निकालता है?",
+    "mr": "काळजी घेणाऱ्या व्यक्तीशी बाळ आलटून-पालटून आवाज काढते का?"
+  },
+  "la_6_02": {
+    "en": "Blows to make raspberry sounds.",
+    "hi": "क्या बच्चा होंठों से फू-फू जैसी आवाज़ निकालता है?",
+    "mr": "बाळ ओठांनी फुर्रफुर्र असा आवाज काढते का?"
+  },
+  "la_9_01": {
+    "en": "Does the child make repeated babbling sounds?",
+    "hi": "क्या बच्चा बार-बार अलग-अलग बड़बड़ाहट जैसी आवाज़ें निकालता है?",
+    "mr": "बाळ वारंवार निरनिराळे बडबडण्याचे आवाज काढते का?"
+  },
+  "la_12_01": {
+    "en": "Does the child use a special name such as 'mama' or 'dada' for a parent?",
+    "hi": "क्या बच्चा माता-पिता के लिए 'माँ' या 'पापा' जैसा कोई खास नाम बोलता है?",
+    "mr": "बाळ आई किंवा वडिलांना 'आई' किंवा 'बाबा' असे खास नावाने हाक मारते का?"
+  },
+  "la_18_02": {
+    "en": "Can the child follow a one-step direction without a gesture?",
+    "hi": "क्या बच्चा इशारा किए बिना एक आसान बात मानता है, जैसे 'गेंद लाओ'?",
+    "mr": "हातवारा न करता सांगितलेली एक सोपी गोष्ट बाळ करते का, जसे 'चेंडू आण'?"
+  },
+  "la_24_01": {
+    "en": "Does the child use at least two words together?",
+    "hi": "क्या बच्चा कम से कम दो शब्द साथ बोलता है?",
+    "mr": "बाळ किमान दोन शब्द एकत्र बोलते का?"
+  },
+  "la_36_03": {
+    "en": "Is the child understood by other people most of the time?",
+    "hi": "क्या ज़्यादातर लोग बच्चे की बात समझ पाते हैं?",
+    "mr": "बहुतेक वेळा इतर लोकांना बाळाचे बोलणे समजते का?"
+  },
+  "la_48_01": {
+    "en": "Does the child use sentences with four or more words?",
+    "hi": "क्या बच्चा चार या उससे ज़्यादा शब्दों वाले वाक्य बोलता है?",
+    "mr": "बाळ चार किंवा अधिक शब्दांची वाक्ये बोलते का?"
+  },
+  "co_2_01": {
+    "en": "Does the child watch a person as they move?",
+    "hi": "क्या बच्चा किसी व्यक्ति को चलते समय नज़र से देखता है?",
+    "mr": "एखादी व्यक्ती हलताना बाळ तिच्याकडे पाहत राहते का?"
+  },
+  "co_2_02": {
+    "en": "Does the child keep looking at a toy for several seconds?",
+    "hi": "क्या बच्चा खिलौने को कुछ सेकंड तक देखता रहता है?",
+    "mr": "बाळ काही सेकंद खेळण्याकडे पाहत राहते का?"
+  },
+  "co_6_01": {
+    "en": "Does the child explore objects by mouthing them?",
+    "hi": "क्या बच्चा चीज़ों को मुँह में लेकर उन्हें जानने-समझने की कोशिश करता है?",
+    "mr": "बाळ वस्तू तोंडात घेऊन त्यांची ओळख करून घेते का?"
+  },
+  "co_6_02": {
+    "en": "Does the child reach for a wanted toy?",
+    "hi": "क्या बच्चा मनचाहा खिलौना लेने के लिए हाथ बढ़ाता है?",
+    "mr": "हवे असलेले खेळणे घेण्यासाठी बाळ हात पुढे करते का?"
+  },
+  "co_6_03": {
+    "en": "Does the child close their lips to indicate they do not want more food?",
+    "hi": "और खाना न चाहने पर क्या बच्चा होंठ बंद करके बताता है?",
+    "mr": "आणखी खायचे नसल्यास बाळ ओठ बंद करून दाखवते का?"
+  },
+  "co_9_01": {
+    "en": "Does the child look for an object after it goes out of view?",
+    "hi": "कोई चीज़ नज़र से हटने पर क्या बच्चा उसे ढूँढ़ता है?",
+    "mr": "एखादी वस्तू दिसेनाशी झाल्यावर बाळ ती शोधते का?"
+  },
+  "co_12_02": {
+    "en": "Does the child look for an object the caregiver has hidden?",
+    "hi": "क्या बच्चा देखभाल करने वाले की छिपाई हुई चीज़ ढूँढ़ता है?",
+    "mr": "काळजी घेणाऱ्या व्यक्तीने लपवलेली वस्तू बाळ शोधते का?"
+  },
+  "co_18_01": {
+    "en": "Does the child copy a caregiver doing a task?",
+    "hi": "क्या बच्चा देखभाल करने वाले को कोई काम करते देखकर उसकी नकल करता है?",
+    "mr": "काळजी घेणारी व्यक्ती एखादे काम करताना पाहून बाळ तिची नक्कल करते का?"
+  },
+  "co_48_01": {
+    "en": "Does the child name several colors?",
+    "hi": "क्या बच्चा कई रंगों के नाम बता सकता है?",
+    "mr": "बाळ अनेक रंगांची नावे सांगू शकते का?"
+  },
+  "co_60_01": {
+    "en": "Does the child count to ten?",
+    "hi": "क्या बच्चा दस तक गिनती गिन सकता है?",
+    "mr": "बाळ दहापर्यंत मोजू शकते का?"
+  },
+  "so_2_01": {
+    "en": "Does the child settle when a caregiver speaks or picks them up?",
+    "hi": "क्या देखभाल करने वाले के बोलने या गोद में लेने पर बच्चा शांत हो जाता है?",
+    "mr": "काळजी घेणारी व्यक्ती बोलल्यावर किंवा उचलून घेतल्यावर बाळ शांत होते का?"
+  },
+  "so_2_02": {
+    "en": "Does the child look at a caregiver's face?",
+    "hi": "क्या बच्चा देखभाल करने वाले के चेहरे की ओर देखता है?",
+    "mr": "बाळ काळजी घेणाऱ्या व्यक्तीच्या चेहऱ्याकडे पाहते का?"
+  },
+  "so_4_01": {
+    "en": "Smiles to gain a caregiver's attention.",
+    "hi": "क्या बच्चा ध्यान पाने के लिए देखभाल करने वाले को देखकर मुस्कुराता है?",
+    "mr": "काळजी घेणाऱ्या व्यक्तीचे लक्ष वेधण्यासाठी बाळ तिच्याकडे पाहून हसते का?"
+  },
+  "so_6_01": {
+    "en": "Does the child recognize familiar people?",
+    "hi": "क्या बच्चा जाने-पहचाने लोगों को पहचानता है?",
+    "mr": "बाळ ओळखीच्या व्यक्तींना ओळखते का?"
+  },
+  "so_9_01": {
+    "en": "Does the child show shyness, clinginess, or fear around strangers?",
+    "hi": "क्या अनजान लोगों के पास बच्चा झिझकता है, चिपककर रहता है या डरता है?",
+    "mr": "अनोळखी व्यक्तींजवळ बाळ लाजते, जवळ राहते किंवा घाबरते का?"
+  },
+  "so_12_01": {
+    "en": "Does the child play a caregiver game such as pat-a-cake?",
+    "hi": "क्या बच्चा देखभाल करने वाले के साथ ताली वाला खेल खेलता है?",
+    "mr": "बाळ काळजी घेणाऱ्या व्यक्तीसोबत टाळ्यांचा खेळ खेळते का?"
+  },
+  "so_18_01": {
+    "en": "Moves away while checking that the caregiver is nearby.",
+    "hi": "क्या बच्चा दूर जाता है और बीच-बीच में देखता है कि देखभाल करने वाला पास है?",
+    "mr": "बाळ थोडे दूर जाते आणि काळजी घेणारी व्यक्ती जवळ आहे ना हे पाहते का?"
+  },
+  "so_24_01": {
+    "en": "Does the child notice when another person is hurt or upset?",
+    "hi": "क्या बच्चा किसी दूसरे व्यक्ति को चोट लगने या परेशान होने पर ध्यान देता है?",
+    "mr": "दुसऱ्या व्यक्तीला दुखापत झाली किंवा ती दुःखी आहे हे बाळाच्या लक्षात येते का?"
+  },
+  "so_36_03": {
+    "en": "Does the child notice other children and join their play?",
+    "hi": "क्या बच्चा दूसरे बच्चों को देखकर उनके खेल में शामिल होता है?",
+    "mr": "बाळ इतर मुलांकडे लक्ष देते आणि त्यांच्या खेळात सहभागी होते का?"
+  },
+  "so_60_01": {
+    "en": "Follows game rules or takes turns with other children.",
+    "hi": "क्या बच्चा खेल के नियम मानता है या दूसरे बच्चों के साथ बारी लेता है?",
+    "mr": "बाळ खेळाचे नियम पाळते किंवा इतर मुलांसोबत आपली पाळी घेते का?"
+  }
+}

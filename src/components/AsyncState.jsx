@@ -10,7 +10,7 @@ export function LoadingState({ label = 'Loading data…', className = '' }) {
   )
 }
 
-export function ErrorState({ error, onRetry, className = '' }) {
+export function ErrorState({ error, onRetry, className = '', title = 'Unable to load data', retryLabel = 'Try Again' }) {
   const message = error?.message || (typeof error === 'string' ? error : 'An unexpected error occurred.')
 
   return (
@@ -18,13 +18,13 @@ export function ErrorState({ error, onRetry, className = '' }) {
       <div className="mx-auto grid h-10 w-10 place-items-center rounded-full bg-red-100 text-red-700">
         <Icon name="alertTriangle" className="h-5 w-5" />
       </div>
-      <h3 className="mt-3 text-sm font-bold text-red-900">Unable to load data</h3>
+      <h3 className="mt-3 text-sm font-bold text-red-900">{title}</h3>
       <p className="mt-1 text-xs text-red-700 max-w-sm mx-auto">{message}</p>
       {onRetry && (
         <div className="mt-4">
           <Button variant="secondary" size="sm" onClick={onRetry}>
             <Icon name="refresh" className="h-3.5 w-3.5 mr-1" />
-            Try Again
+            {retryLabel}
           </Button>
         </div>
       )}
