@@ -35,10 +35,23 @@ export function AppProvider({ children }) {
     return promise
   }, [])
 
+  const signOut = useCallback(async () => {
+    await authService.signOut()
+    profileRequestRef.current = null
+    setCurrentWorker(null)
+    setCurrentChild(null)
+    setScreeningResult(null)
+    setPendingScreening(null)
+    setAuthError(null)
+  }, [])
+
   useEffect(() => authService.observeAuthState(async (user) => {
     if (!user) {
       profileRequestRef.current = null
       setCurrentWorker(null)
+      setCurrentChild(null)
+      setScreeningResult(null)
+      setPendingScreening(null)
       setAuthError(null)
       setAuthReady(true)
       return
@@ -81,7 +94,7 @@ export function AppProvider({ children }) {
     <AppContext.Provider value={{
       currentWorker, setCurrentWorker, currentChild, setCurrentChild,
       screeningResult, setScreeningResult, pendingScreening, setPendingScreening, authReady, authError,
-      loadCurrentWorker,
+      loadCurrentWorker, signOut,
     }}>
       {children}
     </AppContext.Provider>

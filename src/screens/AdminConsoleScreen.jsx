@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useApp } from '../context/AppContext'
+import Icon from '../components/Icon'
 import CentresScreen from './CentresScreen'
 import UsersScreen from './UsersScreen'
 
@@ -9,8 +10,19 @@ const TABS = [
 ]
 
 export default function AdminConsoleScreen({ onNavigate }) {
-  const { currentWorker } = useApp()
+  const { currentWorker, signOut } = useApp()
   const [activeTab, setActiveTab] = useState('centres')
+  const [signingOut, setSigningOut] = useState(false)
+
+  const handleLogout = async () => {
+    setSigningOut(true)
+    try {
+      await signOut()
+      onNavigate?.('login', { replace: true })
+    } finally {
+      setSigningOut(false)
+    }
+  }
 
   if (!currentWorker || currentWorker.role !== 'admin') {
     return (
@@ -48,9 +60,20 @@ export default function AdminConsoleScreen({ onNavigate }) {
               <h1 className="text-xl font-bold text-neutral-900">Administration</h1>
             </div>
           </div>
-          <span className="hidden text-xs text-neutral-400 lg:block">
-            Signed in as {currentWorker.name}
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="hidden text-xs text-neutral-400 sm:block">
+              Signed in as {currentWorker.name}
+            </span>
+            <button
+              type="button"
+              onClick={handleLogout}
+              disabled={signingOut}
+              className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 disabled:cursor-wait disabled:opacity-60"
+            >
+              <Icon name="logOut" className="h-4 w-4" />
+              {signingOut ? 'Logging out…' : 'Logout'}
+            </button>
+          </div>
         </div>
 
         <nav className="mx-auto max-w-7xl border-b border-neutral-100 px-5 lg:px-10" aria-label="Admin console sections">

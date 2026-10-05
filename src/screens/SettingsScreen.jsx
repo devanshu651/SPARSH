@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useApp } from '../context/AppContext'
-import { authService } from '../services/auth'
 import AppLayout from '../components/AppLayout'
 import Card from '../components/Card'
 import Button from '../components/Button'
@@ -9,7 +8,7 @@ import Icon from '../components/Icon'
 
 export default function SettingsScreen({ onNavigate }) {
   const { i18n } = useTranslation()
-  const { currentWorker, setCurrentWorker } = useApp()
+  const { currentWorker, signOut } = useApp()
   const [biometric, setBiometric] = useState(true)
   const [notifications, setNotifications] = useState(true)
   const [syncOnWifi, setSyncOnWifi] = useState(false)
@@ -19,9 +18,8 @@ export default function SettingsScreen({ onNavigate }) {
   const centreId = currentWorker?.centre_ids?.[0] || 'No centre assigned'
 
   const handleSignOut = async () => {
-    await authService.signOut()
-    setCurrentWorker(null)
-    onNavigate('login')
+    await signOut()
+    onNavigate('login', { replace: true })
   }
 
   const toggleLanguage = () => {

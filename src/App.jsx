@@ -107,6 +107,14 @@ function AppContent() {
     }
   }, [])
 
+  if (!authReady) {
+    return (
+      <main className="grid min-h-screen place-items-center bg-neutral-50" role="status" aria-live="polite">
+        <p className="text-sm font-medium text-neutral-600">Loading your session…</p>
+      </main>
+    )
+  }
+
   if (authReady && currentWorker?.role === 'admin' && screen !== 'admin-console') {
     return <AdminConsoleScreen onNavigate={navigate} />
   }
