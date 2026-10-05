@@ -12,7 +12,7 @@ const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:800
  * @param {string} [params.currentScreen]
  * @returns {Promise<{reply: string, suggestions: string[], follow_up_prompt?: string, provider?: string}>}
  */
-export async function sendChatMessage({ message, history = [], language = 'en', currentScreen = 'dashboard' }) {
+export async function sendChatMessage({ message, history = [], language = 'en', currentScreen = 'dashboard', context = {} }) {
   const headers = {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -41,6 +41,7 @@ export async function sendChatMessage({ message, history = [], language = 'en', 
         history: history.slice(-8),
         language,
         current_screen: currentScreen,
+        context,
       }),
       signal: controller.signal,
     })

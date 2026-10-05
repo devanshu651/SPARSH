@@ -9,59 +9,58 @@ import { sendChatMessage } from '../../services/assistant/chatApi'
 
 export default function AssistantChat({ currentScreen = 'dashboard', onNavigate }) {
   const { t, i18n } = useTranslation()
+  const [assistantLanguage, setAssistantLanguage] = useState(() => {
+    try {
+      const saved = window.sessionStorage.getItem('sparsh-assistant-language')
+      if (['en', 'hi', 'mr'].includes(saved)) return saved
+    } catch {
+      // Storage may be unavailable; use the current app language.
+    }
+    const language = i18n.language || 'en'
+    return language.startsWith('hi') ? 'hi' : language.startsWith('mr') ? 'mr' : 'en'
+  })
   const [isOpen, setIsOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [lastFailedMessage, setLastFailedMessage] = useState(null)
 
   // Current normalized language
-  const currentLang = useMemo(() => {
-    const lang = i18n.language || 'en'
-    if (lang.startsWith('hi')) return 'hi'
-    if (lang.startsWith('mr')) return 'mr'
-    return 'en'
-  }, [i18n.language])
+  const currentLang = assistantLanguage
 
   // Initial greeting based on language
   const initialGreeting = useMemo(() => {
     if (currentLang === 'hi') {
-      return '??????! ??? ?????? (SPARSH) ????? ???? ??? ??? ????? ??????????, ??????????, ?????-?????? ????????? ?? ????? ??????????? ??? ???? ?????? ?? ???? ????'
+      return 'नमस्ते! मैं SPARSH Assistant हूँ। SPARSH में आपको किस काम में मदद चाहिए?'
     }
     if (currentLang === 'mr') {
-      return '??????! ?? ?????? (SPARSH) ??????? ???. ??? ????? ??????, ????? ?????, ????-?????????? ????????? ??? ????? ?????????? ?? ???????? ??? ??? ????.'
+      return 'नमस्कार! मी SPARSH Assistant आहे. SPARSH मध्ये कशासाठी मदत हवी आहे?'
     }
-    return 'Hello! I am your SPARSH Assistant. I can help you understand developmental screening, age checkpoints, audio-visual assessments, and the referral workflow.'
+    return 'Hi! I’m the SPARSH Assistant. What would you like help with?'
   }, [currentLang])
 
   // Initial suggestions based on language
   const defaultSuggestions = useMemo(() => {
     if (currentLang === 'hi') {
       return [
-        '?????????? ???? ???? ?????',
-        '?????? ?? ????? ????',
-        '????? ?? ???????',
-        '????? ?? ?????',
-        '????? ?? ???? ??? ????',
-        '??????? ?? ???? ?????',
+        'SPARSH कैसे इस्तेमाल करें',
+        'स्क्रीनिंग शुरू करें',
+        'परिणाम समझें',
+        'रेफ़रल प्रक्रिया',
       ]
     }
     if (currentLang === 'mr') {
       return [
-        '?????????? ??? ???? ??????',
-        '????? ??? ????? ????',
-        '???? ??????',
-        '??????? ??? ?????',
-        '???????? ???? ????? ?????',
-        '??????? ? ?????????? ?????',
+        'SPARSH कसे वापरायचे',
+        'स्क्रीनिंग सुरू करा',
+        'निकाल समजून घ्या',
+        'रेफरल प्रक्रिया',
       ]
     }
     return [
-      'Start Screening',
-      'Understand Results',
-      'Child Registration',
-      'Alerts & Referrals',
-      'Speech & Language Concern',
-      'Motor & Physical Development',
+      'How to use SPARSH',
+      'Start screening',
+      'Understand results',
+      'Referral process',
     ]
   }, [currentLang])
 
@@ -69,7 +68,7 @@ export default function AssistantChat({ currentScreen = 'dashboard', onNavigate 
     {
       role: 'assistant',
       content: initialGreeting,
-      follow_up_prompt: currentLang === 'hi' ? '??? ?? ???? ??? ?????? ?????? ?? ???? ????' : currentLang === 'mr' ? '?? ?? ???????? ??? ??? ??? ?????' : 'How can I assist you with SPARSH today?',
+      follow_up_prompt: currentLang === 'hi' ? 'आपको किस बारे में मदद चाहिए?' : currentLang === 'mr' ? 'तुम्हाला कशाबद्दल मदत हवी आहे?' : 'What would you like help with?',
     },
   ])
   const [suggestions, setSuggestions] = useState(defaultSuggestions)
@@ -82,16 +81,13 @@ export default function AssistantChat({ currentScreen = 'dashboard', onNavigate 
           {
             role: 'assistant',
             content: initialGreeting,
-            follow_up_prompt: currentLang === 'hi' ? '??? ?? ???? ??? ?????? ?????? ?? ???? ????' : currentLang === 'mr' ? '?? ?? ???????? ??? ??? ??? ?????' : 'How can I assist you with SPARSH today?',
+            follow_up_prompt: currentLang === 'hi' ? 'आपको किस बारे में मदद चाहिए?' : currentLang === 'mr' ? 'तुम्हाला कशाबद्दल मदत हवी आहे?' : 'What would you like help with?',
           },
         ]
       }
       return prev
     })
-    setSuggestions((prev) => {
-      // If suggestions are currently matching previous default set, update them
-      return defaultSuggestions
-    })
+    setSuggestions(defaultSuggestions)
   }, [currentLang, initialGreeting, defaultSuggestions])
 
   // Close chat when user presses Escape key
@@ -120,13 +116,13 @@ export default function AssistantChat({ currentScreen = 'dashboard', onNavigate 
     setLoading(true)
 
     // Check for quick workflow navigation shortcuts if requested
-    const lower = trimmed.toLowerCase()
+    const lower = trimmed.toLocaleLowerCase().trim()
     if (onNavigate) {
-      if (lower.includes('start screening') || lower.includes('?????????? ????') || lower.includes('?????? ????')) {
+      if (['start screening', 'स्क्रीनिंग शुरू करें', 'स्क्रीनिंग सुरू करा'].includes(lower)) {
         onNavigate('screening')
-      } else if (lower.includes('child registration') || lower.includes('register child') || lower.includes('???????') || lower.includes('??????')) {
+      } else if (['register child', 'child registration', 'बच्चे का पंजीकरण', 'बालक नोंदणी'].includes(lower)) {
         onNavigate('register')
-      } else if (lower.includes('alerts') || lower.includes('?????') || lower.includes('?????')) {
+      } else if (['open alerts', 'alerts'].includes(lower)) {
         onNavigate('alerts')
       }
     }
@@ -143,13 +139,23 @@ export default function AssistantChat({ currentScreen = 'dashboard', onNavigate 
         history: historyPayload,
         language: currentLang,
         currentScreen,
+        context: { selected_language: currentLang },
       })
+
+      const responseLanguage = ['en', 'hi', 'mr'].includes(response.language) ? response.language : currentLang
+      setAssistantLanguage(responseLanguage)
+      try {
+        window.sessionStorage.setItem('sparsh-assistant-language', responseLanguage)
+      } catch {
+        // The current component state still preserves the language for this chat.
+      }
 
       const assistantMsg = {
         role: 'assistant',
         content: response.reply,
         follow_up_prompt: response.follow_up_prompt,
         provider: response.provider,
+        intent: response.intent,
       }
 
       setMessages((prev) => [...prev, assistantMsg])
@@ -160,9 +166,9 @@ export default function AssistantChat({ currentScreen = 'dashboard', onNavigate 
       } else if (response.follow_up_prompt) {
         setSuggestions(
           currentLang === 'hi'
-            ? ['???, ???????', '????, ?? ??? ?????']
+            ? ['हाँ, धन्यवाद', 'नहीं, और मदद चाहिए']
             : currentLang === 'mr'
-            ? ['???, ???????', '????, ???? ??? ???']
+            ? ['हो, धन्यवाद', 'नाही, आणखी मदत हवी']
             : ['Yes, thanks', 'No, I need more help']
         )
       } else {
@@ -188,7 +194,7 @@ export default function AssistantChat({ currentScreen = 'dashboard', onNavigate 
       {
         role: 'assistant',
         content: initialGreeting,
-        follow_up_prompt: currentLang === 'hi' ? '??? ?? ???? ??? ?????? ?????? ?? ???? ????' : currentLang === 'mr' ? '?? ?? ???????? ??? ??? ??? ?????' : 'How can I assist you with SPARSH today?',
+        follow_up_prompt: currentLang === 'hi' ? 'आपको किस बारे में मदद चाहिए?' : currentLang === 'mr' ? 'तुम्हाला कशाबद्दल मदत हवी आहे?' : 'What would you like help with?',
       },
     ])
     setSuggestions(defaultSuggestions)

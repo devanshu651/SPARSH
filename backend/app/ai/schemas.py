@@ -30,3 +30,5 @@ class ChatAssistantResponse(BaseModel):
     suggestions: list[str] = Field(default_factory=list)
     follow_up_prompt: str | None = None
     provider: str = "gemini-2.5-flash-lite"
+    language: str = "en"
+    intent: str = "general"

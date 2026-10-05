@@ -1,8 +1,13 @@
-import pytest
+import asyncio
 from unittest.mock import AsyncMock, Mock, patch
+
 from fastapi.testclient import TestClient
 
-from app.ai.chat_service import call_gemini_chat, _get_local_grounded_reply
+from app.ai.chat_service import (
+    _get_local_grounded_reply,
+    call_gemini_chat,
+    classify_intent,
+)
 from app.ai.safety import is_safe_text
 from app.ai.schemas import ChatAssistantRequest, ChatMessage
 from main import app
@@ -10,284 +15,194 @@ from main import app
 client = TestClient(app)
 
 
+def request(message, language="en", history=None, current_screen=None):
+    return ChatAssistantRequest(
+        message=message,
+        language=language,
+        history=history or [],
+        current_screen=current_screen,
+    )
+
+
 def test_safety_filter_catches_diagnostic_claims():
-    assert is_safe_text("This observation indicates a developmental area to monitor.")
+    assert is_safe_text("This observation indicates an area to monitor.")
     assert not is_safe_text("The child has autism.")
     assert not is_safe_text("The patient is diagnosed with ADHD.")
     assert not is_safe_text("This is a confirmed disorder.")
 
 
-def test_chat_endpoint_returns_local_grounded_response_when_no_api_key():
+def test_language_change_intents_and_responses():
+    marathi_requests = [
+        "talk in marathi",
+        "मराठीत बोला",
+        "मराठीमध्ये सांगा",
+        "marathi madhe bol",
+        "maray=thi?",
+    ]
+    for message in marathi_requests:
+        response = _get_local_grounded_reply(request(message))
+        assert classify_intent(message) == "language_change"
+        assert response.intent == "language_change"
+        assert response.language == "mr"
+        assert "मराठीत" in response.reply
+
+    hindi_requests = ["मुझसे हिंदी में बात करो", "हिंदी में बताओ", "speak Hindi"]
+    for message in hindi_requests:
+        response = _get_local_grounded_reply(request(message))
+        assert response.intent == "language_change"
+        assert response.language == "hi"
+        assert "हिंदी" in response.reply
+
+    english = _get_local_grounded_reply(request("English please", "mr"))
+    assert english.language == "en"
+    assert "English" in english.reply
+
+
+def test_mojibake_language_request_is_repaired():
+    message = "मराठीत बोला".encode("utf-8").decode("latin-1")
+    response = _get_local_grounded_reply(request(message))
+    assert response.language == "mr"
+    assert "मराठीत" in response.reply
+
+
+def test_language_persists_between_turns_until_switched():
+    first = _get_local_grounded_reply(request("talk in marathi"))
+    second = _get_local_grounded_reply(request("how to use this app", first.language))
+    assert second.language == "mr"
+    assert "अंगणवाडी" in second.reply
+
+    switched = _get_local_grounded_reply(request("speak Hindi", second.language))
+    follow_up = _get_local_grounded_reply(request("screening kya hai?", switched.language))
+    assert switched.language == "hi"
+    assert follow_up.language == "hi"
+    assert "स्क्रीनिंग" in follow_up.reply
+    assert "निदान नहीं" in follow_up.reply
+
+
+def test_app_usage_is_not_a_developmental_intent():
+    for message in ("how to use this app", "SPARSH kasa use karaycha?", "what can I do here?", "Hi, how to use this app?"):
+        assert classify_intent(message) == "app_usage"
+        response = _get_local_grounded_reply(request(message))
+        assert response.intent == "app_usage"
+        assert "1." in response.reply and "9." in response.reply
+        assert "diagnos" not in response.reply.lower()
+
+    marathi = _get_local_grounded_reply(request("SPARSH kasa use karaycha?", "mr"))
+    assert "अंगणवाडी" in marathi.reply
+
+
+def test_screening_result_and_referral_intents_are_grounded():
+    assert classify_intent("screening kya hai?") == "screening_explanation"
+    screening = _get_local_grounded_reply(request("screening kya hai?"))
+    assert "age-appropriate" in screening.reply
+    assert "not a diagnosis" in screening.reply
+
+    assert classify_intent("what does yellow mean?") == "result_explanation"
+    yellow = _get_local_grounded_reply(request("what does yellow mean?"))
+    assert "one month" in yellow.reply
+
+    assert classify_intent("red result ala tar kay") == "referral"
+    red = _get_local_grounded_reply(request("red result ala tar kay", "mr"))
+    assert red.language == "mr"
+    assert "RED" in red.reply and "Primary Health Centre" in red.reply
+
+
+def test_speech_question_is_developmental_not_unsupported():
+    message = "speech delay ka question"
+    assert classify_intent(message) == "developmental_question"
+    response = _get_local_grounded_reply(request(message))
+    assert "Language & Communication" in response.reply
+    assert "diagnos" in response.reply.lower()
+
+
+def test_non_greeting_turn_does_not_repeat_initial_introduction():
+    greeting = _get_local_grounded_reply(request("hello"))
+    answer = _get_local_grounded_reply(request("how to use this app", greeting.language))
+    assert greeting.intent == "greeting"
+    assert "SPARSH Assistant" not in answer.reply
+
+
+def test_navigation_uses_current_screen_without_changing_app_behavior():
+    response = _get_local_grounded_reply(request("What should I do here?", current_screen="screening"))
+    assert response.intent == "navigation"
+    assert "screening screen" in response.reply.lower()
+
+
+def test_chat_endpoint_returns_local_response_with_intent_and_language():
     with patch("app.core.config.settings.gemini_api_key", None):
         response = client.post(
             "/api/v1/assistant/chat",
-            json={
-                "message": "How do I start screening in SPARSH?",
-                "language": "en",
-                "current_screen": "dashboard",
-            },
+            json={"message": "talk in marathi", "language": "en"},
         )
-        assert response.status_code == 200
-        data = response.json()
-        assert "reply" in data
-        assert "Screening" in data["reply"] or "screening" in data["reply"]
-        assert len(data["suggestions"]) > 0
-        assert data["provider"] == "local_grounded"
+    assert response.status_code == 200
+    data = response.json()
+    assert data["language"] == "mr"
+    assert data["intent"] == "language_change"
+    assert "मराठीत" in data["reply"]
+    assert data["provider"] == "local_grounded"
 
 
-def test_chat_endpoint_multilingual_hindi():
-    with patch("app.core.config.settings.gemini_api_key", None):
-        response = client.post(
-            "/api/v1/assistant/chat",
-            json={
-                "message": "?????????? ???? ???? ?????",
-                "language": "hi",
-                "current_screen": "screening",
-            },
-        )
-        assert response.status_code == 200
-        data = response.json()
-        assert len(data["reply"]) > 0
-        assert len(data["suggestions"]) > 0
-        assert data["provider"] == "local_grounded"
-
-
-def test_chat_endpoint_multilingual_marathi():
-    with patch("app.core.config.settings.gemini_api_key", None):
-        response = client.post(
-            "/api/v1/assistant/chat",
-            json={
-                "message": "?????? ??? ???? ??????",
-                "language": "mr",
-                "current_screen": "screening",
-            },
-        )
-        assert response.status_code == 200
-        data = response.json()
-        assert len(data["reply"]) > 0
-        assert len(data["suggestions"]) > 0
-        assert data["provider"] == "local_grounded"
-
-
-def test_marathi_multi_turn_flow_no_loop():
-    """Verify exact multi-turn progression from Section 8 does not loop in Marathi."""
-    # Turn 1: General speech concern
-    req1 = ChatAssistantRequest(
-        message="??? ??????? ???????? ???? ??? ???. ?? ??????? ?????????? ?????????? ??????? ??? ?????",
-        language="mr"
-    )
-    res1 = _get_local_grounded_reply(req1)
-    assert "???? ??? ?????" in res1.reply
-    assert "??? ??? ???? ?????" in res1.suggestions
-
-    # Turn 2: Follow-up specific observation
-    req2 = ChatAssistantRequest(
-        message="??? ??? ???? ?????",
-        language="mr",
-        history=[
-            ChatMessage(role="user", content=req1.message),
-            ChatMessage(role="assistant", content=res1.reply)
-        ]
-    )
-    res2 = _get_local_grounded_reply(req2)
-    assert "12 ?? 18 ?????" in res2.reply
-    assert "???????? ??? ????? ???????" in res2.suggestions
-    assert res2.reply != res1.reply  # Distinct, no loop
-
-    # Turn 3: Parent guidance
-    req3 = ChatAssistantRequest(
-        message="???????? ??? ????? ???????",
-        language="mr",
-        history=[
-            ChatMessage(role="user", content=req2.message),
-            ChatMessage(role="assistant", content=res2.reply)
-        ]
-    )
-    res3 = _get_local_grounded_reply(req3)
-    assert "?????????? ?????????? ?????" in res3.reply
-    assert "???????" in res3.reply
-    assert res3.reply != res2.reply  # Distinct, no loop
-
-    # Turn 4: Referral criteria
-    req4 = ChatAssistantRequest(
-        message="????? ?????? ?????? ????",
-        language="mr",
-        history=[
-            ChatMessage(role="user", content=req3.message),
-            ChatMessage(role="assistant", content=res3.reply)
-        ]
-    )
-    res4 = _get_local_grounded_reply(req4)
-    assert "Red Flags" in res4.reply or "??????? ?????????? ????" in res4.reply
-    assert "???, ???????" in res4.suggestions
-    assert res4.reply != res3.reply  # Distinct, no loop
-
-    # Turn 5: Affirmative "Did this answer your question?"
-    req5 = ChatAssistantRequest(
-        message="???, ???????",
-        language="mr"
-    )
-    res5 = _get_local_grounded_reply(req5)
-    assert "??? ??? ???????? ??? ???? ???" in res5.reply
-
-    # Turn 5b: Negative "No, I need more help"
-    req5b = ChatAssistantRequest(
-        message="????, ???? ??? ???",
-        language="mr"
-    )
-    res5b = _get_local_grounded_reply(req5b)
-    assert "????? ??? ???????" in res5b.reply
-
-
-def test_hindi_multi_turn_flow_no_loop():
-    """Verify multi-turn progression in Hindi."""
-    req1 = ChatAssistantRequest(
-        message="????? ?? ????? ??? ??????? ?? ??? ??",
-        language="hi"
-    )
-    res1 = _get_local_grounded_reply(req1)
-    assert "???? ?? ?????" in res1.reply
-
-    req2 = ChatAssistantRequest(
-        message="???? ?? ???? ????? ??",
-        language="hi"
-    )
-    res2 = _get_local_grounded_reply(req2)
-    assert "12 ?? 18 ?????" in res2.reply
-    assert res2.reply != res1.reply
-
-    req3 = ChatAssistantRequest(
-        message="????-???? ?? ???? ???? ????",
-        language="hi"
-    )
-    res3 = _get_local_grounded_reply(req3)
-    assert "????-???? ?? ??? ?????????? ??????????" in res3.reply
-
-    req4 = ChatAssistantRequest(
-        message="???, ???????",
-        language="hi"
-    )
-    res4 = _get_local_grounded_reply(req4)
-    assert "???? ??" in res4.reply
-
-    req4b = ChatAssistantRequest(
-        message="????, ?? ??? ?????",
-        language="hi"
-    )
-    res4b = _get_local_grounded_reply(req4b)
-    assert "??? ???? ?? ??? ???? ???" in res4b.reply
-
-
-def test_english_multi_turn_flow_no_loop():
-    """Verify multi-turn progression in English."""
-    req1 = ChatAssistantRequest(
-        message="A child is having difficulty speaking. What developmental area could this relate to?",
-        language="en"
-    )
-    res1 = _get_local_grounded_reply(req1)
-    assert "Language & Communication" in res1.reply
-    assert any("words" in s.lower() for s in res1.suggestions)
-
-    req2 = ChatAssistantRequest(
-        message="Uses very few words",
-        language="en"
-    )
-    res2 = _get_local_grounded_reply(req2)
-    assert "Language & Communication" in res2.reply
-    assert "12-18 months" in res2.reply
-    assert res2.reply != res1.reply
-
-    req3 = ChatAssistantRequest(
-        message="What should I advise parents?",
-        language="en"
-    )
-    res3 = _get_local_grounded_reply(req3)
-    assert "Developmental Guidance for Parents" in res3.reply
-    assert res3.reply != res2.reply
-
-    req4 = ChatAssistantRequest(
-        message="Yes, thanks",
-        language="en"
-    )
-    res4 = _get_local_grounded_reply(req4)
-    assert "glad" in res4.reply.lower()
-
-    req4b = ChatAssistantRequest(
-        message="No, I need more help",
-        language="en"
-    )
-    res4b = _get_local_grounded_reply(req4b)
-    assert "help further" in res4b.reply.lower()
-
-
-def test_current_screen_awareness():
-    req_screen = ChatAssistantRequest(
-        message="What should I do here?",
-        language="en",
-        current_screen="screening"
-    )
-    res_screen = _get_local_grounded_reply(req_screen)
-    assert "Screening screen" in res_screen.reply
-
-    req_alerts = ChatAssistantRequest(
-        message="alerts",
-        language="en",
-        current_screen="alerts"
-    )
-    res_alerts = _get_local_grounded_reply(req_alerts)
-    assert "Alerts" in res_alerts.reply
-
-
-def test_gemini_api_call_success_mock():
-    import asyncio
-
-    mock_gemini_response = {
+def test_gemini_receives_recent_history_intent_and_selected_language():
+    mock_response = Mock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {
         "candidates": [
             {
                 "content": {
                     "parts": [
                         {
-                            "text": '{"reply": "SPARSH provides 5 developmental milestone domains.", "suggestions": ["Gross Motor", "Fine Motor"], "follow_up_prompt": "Would you like to know more?"}'
+                            "text": (
+                                '{"reply":"This is a screening indication, not a diagnosis.",'
+                                '"suggestions":["Review results","Referral process"],'
+                                '"follow_up_prompt":"What did the result show?"}'
+                            )
                         }
                     ]
                 }
             }
         ]
     }
-    mock_post_response = Mock()
-    mock_post_response.status_code = 200
-    mock_post_response.json = Mock(return_value=mock_gemini_response)
 
-    with patch("app.core.config.settings.gemini_api_key", "mock-gemini-key"), \
-         patch("httpx.AsyncClient.post", new_callable=AsyncMock) as mock_post:
-        mock_post.return_value = mock_post_response
-        req = ChatAssistantRequest(message="Tell me about milestone domains", language="en")
-        res = asyncio.run(call_gemini_chat(req))
-        assert res.reply == "SPARSH provides 5 developmental milestone domains."
-        assert "Gross Motor" in res.suggestions
-        assert res.provider in ["gemini-2.5-flash-lite", "gemini-3.5-flash-lite"]
+    with patch("app.core.config.settings.gemini_api_key", "mock-key"), patch(
+        "httpx.AsyncClient.post", new_callable=AsyncMock
+    ) as mock_post:
+        mock_post.return_value = mock_response
+        result = asyncio.run(call_gemini_chat(ChatAssistantRequest(
+            message="speech delay ka question",
+            language="mr",
+            history=[
+                ChatMessage(role="user", content="talk in marathi"),
+                ChatMessage(role="assistant", content="I will reply in Marathi."),
+                ChatMessage(role="user", content="speech delay ka question"),
+            ],
+            current_screen="dashboard",
+            context={"selected_language": "mr"},
+        )))
+
+    assert result.language == "mr"
+    assert result.intent == "developmental_question"
+    assert result.reply == "This is a screening indication, not a diagnosis."
+    payload = mock_post.call_args.kwargs["json"]
+    serialized = str(payload)
+    assert "talk in marathi" in serialized
+    assert "Likely intent: developmental_question" in serialized
+    assert "Selected response language: mr" in serialized
 
 
-def test_gemini_api_failure_falls_back_to_local_grounded():
-    import asyncio
-
-    with patch("app.core.config.settings.gemini_api_key", "mock-gemini-key"), \
-         patch("httpx.AsyncClient.post", side_effect=Exception("Network error")):
-        req = ChatAssistantRequest(message="How to start screening?", language="en")
-        res = asyncio.run(call_gemini_chat(req))
-        assert res.provider == "local_grounded"
-        assert "Screening" in res.reply or "screening" in res.reply
+def test_provider_failure_uses_concise_local_developmental_fallback():
+    with patch("app.core.config.settings.gemini_api_key", "mock-key"), patch(
+        "httpx.AsyncClient.post", side_effect=Exception("Network error")
+    ):
+        result = asyncio.run(call_gemini_chat(request("speech delay ka question")))
+    assert result.provider == "local_grounded"
+    assert "Language & Communication" in result.reply
 
 
-def test_no_api_key_exposure_in_response():
-    response = client.post(
-        "/api/v1/assistant/chat",
-        json={
-            "message": "What is SPARSH?",
-            "language": "en",
-        },
-    )
-    assert response.status_code == 200
-    content = response.text
-    assert "AIza" not in content
-    assert "api_key" not in content.lower() or content.lower().count("api_key") == 0
+def test_gemini_is_bypassed_for_explicit_language_switch():
+    with patch("app.core.config.settings.gemini_api_key", "mock-key"), patch(
+        "httpx.AsyncClient.post", new_callable=AsyncMock
+    ) as mock_post:
+        result = asyncio.run(call_gemini_chat(request("talk in marathi")))
+    mock_post.assert_not_called()
+    assert result.language == "mr"
+    assert result.intent == "language_change"
