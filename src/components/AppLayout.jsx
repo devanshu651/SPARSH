@@ -1,18 +1,9 @@
+import { useTranslation } from 'react-i18next'
 import { useApp } from '../context/AppContext'
 import BrandLogo from './BrandLogo'
 import BottomNav from './BottomNav'
 import SyncStatus from './SyncStatus'
 import Icon from './Icon'
-
-const workerNavLinks = [
-  { id: 'dashboard', label: 'Dashboard', icon: 'home' },
-  { id: 'children', label: 'Child Cohort', icon: 'children' },
-  { id: 'register', label: 'Register Child', icon: 'userPlus' },
-  { id: 'screening', label: 'Screening', icon: 'screening' },
-  { id: 'analytics', label: 'Supervisor Analytics', icon: 'analytics' },
-  { id: 'alerts', label: 'Clinical Alerts', icon: 'alerts' },
-  { id: 'settings', label: 'Settings', icon: 'settings' }
-]
 
 export default function AppLayout({
   active = 'dashboard',
@@ -23,9 +14,21 @@ export default function AppLayout({
   backTo,
   children
 }) {
+  const { t } = useTranslation()
   const { currentWorker } = useApp()
+
+  const workerNavLinks = [
+    { id: 'dashboard', label: t('nav.dashboard'), icon: 'home' },
+    { id: 'children', label: t('nav.childCohort'), icon: 'children' },
+    { id: 'register', label: t('nav.registerChild'), icon: 'userPlus' },
+    { id: 'screening', label: t('nav.screening'), icon: 'screening' },
+    { id: 'analytics', label: t('nav.supervisorAnalytics'), icon: 'analytics' },
+    { id: 'alerts', label: t('nav.clinicalAlerts'), icon: 'alerts' },
+    { id: 'settings', label: t('nav.settings'), icon: 'settings' }
+  ]
+
   const navLinks = currentWorker?.role === 'admin'
-    ? [{ id: 'admin-console', label: 'Administration', icon: 'settings' }]
+    ? [{ id: 'admin-console', label: t('nav.adminConsole'), icon: 'settings' }]
     : workerNavLinks
   const workerName = currentWorker?.name || 'Healthcare Worker'
   const workerInitials = workerName
@@ -88,8 +91,8 @@ export default function AppLayout({
 
         {/* Footer Info */}
         <div className="border-t border-[#D5DDD7] p-4 text-[11px] text-[#8E9C95]">
-          <p className="font-bold text-[#5A6660]">SPARSH v1.2</p>
-          <p className="mt-0.5">Developmental Screening &amp; Follow-up Support</p>
+          <p className="font-bold text-[#5A6660]">{t('nav.version')}</p>
+          <p className="mt-0.5">{t('nav.subtitle')}</p>
         </div>
       </aside>
 

@@ -3,12 +3,13 @@ import { useTranslation } from 'react-i18next'
 import BrandLogo from '../components/BrandLogo'
 import SparshBotanical from '../components/SparshBotanical'
 import Icon from '../components/Icon'
+import LanguageSelector from '../components/LanguageSelector'
 import { authService, readableAuthError } from '../services/auth'
 import { useApp } from '../context/AppContext'
 import { firebaseConfigError } from '../lib/firebase'
 
 export default function LoginScreen({ onBack, onLogin, onRegister }) {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const { loadCurrentWorker, authError } = useApp()
 
   const [mobile, setMobile] = useState('')
@@ -55,10 +56,6 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
     }
   }
 
-  const toggleLang = () => {
-    i18n.changeLanguage(i18n.language === 'en' ? 'hi' : 'en')
-  }
-
   return (
     <main className="relative min-h-screen lg:h-screen w-full bg-[#143D31] flex items-center justify-center p-4 sm:p-6 lg:px-8 xl:px-12 lg:py-4 xl:py-6 overflow-x-hidden">
       {/* 1. FULL-PAGE GREEN BACKGROUND WITH MOTHER-CHILD IMAGE ANCHORED ON THE LEFT */}
@@ -95,37 +92,37 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
           <div>
             <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1 text-xs font-semibold text-[#D2E3D8] border border-white/15">
               <span className="h-1.5 w-1.5 rounded-full bg-[#D96B43]" />
-              <span>Developmental screening and follow-up support</span>
+              <span>{t('login.badge')}</span>
             </span>
           </div>
 
           {/* Core SPARSH Message */}
           <h1 className="mt-4 xl:mt-5 text-3xl lg:text-4xl xl:text-[42px] font-extrabold tracking-tight text-white leading-tight font-heading">
-            Early Steps. <br />
-            Brighter Futures.
+            {t('login.title')} <br />
+            {t('login.titleLine2')}
           </h1>
 
           {/* Supporting Clinical Description */}
           <p className="mt-3 text-sm lg:text-base leading-relaxed text-[#D2E3D8] max-w-md">
-            A digital companion for Anganwadi workers to track and support child development across frontline communities in India.
+            {t('login.desc')}
           </p>
 
           {/* Subtle Feature Highlight Chips */}
           <div className="grid grid-cols-2 gap-3 pt-5 max-w-md">
             <div className="rounded-2xl border border-white/15 bg-white/10 p-3 sm:p-3.5">
-              <span className="font-bold text-white text-xs sm:text-sm block">Milestone Screening</span>
-              <span className="text-[#D2E3D8] text-[11px] sm:text-xs mt-0.5 block">5 Developmental Domains</span>
+              <span className="font-bold text-white text-xs sm:text-sm block">{t('login.milestoneScreening')}</span>
+              <span className="text-[#D2E3D8] text-[11px] sm:text-xs mt-0.5 block">{t('login.domains')}</span>
             </div>
             <div className="rounded-2xl border border-white/15 bg-white/10 p-3 sm:p-3.5">
-              <span className="font-bold text-white text-xs sm:text-sm block">Offline First</span>
-              <span className="text-[#D2E3D8] text-[11px] sm:text-xs mt-0.5 block">Syncs in Remote Sub-centres</span>
+              <span className="font-bold text-white text-xs sm:text-sm block">{t('login.offlineFirst')}</span>
+              <span className="text-[#D2E3D8] text-[11px] sm:text-xs mt-0.5 block">{t('login.syncDesc')}</span>
             </div>
           </div>
 
           {/* Institutional Alignment Footer */}
           <div className="mt-6 pt-4 border-t border-white/15 text-xs text-[#D2E3D8]/80 space-y-0.5">
-            <p className="font-bold text-white">SPARSH Child Development Screening</p>
-            <p className="text-[11px] text-[#D2E3D8]/75">National Health Mission & Child Welfare Alignment</p>
+            <p className="font-bold text-white">{t('login.footerTitle')}</p>
+            <p className="text-[11px] text-[#D2E3D8]/75">{t('login.footerSubtitle')}</p>
           </div>
         </section>
 
@@ -133,13 +130,13 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
         <div className="lg:hidden text-center text-white mb-2 max-w-md mx-auto select-none">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-[11px] font-semibold text-[#D2E3D8] border border-white/15">
             <span className="h-1.5 w-1.5 rounded-full bg-[#D96B43]" />
-            <span>Child Development Screening</span>
+            <span>{t('login.badge')}</span>
           </span>
           <h1 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-white font-heading">
-            Early Steps. Brighter Futures.
+            {t('login.title')} {t('login.titleLine2')}
           </h1>
           <p className="mt-1 text-xs text-[#D2E3D8]/90 max-w-xs mx-auto">
-            Anganwadi frontline digital companion
+            {t('login.desc')}
           </p>
         </div>
 
@@ -158,26 +155,18 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
             aria-labelledby="login-heading"
           >
             {/* Top Bar: Back & Language Switcher */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-2">
               <button
                 type="button"
                 onClick={onBack}
                 className="inline-flex items-center gap-1.5 rounded-xl border border-[#E5EBE7] bg-[#FAFCFA] px-3 py-1.5 text-xs font-semibold text-[#5A6660] hover:text-[#1A201E] hover:bg-[#F3F6F4] transition-colors focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30"
-                aria-label="Go back to previous screen"
+                aria-label={t('common.back')}
               >
                 <Icon name="arrowLeft" className="h-3.5 w-3.5" />
-                <span>Back</span>
+                <span>{t('common.back')}</span>
               </button>
 
-              <button
-                type="button"
-                onClick={toggleLang}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-[#E5EBE7] bg-[#FAFCFA] px-3 py-1.5 text-xs font-semibold text-[#1B4D3E] hover:bg-[#EBF2EE] transition-colors focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30"
-                aria-label="Switch interface language"
-              >
-                <span className="h-1.5 w-1.5 rounded-full bg-[#1B4D3E]" />
-                <span>{i18n.language === 'en' ? 'हिंदी (Hindi)' : 'English'}</span>
-              </button>
+              <LanguageSelector size="sm" />
             </div>
 
             {/* SPARSH Logo & Welcome Back */}
@@ -187,10 +176,10 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
                 id="login-heading"
                 className="mt-2 sm:mt-2.5 text-xl sm:text-2xl font-bold tracking-tight text-[#1A201E] font-heading"
               >
-                Welcome Back
+                {t('login.welcomeBack')}
               </h2>
               <p className="mt-0.5 text-xs sm:text-sm text-[#5A6660]">
-                Sign in to continue to SPARSH
+                {t('login.signInSubtitle')}
               </p>
               {(authError || firebaseConfigError) && (
                 <div
@@ -207,7 +196,7 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
               {/* Registered Mobile */}
               <div className="space-y-1 text-left">
                 <label htmlFor="login-mobile" className="block text-xs font-bold text-[#1A201E]">
-                  Registered Mobile <span className="text-[#D96B43]">*</span>
+                  {t('login.mobileLabel')} <span className="text-[#D96B43]">*</span>
                 </label>
                 <div
                   className={`flex min-h-[46px] sm:min-h-[48px] overflow-hidden rounded-xl border bg-[#FAFCFA] transition-all focus-within:bg-white focus-within:border-[#1B4D3E] focus-within:ring-2 focus-within:ring-[#1B4D3E]/20 ${
@@ -227,7 +216,7 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
                     maxLength={10}
                     value={mobile}
                     onChange={(e) => setMobile(e.target.value.replace(/\D/g, ''))}
-                    placeholder="10-digit mobile number"
+                    placeholder={t('login.mobilePlaceholder')}
                     autoComplete="tel"
                     className="w-full px-3 text-sm text-[#1A201E] outline-none placeholder:text-[#8E9C95] bg-transparent font-medium"
                     aria-required="true"
@@ -238,7 +227,7 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
               {/* Password */}
               <div className="space-y-1 text-left">
                 <label htmlFor="login-password" className="block text-xs font-bold text-[#1A201E]">
-                  Password <span className="text-[#D96B43]">*</span>
+                  {t('login.passwordLabel')} <span className="text-[#D96B43]">*</span>
                 </label>
                 <div
                   className={`flex min-h-[46px] sm:min-h-[48px] items-center overflow-hidden rounded-xl border bg-[#FAFCFA] px-3 transition-all focus-within:bg-white focus-within:border-[#1B4D3E] focus-within:ring-2 focus-within:ring-[#1B4D3E]/20 ${
@@ -251,7 +240,7 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter password"
+                    placeholder={t('login.passwordPlaceholder')}
                     autoComplete="current-password"
                     className="w-full text-sm text-[#1A201E] outline-none placeholder:text-[#8E9C95] bg-transparent font-medium"
                     aria-required="true"
@@ -260,9 +249,9 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="text-xs font-bold text-[#5A6660] hover:text-[#1B4D3E] ml-2 shrink-0 py-1 px-1.5 rounded transition-colors focus:outline-none focus:ring-1 focus:ring-[#1B4D3E]"
-                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    aria-label={showPassword ? t('login.hide') : t('login.show')}
                   >
-                    {showPassword ? 'Hide' : 'Show'}
+                    {showPassword ? t('login.hide') : t('login.show')}
                   </button>
                 </div>
               </div>
@@ -271,10 +260,10 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
               <div className="text-right pt-0.5">
                 <button
                   type="button"
-                  onClick={() => alert('Password reset link sent to your registered mobile number.')}
+                  onClick={() => alert(t('login.forgotAlert'))}
                   className="text-xs font-bold text-[#D96B43] hover:text-[#C85A32] hover:underline transition-colors focus:outline-none focus:underline"
                 >
-                  Forgot password?
+                  {t('login.forgotPassword')}
                 </button>
               </div>
 
@@ -298,23 +287,23 @@ export default function LoginScreen({ onBack, onLogin, onRegister }) {
                 {loading ? (
                   <>
                     <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-white border-r-transparent" />
-                    <span>Signing In…</span>
+                    <span>{t('login.signingIn')}</span>
                   </>
                 ) : (
-                  <span>Sign In</span>
+                  <span>{t('login.signIn')}</span>
                 )}
               </button>
             </form>
 
             {/* Sign Up / Worker Account Access */}
             <div className="mt-4 sm:mt-5 pt-3 sm:pt-3.5 text-center text-xs text-[#5A6660] border-t border-[#E5EBE7]">
-              <span>Need account access for your Anganwadi centre? </span>
+              <span>{t('login.needAccount')} </span>
               <button
                 type="button"
                 onClick={onRegister}
                 className="font-bold text-[#D96B43] hover:text-[#C85A32] hover:underline transition-colors ml-1 focus:outline-none focus:underline"
               >
-                Sign Up
+                {t('login.signUp')}
               </button>
             </div>
           </section>

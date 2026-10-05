@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import AppLayout from '../components/AppLayout'
 import Button from '../components/Button'
 import BadgePill from '../components/BadgePill'
@@ -38,6 +39,7 @@ const domainMeta = {
 }
 
 export default function ScreeningScreen({ onNavigate }) {
+  const { t } = useTranslation()
   const { currentChild, setCurrentChild } = useApp()
   const [data, setData] = useState(null)
   const [error, setError] = useState(null)
@@ -333,8 +335,8 @@ export default function ScreeningScreen({ onNavigate }) {
       active="screening"
       onNavigate={onNavigate}
       backTo="dashboard"
-      title="Child Development Screening"
-      subtitle="Age-based milestone questions"
+      title={t('screening.title')}
+      subtitle={t('screening.subtitle')}
       actions={
         <button
           type="button"
@@ -365,21 +367,27 @@ export default function ScreeningScreen({ onNavigate }) {
             onClick={() => setCurrentChild(null)}
             className="text-xs font-semibold text-[#729082] hover:text-[#1B4D3E] transition"
           >
-            Change
+            {t('screening.changeChild')}
           </button>
         </div>
 
         {/* Offline warning */}
         {error && (
           <p className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">
-            {error.message}
+            {error.message || t('screening.workingOffline')}
           </p>
         )}
 
         {/* Progress bar */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between text-xs font-semibold text-[#5A6660]">
-            <span>Domain {domainIndex + 1} of {domains.length} ({meta.label})</span>
+            <span>
+              {t('screening.domainOf', {
+                current: domainIndex + 1,
+                total: domains.length,
+                domain: t(`screening.domains.${currentDomainKey}`, { defaultValue: meta.label })
+              })}
+            </span>
             <span>{progressPercent}%</span>
           </div>
           <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#E5EBE7]">
@@ -396,10 +404,10 @@ export default function ScreeningScreen({ onNavigate }) {
             <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#FDF0EB] text-[#D96B43]">
               <Icon name={meta.icon || 'activity'} className="h-4 w-4" />
             </span>
-            <span>{meta.label}</span>
+            <span>{t(`screening.domains.${currentDomainKey}`, { defaultValue: meta.label })}</span>
           </div>
           <span className="rounded-full bg-[#F5F8F6] px-2.5 py-0.5 text-xs font-medium text-[#5A6660] border border-[#E5EBE7]">
-            {currentTasks.length} question{currentTasks.length !== 1 ? 's' : ''}
+            {currentTasks.length} {t(currentTasks.length !== 1 ? 'screening.questionsCount_other' : 'screening.questionsCount', { count: currentTasks.length })}
           </span>
         </div>
 
@@ -429,7 +437,7 @@ export default function ScreeningScreen({ onNavigate }) {
                         : 'border-[#C6E7D5] text-[#2D7A58] hover:bg-[#EBF2EE]'
                     }`}
                   >
-                    Yes
+                    {t('common.yes')}
                   </button>
                   <button
                     type="button"
@@ -440,7 +448,7 @@ export default function ScreeningScreen({ onNavigate }) {
                         : 'border-[#F7D4C8] text-[#C85A32] hover:bg-[#FDF0EB]'
                     }`}
                   >
-                    No
+                    {t('common.no')}
                   </button>
                   <button
                     type="button"
@@ -451,13 +459,13 @@ export default function ScreeningScreen({ onNavigate }) {
                         : 'border-amber-200 text-amber-700 hover:bg-amber-50'
                     }`}
                   >
-                    Unsure
+                    {t('common.unsure')}
                   </button>
                 </div>
 
                 {/* Per-question unanswered warning (production behavior) */}
                 {!answered && (
-                  <p className="text-xs text-amber-800 font-medium">Response required</p>
+                  <p className="text-xs text-amber-800 font-medium">{t('screening.responseRequired')}</p>
                 )}
               </article>
             )
@@ -467,7 +475,7 @@ export default function ScreeningScreen({ onNavigate }) {
         {/* Last-domain total unanswered count (production behavior) */}
         {isLastDomain && totalUnanswered.length > 0 && (
           <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-sm text-amber-800 font-medium">
-            {totalUnanswered.length} question{totalUnanswered.length === 1 ? ' remains' : 's remain'} unanswered.
+            {t(totalUnanswered.length === 1 ? 'screening.unansweredRemain' : 'screening.unansweredRemain_other', { count: totalUnanswered.length })}
           </p>
         )}
 
@@ -482,7 +490,7 @@ export default function ScreeningScreen({ onNavigate }) {
             }}
             className="w-32"
           >
-            ← Back
+            ← {t('common.back')}
           </Button>
 
           {/* Advance button — disabled until ALL current domain questions answered */}
@@ -492,10 +500,11 @@ export default function ScreeningScreen({ onNavigate }) {
             disabled={domainUnanswered.length > 0}
             className="w-44"
           >
-            {isLastDomain ? 'Continue to A/V →' : 'Next Domain →'}
+            {isLastDomain ? t('screening.continueToAv') : t('screening.nextDomain')}
           </Button>
         </div>
       </div>
     </AppLayout>
   )
 }
+

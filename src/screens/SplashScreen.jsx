@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import BrandLogo from '../components/BrandLogo'
 import SparshBotanical from '../components/SparshBotanical'
 import Icon from '../components/Icon'
@@ -149,6 +150,8 @@ function HeroChildDevelopmentVisual({ className = 'w-full h-auto max-w-md' }) {
 }
 
 export default function SplashScreen({ onContinue }) {
+  const { t } = useTranslation()
+
   return (
     <main className="min-h-screen min-h-[100dvh] w-full bg-white relative overflow-hidden flex flex-col justify-between">
       {/* ============================================================== */}
@@ -169,14 +172,14 @@ export default function SplashScreen({ onContinue }) {
           <div className="relative z-10 my-auto py-2 xl:py-4 space-y-3 xl:space-y-4 max-w-xl">
             <div className="flex flex-col items-start gap-2 xl:gap-2.5">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-[#EBF2EE] px-3 sm:px-3.5 py-0.5 sm:py-1 text-[11px] sm:text-xs font-semibold text-[#1B4D3E] border border-[#D5E3DB]">
-                Developmental Screening &amp; Follow-up Support
+                {t('splash.badge')}
               </span>
               <h1 className="text-2xl sm:text-3xl xl:text-4xl font-extrabold text-[#1A201E] tracking-tight font-heading leading-tight">
-                Supporting Every Child&apos;s <br />
-                Brighter Tomorrow
+                {t('splash.heroTitle')} <br />
+                {t('splash.heroTitleLine2')}
               </h1>
               <p className="text-xs sm:text-sm text-[#5A6660] leading-relaxed max-w-lg">
-                Empowering Anganwadi workers with RBSK 5-domain developmental surveillance, automated delay detection, and immediate clinical DEIC referral.
+                {t('splash.heroDesc')}
               </p>
             </div>
 
@@ -188,23 +191,23 @@ export default function SplashScreen({ onContinue }) {
             {/* Core Trust Pillars */}
             <div className="grid grid-cols-3 gap-2.5 sm:gap-3 pt-2.5 xl:pt-3 border-t border-[#E5EBE7]">
               <div className="space-y-0.5">
-                <p className="text-xs font-bold text-[#1A201E]">RBSK Standard</p>
-                <p className="text-[10px] sm:text-[11px] text-[#5A6660]">5-Domain Checklist</p>
+                <p className="text-xs font-bold text-[#1A201E]">{t('splash.pillar1Title')}</p>
+                <p className="text-[10px] sm:text-[11px] text-[#5A6660]">{t('splash.pillar1Desc')}</p>
               </div>
               <div className="space-y-0.5">
-                <p className="text-xs font-bold text-[#1A201E]">Offline-First</p>
-                <p className="text-[10px] sm:text-[11px] text-[#5A6660]">IndexedDB Local Queue</p>
+                <p className="text-xs font-bold text-[#1A201E]">{t('splash.pillar2Title')}</p>
+                <p className="text-[10px] sm:text-[11px] text-[#5A6660]">{t('splash.pillar2Desc')}</p>
               </div>
               <div className="space-y-0.5">
-                <p className="text-xs font-bold text-[#1A201E]">DEIC Referral</p>
-                <p className="text-[10px] sm:text-[11px] text-[#5A6660]">Official Form 3A Docket</p>
+                <p className="text-xs font-bold text-[#1A201E]">{t('splash.pillar3Title')}</p>
+                <p className="text-[10px] sm:text-[11px] text-[#5A6660]">{t('splash.pillar3Desc')}</p>
               </div>
             </div>
           </div>
 
           {/* Footer note */}
           <div className="relative z-10 text-[11px] sm:text-xs text-[#8E9C95] shrink-0 pt-1">
-            <p>SPARSH Child Health Companion · Ministry of Health & Family Welfare</p>
+            <p>{t('splash.footer')}</p>
           </div>
         </section>
 
@@ -216,18 +219,18 @@ export default function SplashScreen({ onContinue }) {
           {/* Upper Badge */}
           <div className="relative z-10 shrink-0">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 sm:px-3.5 py-0.5 sm:py-1 text-[11px] sm:text-xs font-semibold text-[#D2E3D8] border border-white/20">
-              Anganwadi Frontline Portal
+              {t('splash.portalBadge')}
             </span>
           </div>
 
           {/* Center Message */}
           <div className="relative z-10 space-y-3 xl:space-y-4 my-auto py-4 xl:py-6 max-w-md">
             <h2 className="text-2xl sm:text-3xl xl:text-4xl font-extrabold text-white tracking-tight font-heading leading-tight">
-              Early Steps <br />
-              Brighter Futures
+              {t('splash.portalTitle')} <br />
+              {t('splash.portalTitleLine2')}
             </h2>
             <p className="text-xs sm:text-sm xl:text-base text-[#D2E3D8] leading-relaxed">
-              A digital companion for Anganwadi workers to track and support child development across frontline communities in India.
+              {t('splash.portalDesc')}
             </p>
           </div>
 
@@ -238,11 +241,11 @@ export default function SplashScreen({ onContinue }) {
               onClick={onContinue}
               className="w-full min-h-[50px] sm:min-h-[54px] rounded-2xl bg-white hover:bg-[#EBF2EE] text-[#1B4D3E] font-bold text-sm sm:text-base shadow-md flex items-center justify-center gap-2.5 transition-all active:scale-[0.99] cursor-pointer"
             >
-              <span>Get Started</span>
+              <span>{t('splash.getStarted')}</span>
               <Icon name="arrowRight" className="h-4 w-4 sm:h-5 sm:w-5" />
             </button>
             <p className="text-center text-[11px] sm:text-xs text-[#D2E3D8]/75">
-              Sign in with your registered Anganwadi credentials
+              {t('splash.signInPrompt')}
             </p>
           </div>
         </section>
@@ -274,11 +277,11 @@ export default function SplashScreen({ onContinue }) {
         <section className="w-full bg-[#1B4D3E] text-white rounded-t-[36px] px-6 py-7 sm:px-8 sm:py-8 space-y-5 shadow-2xl relative z-20 shrink-0">
           <div className="space-y-2">
             <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white font-heading leading-tight">
-              Early Steps <br />
-              Brighter Futures
+              {t('splash.portalTitle')} <br />
+              {t('splash.portalTitleLine2')}
             </h2>
             <p className="text-xs sm:text-sm text-[#D2E3D8] leading-relaxed max-w-sm">
-              A digital companion for Anganwadi workers to track and support child development.
+              {t('splash.portalDescMobile')}
             </p>
           </div>
 
@@ -288,7 +291,7 @@ export default function SplashScreen({ onContinue }) {
               onClick={onContinue}
               className="w-full min-h-[50px] rounded-2xl bg-white/10 hover:bg-white/20 border border-white/25 text-white font-bold text-sm sm:text-base shadow-sm flex items-center justify-center gap-2 transition-all active:scale-[0.99] cursor-pointer"
             >
-              <span>Get Started</span>
+              <span>{t('splash.getStarted')}</span>
               <Icon name="arrowRight" className="h-4 w-4" />
             </button>
           </div>

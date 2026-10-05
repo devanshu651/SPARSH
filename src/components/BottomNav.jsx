@@ -1,51 +1,53 @@
 import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import Icon from './Icon'
 
-const mainItems = [
-  { id: 'dashboard', label: 'Home', icon: 'home' },
-  { id: 'children', label: 'Children', icon: 'children' },
-  { id: 'screening', label: 'Screening', icon: 'screening' },
-  { id: 'analytics', label: 'Reports', icon: 'analytics' },
-  { id: 'more', label: 'More', icon: 'more' },
-]
-
-const secondaryItems = [
-  {
-    id: 'alerts',
-    label: 'Clinical Alerts',
-    sub: 'Triage notices & overdue follow-ups',
-    icon: 'alerts',
-    badge: 'Alerts'
-  },
-  {
-    id: 'records',
-    label: 'Health Records',
-    sub: 'Child cohort & measurement logs',
-    icon: 'report'
-  },
-  {
-    id: 'history',
-    label: 'Medical History',
-    sub: 'Longitudinal milestone audits',
-    icon: 'clock'
-  },
-  {
-    id: 'register',
-    label: 'Register Child',
-    sub: 'Enroll new child into cohort',
-    icon: 'userPlus'
-  },
-  {
-    id: 'settings',
-    label: 'Settings',
-    sub: 'Worker profile, sync & language',
-    icon: 'settings'
-  }
-]
-
 export default function BottomNav({ active = 'dashboard', onChange }) {
+  const { t } = useTranslation()
   const [moreOpen, setMoreOpen] = useState(false)
   const menuRef = useRef(null)
+
+  const mainItems = [
+    { id: 'dashboard', label: t('nav.home'), icon: 'home' },
+    { id: 'children', label: t('nav.children'), icon: 'children' },
+    { id: 'screening', label: t('nav.screening'), icon: 'screening' },
+    { id: 'analytics', label: t('nav.reports'), icon: 'analytics' },
+    { id: 'more', label: t('nav.more'), icon: 'more' },
+  ]
+
+  const secondaryItems = [
+    {
+      id: 'alerts',
+      label: t('nav.clinicalAlerts'),
+      sub: t('nav.alertsSub'),
+      icon: 'alerts',
+      badge: t('nav.alerts')
+    },
+    {
+      id: 'records',
+      label: t('nav.healthRecords'),
+      sub: t('nav.healthRecordsSub'),
+      icon: 'report'
+    },
+    {
+      id: 'history',
+      label: t('nav.medicalHistory'),
+      sub: t('nav.medicalHistorySub'),
+      icon: 'clock'
+    },
+    {
+      id: 'register',
+      label: t('nav.registerChild'),
+      sub: t('nav.registerChildSub'),
+      icon: 'userPlus'
+    },
+    {
+      id: 'settings',
+      label: t('nav.settings'),
+      sub: t('nav.settingsSub'),
+      icon: 'settings'
+    }
+  ]
 
   const isScreeningActive = [
     'screening',

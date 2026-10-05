@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import AppLayout from '../components/AppLayout'
 import Button from '../components/Button'
 import BadgePill from '../components/BadgePill'
@@ -7,6 +8,7 @@ import { SparshBotanicalCorner } from '../components/SparshBotanical'
 import { useApp } from '../context/AppContext'
 
 export default function AVAssessmentScreen({ onNavigate }) {
+  const { t } = useTranslation()
   const { currentChild } = useApp()
 
   // Hearing and Vision observation state only (production contract)
@@ -116,8 +118,8 @@ export default function AVAssessmentScreen({ onNavigate }) {
       active="screening"
       onNavigate={onNavigate}
       backTo="screening"
-      title="Sensory Checks"
-      subtitle="Supplemental Audio-Visual and Speech Reflex Testing"
+      title={t('sensory.title')}
+      subtitle={t('sensory.subtitle')}
     >
       <div className="relative mx-auto max-w-2xl p-4 sm:p-6 lg:p-8 space-y-6">
         <SparshBotanicalCorner position="top-right" className="opacity-25" />
@@ -140,17 +142,15 @@ export default function AVAssessmentScreen({ onNavigate }) {
             onClick={handleProceedToAnalysis}
             className="text-xs font-semibold text-[#1B4D3E] hover:underline"
           >
-            Skip to Analysis →
+            {t('sensory.skipToAnalysis')}
           </button>
         </div>
 
         {/* Clinical Disclaimer — device integration pending (production behavior) */}
         <div className="rounded-2xl border border-amber-200 bg-amber-50/90 p-4 text-xs leading-relaxed text-amber-950 shadow-2xs">
-          <p className="font-bold text-amber-900">Screening Observation Aid — Non-Diagnostic</p>
+          <p className="font-bold text-amber-900">{t('sensory.disclaimerTitle')}</p>
           <p className="mt-0.5 text-amber-800">
-            <span className="font-semibold">Device integration pending.</span>{' '}
-            Hearing and camera capture require validated native-device workflows before clinical use.
-            These controls do not generate clinical results.
+            {t('sensory.disclaimerDesc')}
           </p>
         </div>
 
@@ -162,13 +162,13 @@ export default function AVAssessmentScreen({ onNavigate }) {
                 <Icon name="hearing" className="h-4 w-4" />
               </span>
               <div>
-                <h3 className="text-sm font-semibold text-[#1A201E]">Auditory Tone Response</h3>
-                <p className="text-xs text-[#5A6660]">Emit calibrated audio frequencies (500Hz - 4000Hz)</p>
+                <h3 className="text-sm font-semibold text-[#1A201E]">{t('sensory.auditoryTitle')}</h3>
+                <p className="text-xs text-[#5A6660]">{t('sensory.auditoryDesc')}</p>
               </div>
             </div>
             {observations.hearing && (
               <BadgePill tone={observations.hearing === 'normal' ? 'normal' : 'risk'}>
-                {observations.hearing === 'normal' ? 'Pass' : 'Concern'}
+                {observations.hearing === 'normal' ? t('common.pass') : t('common.concern')}
               </BadgePill>
             )}
           </div>
@@ -199,14 +199,14 @@ export default function AVAssessmentScreen({ onNavigate }) {
               variant={observations.hearing === 'normal' ? 'primary' : 'outline'}
               onClick={() => setFinding('hearing', 'normal')}
             >
-              Pass (Reflex Seen)
+              {t('sensory.auditoryPass')}
             </Button>
             <Button
               size="sm"
               variant={observations.hearing === 'concern' ? 'terracotta' : 'outline'}
               onClick={() => setFinding('hearing', 'concern')}
             >
-              No Reflex
+              {t('sensory.auditoryConcern')}
             </Button>
           </div>
         </div>
@@ -219,13 +219,13 @@ export default function AVAssessmentScreen({ onNavigate }) {
                 <Icon name="vision" className="h-4 w-4" />
               </span>
               <div>
-                <h3 className="text-sm font-semibold text-[#1A201E]">Visual Tracking & Fixation</h3>
-                <p className="text-xs text-[#5A6660]">Assess ocular pursuit across horizontal & vertical field</p>
+                <h3 className="text-sm font-semibold text-[#1A201E]">{t('sensory.visualTitle')}</h3>
+                <p className="text-xs text-[#5A6660]">{t('sensory.visualDesc')}</p>
               </div>
             </div>
             {observations.vision && (
               <BadgePill tone={observations.vision === 'normal' ? 'normal' : 'risk'}>
-                {observations.vision === 'normal' ? 'Pass' : 'Concern'}
+                {observations.vision === 'normal' ? t('common.pass') : t('common.concern')}
               </BadgePill>
             )}
           </div>
@@ -240,7 +240,7 @@ export default function AVAssessmentScreen({ onNavigate }) {
               }}
               className="w-full"
             >
-              Launch Interactive Visual Target
+              {t('sensory.launchTarget')}
             </Button>
           </div>
 
@@ -250,14 +250,14 @@ export default function AVAssessmentScreen({ onNavigate }) {
               variant={observations.vision === 'normal' ? 'primary' : 'outline'}
               onClick={() => setFinding('vision', 'normal')}
             >
-              Smooth Pursuit
+              {t('sensory.smoothPursuit')}
             </Button>
             <Button
               size="sm"
               variant={observations.vision === 'concern' ? 'terracotta' : 'outline'}
               onClick={() => setFinding('vision', 'concern')}
             >
-              Tracking Deficit
+              {t('sensory.trackingDeficit')}
             </Button>
           </div>
         </div>
@@ -267,7 +267,7 @@ export default function AVAssessmentScreen({ onNavigate }) {
         {/* Concerning Observation Notice */}
         {hasConcerningObservation && (
           <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-xs font-semibold text-red-900 shadow-2xs">
-            ⚠️ Concerning screening observation flagged — these findings will be highlighted in the diagnostic evaluation.
+            {t('sensory.flaggedNotice')}
           </div>
         )}
 
@@ -278,7 +278,7 @@ export default function AVAssessmentScreen({ onNavigate }) {
             onClick={handleProceedToAnalysis}
             className="w-full text-sm font-semibold py-3"
           >
-            Compute Developmental Analysis →
+            {t('sensory.computeAnalysis')}
           </Button>
         </div>
       </div>
@@ -287,7 +287,7 @@ export default function AVAssessmentScreen({ onNavigate }) {
       {showVisualModal && (
         <div className="fixed inset-0 z-50 flex flex-col bg-[#1A201E] p-4 text-white" role="dialog">
           <div className="flex items-center justify-between pb-3">
-            <h3 className="text-sm font-bold">Ocular Pursuit Target</h3>
+            <h3 className="text-sm font-bold">{t('sensory.targetTitle')}</h3>
             <Button
               variant="secondary"
               size="sm"
@@ -296,7 +296,7 @@ export default function AVAssessmentScreen({ onNavigate }) {
                 setShowVisualModal(false)
               }}
             >
-              Done / Close
+              {t('sensory.close')}
             </Button>
           </div>
 

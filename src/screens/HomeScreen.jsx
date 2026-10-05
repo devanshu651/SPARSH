@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import AppLayout from '../components/AppLayout'
 import BadgePill from '../components/BadgePill'
 import Button from '../components/Button'
@@ -61,6 +62,7 @@ function AnganwadiWorkerVisual({ className = 'h-24 w-24 sm:h-28 sm:w-28' }) {
 }
 
 export default function HomeScreen({ onNavigate }) {
+  const { t } = useTranslation()
   const { currentWorker, setCurrentChild } = useApp()
   const [centres, setCentres] = useState([])
   const [children, setChildren] = useState([])
@@ -127,10 +129,10 @@ export default function HomeScreen({ onNavigate }) {
 
   const greeting = useMemo(() => {
     const hour = new Date().getHours()
-    if (hour < 12) return 'Good Morning'
-    if (hour < 17) return 'Good Afternoon'
-    return 'Good Evening'
-  }, [])
+    if (hour < 12) return t('dashboard.greetingMorning')
+    if (hour < 17) return t('dashboard.greetingAfternoon')
+    return t('dashboard.greetingEvening')
+  }, [t])
 
   const handleSelectChild = (child) => {
     setCurrentChild(child)
@@ -173,8 +175,8 @@ export default function HomeScreen({ onNavigate }) {
                   {assignedCentre
                     ? `${assignedCentre.name}, ${assignedCentre.district || ''}`.trim().replace(/,\s*$/, '')
                     : isAdmin
-                    ? 'Administrator'
-                    : "Let's support our children's development today."}
+                    ? t('nav.adminConsole')
+                    : t('dashboard.defaultSubtitle')}
                 </p>
               </div>
 
@@ -205,10 +207,10 @@ export default function HomeScreen({ onNavigate }) {
 
               <div className="mt-3">
                 <h2 className="text-base font-bold text-white font-heading">
-                  Start Screening
+                  {t('dashboard.startScreening')}
                 </h2>
                 <p className="mt-0.5 text-xs text-[#D2E3D8] leading-relaxed">
-                  Conduct developmental screening for a child
+                  {t('dashboard.startScreeningDesc')}
                 </p>
               </div>
             </div>
@@ -229,10 +231,10 @@ export default function HomeScreen({ onNavigate }) {
 
               <div className="mt-3">
                 <h2 className="text-base font-bold text-[#1A201E] font-heading">
-                  Register Child
+                  {t('dashboard.registerChild')}
                 </h2>
                 <p className="mt-0.5 text-xs text-[#5A6660] leading-relaxed">
-                  Add a new child to the system
+                  {t('dashboard.registerChildDesc')}
                 </p>
               </div>
             </div>
@@ -253,10 +255,10 @@ export default function HomeScreen({ onNavigate }) {
 
               <div className="mt-3">
                 <h2 className="text-base font-bold text-[#1A201E] font-heading">
-                  View Children
+                  {t('dashboard.viewChildren')}
                 </h2>
                 <p className="mt-0.5 text-xs text-[#5A6660] leading-relaxed">
-                  Manage and monitor registered cohort
+                  {t('dashboard.viewChildrenDesc')}
                 </p>
               </div>
             </div>
@@ -278,10 +280,10 @@ export default function HomeScreen({ onNavigate }) {
 
                 <div className="mt-3">
                   <h2 className="text-base font-bold text-[#1A201E] font-heading">
-                    Admin Console
+                    {t('dashboard.adminConsole')}
                   </h2>
                   <p className="mt-0.5 text-xs text-[#5A6660] leading-relaxed">
-                    Manage centres and user credentials
+                    {t('dashboard.adminConsoleDesc')}
                   </p>
                 </div>
               </div>
@@ -295,10 +297,10 @@ export default function HomeScreen({ onNavigate }) {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-xs font-bold uppercase tracking-wider text-[#5A6660]">
-                  Ward Milestone Coverage
+                  {t('dashboard.milestoneCoverage')}
                 </h3>
                 <p className="text-sm font-semibold text-[#1A201E] mt-0.5">
-                  {screenedCount} of {childrenList.length} Children Screened ({completionRate}%)
+                  {t('dashboard.screenedOf', { screened: screenedCount, total: childrenList.length, rate: completionRate })}
                 </p>
               </div>
               <button
@@ -306,7 +308,7 @@ export default function HomeScreen({ onNavigate }) {
                 onClick={() => onNavigate?.('analytics')}
                 className="text-xs font-bold text-[#1B4D3E] hover:underline"
               >
-                Analytics →
+                {t('dashboard.analyticsLink')}
               </button>
             </div>
 
@@ -322,19 +324,19 @@ export default function HomeScreen({ onNavigate }) {
             <div className="pt-2 border-t border-[#EBF0EC]">
               <div className="grid grid-cols-4 gap-2 text-center">
                 <div className="rounded-xl border border-[#D2DDD6] bg-[#F4F8F5] py-2 px-1 shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
-                  <span className="text-[10px] font-bold uppercase text-[#5A6660]">Total</span>
+                  <span className="text-[10px] font-bold uppercase text-[#5A6660]">{t('common.total')}</span>
                   <p className="text-base font-bold text-[#1A201E] leading-tight mt-0.5">{childrenList.length}</p>
                 </div>
                 <div className="rounded-xl border border-[#B4DEC7] bg-[#EAF6EF] py-2 px-1 shadow-[0_1px_2px_rgba(45,122,88,0.05)]">
-                  <span className="text-[10px] font-bold uppercase text-[#2D7A58]">Normal</span>
+                  <span className="text-[10px] font-bold uppercase text-[#2D7A58]">{t('common.normal')}</span>
                   <p className="text-base font-bold text-[#2D7A58] leading-tight mt-0.5">{onTrackCount}</p>
                 </div>
                 <div className="rounded-xl border border-[#F2C5B5] bg-[#FDF3EE] py-2 px-1 shadow-[0_1px_2px_rgba(217,107,67,0.05)]">
-                  <span className="text-[10px] font-bold uppercase text-[#D96B43]">Follow Up</span>
+                  <span className="text-[10px] font-bold uppercase text-[#D96B43]">{t('common.followUp')}</span>
                   <p className="text-base font-bold text-[#D96B43] leading-tight mt-0.5">{moderateCount}</p>
                 </div>
                 <div className="rounded-xl border border-[#F4B4B4] bg-[#FDEAEA] py-2 px-1 shadow-[0_1px_2px_rgba(211,47,47,0.05)]">
-                  <span className="text-[10px] font-bold uppercase text-[#D32F2F]">At Risk</span>
+                  <span className="text-[10px] font-bold uppercase text-[#D32F2F]">{t('common.atRisk')}</span>
                   <p className="text-base font-bold text-[#D32F2F] leading-tight mt-0.5">{atRiskCount}</p>
                 </div>
               </div>
@@ -347,14 +349,14 @@ export default function HomeScreen({ onNavigate }) {
           <section className="space-y-2.5">
             <div className="flex items-center justify-between px-1">
               <h2 className="text-base font-bold text-[#1A201E] font-heading">
-                Recent Activity
+                {t('dashboard.recentActivity')}
               </h2>
               <button
                 type="button"
                 onClick={() => onNavigate?.('children')}
                 className="text-xs font-bold text-[#D96B43] hover:underline"
               >
-                View All
+                {t('common.viewAll')}
               </button>
             </div>
 
@@ -365,15 +367,15 @@ export default function HomeScreen({ onNavigate }) {
                   <Icon name="report" className="h-5 w-5" />
                 </div>
                 <h3 className="text-sm font-semibold text-[#1A201E]">
-                  No recent activity
+                  {t('dashboard.noRecentActivity')}
                 </h3>
                 <p className="text-xs text-[#5A6660] max-w-xs mx-auto">
-                  Your recent activities will appear here once you begin registrations or screenings.
+                  {t('dashboard.noRecentActivityDesc')}
                 </p>
                 <div className="pt-2">
                   <Button variant="primary" size="sm" onClick={() => onNavigate?.('register')}>
                     <Icon name="plus" className="h-3.5 w-3.5 mr-1" />
-                    <span>Register First Child</span>
+                    <span>{t('dashboard.registerFirstChild')}</span>
                   </Button>
                 </div>
               </div>
@@ -391,16 +393,16 @@ export default function HomeScreen({ onNavigate }) {
 
                   const label =
                     child.latest_risk === 'RED'
-                      ? 'At Risk'
+                      ? t('common.atRisk')
                       : child.latest_risk === 'YELLOW'
-                      ? 'Follow Up'
+                      ? t('common.followUp')
                       : child.latest_risk === 'GREEN'
-                      ? 'Normal'
-                      : 'Pending'
+                      ? t('common.normal')
+                      : t('common.pending')
 
                   const ageText = child.age_months !== null && child.age_months !== undefined
                     ? `${Math.floor(child.age_months / 12)}y ${child.age_months % 12}m`
-                    : 'Age not logged'
+                    : t('dashboard.ageNotLogged')
 
                   return (
                     <div

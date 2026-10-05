@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { childrenApi } from '../services/api'
 import { useApp } from '../context/AppContext'
 import { queuedScreenings } from '../services/offline'
@@ -9,6 +10,7 @@ import { SparshBotanicalCorner } from '../components/SparshBotanical'
 import { ErrorState, LoadingState } from '../components/AsyncState'
 
 export default function AlertsScreen({ onNavigate }) {
+  const { t } = useTranslation()
   const { setCurrentChild } = useApp()
   const [children, setChildren] = useState([])
   const [offlineCount, setOfflineCount] = useState(0)
@@ -147,14 +149,19 @@ export default function AlertsScreen({ onNavigate }) {
     onNavigate?.(alert.targetScreen || 'children')
   }
 
-  const filters = ['All', 'Follow Up', 'At Risk', 'Referrals']
+  const filters = [
+    { id: 'All', label: t('alerts.all') },
+    { id: 'Follow Up', label: t('alerts.followUp') },
+    { id: 'At Risk', label: t('alerts.atRisk') },
+    { id: 'Referrals', label: t('alerts.referrals') }
+  ]
 
   return (
     <AppLayout
       active="alerts"
       onNavigate={onNavigate}
       backTo="dashboard"
-      title="Alerts"
+      title={t('alerts.title')}
       actions={
         <div className="relative">
           <span className="flex h-8 w-8 items-center justify-center rounded-full text-[#D96B43] hover:bg-[#FDF0EB] transition">
@@ -172,20 +179,20 @@ export default function AlertsScreen({ onNavigate }) {
         {/* Filter Pills (Matches Screen 9) */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
           {filters.map((filter) => {
-            const isActive = activeFilter === filter
+            const isActive = activeFilter === filter.id
 
             return (
               <button
-                key={filter}
+                key={filter.id}
                 type="button"
-                onClick={() => setActiveFilter(filter)}
+                onClick={() => setActiveFilter(filter.id)}
                 className={`shrink-0 rounded-full px-4 py-2 text-xs font-semibold transition ${
                   isActive
                     ? 'bg-[#1B4D3E] text-white shadow-2xs'
                     : 'border border-[#E5EBE7] bg-white text-[#5A6660] hover:border-[#CBD5D0] hover:text-[#1A201E]'
                 }`}
               >
-                {filter}
+                {filter.label}
               </button>
             )
           })}
@@ -201,9 +208,9 @@ export default function AlertsScreen({ onNavigate }) {
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EBF2EE] text-[#1B4D3E] mb-3">
               <Icon name="bell" className="h-6 w-6" />
             </div>
-            <h3 className="text-sm font-semibold text-[#1A201E]">No alerts in this category</h3>
+            <h3 className="text-sm font-semibold text-[#1A201E]">{t('alerts.noAlerts')}</h3>
             <p className="mt-1 text-xs text-[#5A6660]">
-              All children in this filter currently have normal development status.
+              {t('alerts.noAlertsDesc')}
             </p>
           </div>
         ) : (
@@ -229,7 +236,7 @@ export default function AlertsScreen({ onNavigate }) {
                 </div>
 
                 <BadgePill tone={alert.tone}>
-                  {alert.badge}
+                  {alert.badge === 'At Risk' ? t('common.atRisk') : alert.badge === 'Follow Up' ? t('common.followUp') : alert.badge}
                 </BadgePill>
               </div>
             ))}
@@ -239,3 +246,4 @@ export default function AlertsScreen({ onNavigate }) {
     </AppLayout>
   )
 }
+

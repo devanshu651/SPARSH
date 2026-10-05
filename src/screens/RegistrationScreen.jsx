@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import AppLayout from '../components/AppLayout'
 import Input from '../components/Input'
 import Select from '../components/Select'
@@ -22,6 +23,7 @@ const initial = {
 }
 
 export default function RegistrationScreen({ onNavigate }) {
+  const { t } = useTranslation()
   const { currentWorker, setCurrentChild } = useApp()
   const [form, setForm] = useState(() => {
     try {
@@ -126,33 +128,33 @@ export default function RegistrationScreen({ onNavigate }) {
   // SUCCESS CONFIRMATION SCREEN
   if (savedChild) {
     return (
-      <AppLayout active="children" onNavigate={onNavigate} title="Enrolment Complete">
+      <AppLayout active="children" onNavigate={onNavigate} title={t('registration.enrolmentComplete')}>
         <div className="max-w-md mx-auto py-8 text-center space-y-4">
           <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-[#E8F5EE] text-[#2D7A58] border border-[#C6E7D5]">
             <Icon name="checkCircle" className="h-8 w-8" />
           </div>
 
           <h2 className="text-xl font-bold text-[#1A201E] font-heading">
-            Child Registered Successfully!
+            {t('registration.registeredSuccess')}
           </h2>
 
           <div className="rounded-2xl border border-[#E5EBE7] bg-white p-5 text-left text-xs space-y-2 shadow-card">
             <div className="flex justify-between border-b border-[#F3F6F4] pb-2">
-              <span className="text-[#5A6660]">Full Name:</span>
+              <span className="text-[#5A6660]">{t('registration.fullName')}:</span>
               <span className="font-bold text-[#1A201E]">{savedChild.name}</span>
             </div>
             <div className="flex justify-between border-b border-[#F3F6F4] pb-2">
-              <span className="text-[#5A6660]">Anganwadi ID:</span>
+              <span className="text-[#5A6660]">{t('registration.anganwadiId')}:</span>
               <span className="font-mono font-bold text-[#1B4D3E]">{savedChild.child_identifier || '—'}</span>
             </div>
             <div className="flex justify-between border-b border-[#F3F6F4] pb-2">
-              <span className="text-[#5A6660]">Age / Gender:</span>
+              <span className="text-[#5A6660]">{t('registration.ageGender')}:</span>
               <span className="font-bold text-[#1A201E]">
-                {savedChild.age_months !== null && savedChild.age_months !== undefined ? `${savedChild.age_months} months` : '—'} • {savedChild.gender || savedChild.sex}
+                {savedChild.age_months !== null && savedChild.age_months !== undefined ? `${savedChild.age_months} ${t('registration.months')}` : '—'} • {savedChild.gender || savedChild.sex}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-[#5A6660]">Guardian:</span>
+              <span className="text-[#5A6660]">{t('registration.guardian')}:</span>
               <span className="font-bold text-[#1A201E]">{savedChild.guardian_name || '—'}</span>
             </div>
           </div>
@@ -164,7 +166,7 @@ export default function RegistrationScreen({ onNavigate }) {
               className="w-full min-h-[50px] rounded-xl bg-[#1B4D3E] hover:bg-[#143D31] text-white font-bold text-sm shadow-card flex items-center justify-center gap-2"
             >
               <Icon name="screening" className="h-4 w-4" />
-              <span>Begin Milestone Screening Now →</span>
+              <span>{t('registration.beginScreening')}</span>
             </button>
 
             <button
@@ -175,7 +177,7 @@ export default function RegistrationScreen({ onNavigate }) {
               }}
               className="w-full min-h-[44px] rounded-xl border border-[#E5EBE7] bg-white text-xs font-bold text-[#1A201E] hover:bg-[#FAFCFA]"
             >
-              + Register Another Child
+              {t('registration.registerAnother')}
             </button>
           </div>
         </div>
@@ -188,8 +190,8 @@ export default function RegistrationScreen({ onNavigate }) {
       active="register"
       onNavigate={onNavigate}
       backTo="children"
-      title="Register Child"
-      subtitle="Enroll new child into Anganwadi health cohort"
+      title={t('registration.title')}
+      subtitle={t('registration.subtitle')}
     >
       <div className="max-w-2xl mx-auto space-y-5 pt-1 pb-16">
 
@@ -197,23 +199,23 @@ export default function RegistrationScreen({ onNavigate }) {
           {/* SECTION 1: BASIC INFORMATION (EXACT MATCH TO SCREEN 5 IN REFERENCE) */}
           <div className="rounded-2xl border border-[#E5EBE7] bg-white p-5 shadow-card space-y-4">
             <h2 className="text-sm font-bold text-[#1A201E] font-heading border-b border-[#F3F6F4] pb-2">
-              Basic Information
+              {t('registration.basicInfo')}
             </h2>
 
             {/* Child's Name */}
             <Input
-              label="Child's Name"
+              label={t('registration.childName')}
               required
               value={form.name}
               onChange={update('name')}
               error={errors.name}
-              placeholder="Enter child's full name"
+              placeholder={t('registration.childNamePlaceholder')}
             />
 
             {/* Date of Birth with Age Preview */}
             <div className="space-y-1">
               <Input
-                label="Date of Birth"
+                label={t('registration.dob')}
                 required
                 type="date"
                 value={form.dob}
@@ -224,7 +226,13 @@ export default function RegistrationScreen({ onNavigate }) {
               {ageMonths !== null && (
                 <div className="flex items-center gap-2 text-xs text-[#1B4D3E] font-semibold pt-0.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#1B4D3E]" />
-                  <span>Calculated Age: {Math.floor(ageMonths / 12)} years {ageMonths % 12} months ({ageMonths} months)</span>
+                  <span>
+                    {t('registration.calculatedAge', {
+                      years: Math.floor(ageMonths / 12),
+                      months: ageMonths % 12,
+                      total: ageMonths
+                    })}
+                  </span>
                 </div>
               )}
             </div>
@@ -232,13 +240,13 @@ export default function RegistrationScreen({ onNavigate }) {
             {/* Gender Segmented Buttons matching Screen 5: [ Male ] [ Female ] [ Other ] */}
             <div className="space-y-1.5">
               <span className="block text-xs font-bold text-[#1A201E]">
-                Gender <span className="text-[#D32F2F]">*</span>
+                {t('registration.gender')} <span className="text-[#D32F2F]">*</span>
               </span>
               <div className="grid grid-cols-3 gap-2">
                 {[
-                  { id: 'male', label: 'Male' },
-                  { id: 'female', label: 'Female' },
-                  { id: 'other', label: 'Other' }
+                  { id: 'male', label: t('registration.male') },
+                  { id: 'female', label: t('registration.female') },
+                  { id: 'other', label: t('registration.other') }
                 ].map((g) => {
                   const isSelected = form.gender === g.id
                   return (
@@ -266,12 +274,12 @@ export default function RegistrationScreen({ onNavigate }) {
           {/* SECTION 2: ADDITIONAL INFORMATION (MATCHING SCREEN 5 IN REFERENCE) */}
           <div className="rounded-2xl border border-[#E5EBE7] bg-white p-5 shadow-card space-y-4">
             <h2 className="text-sm font-bold text-[#1A201E] font-heading border-b border-[#F3F6F4] pb-2">
-              Additional Information
+              {t('registration.additionalInfo')}
             </h2>
 
             {/* Anganwadi Centre Dropdown */}
             <Select
-              label="Anganwadi Centre"
+              label={t('registration.centre')}
               required
               value={form.centreId || currentWorker?.centre_ids?.[0] || ''}
               onChange={update('centreId')}
@@ -285,32 +293,32 @@ export default function RegistrationScreen({ onNavigate }) {
 
             {/* Parent / Guardian Name */}
             <Input
-              label="Parent / Guardian Name"
+              label={t('registration.guardianName')}
               value={form.guardianName}
               onChange={update('guardianName')}
-              placeholder="Enter name"
+              placeholder={t('registration.guardianPlaceholder')}
             />
 
             {/* Contact Number */}
             <Input
-              label="Contact Number"
+              label={t('registration.contactNumber')}
               type="tel"
               inputMode="numeric"
               maxLength={10}
               value={form.mobile}
               onChange={update('mobile')}
               error={errors.mobile}
-              placeholder="Enter contact number"
+              placeholder={t('registration.contactPlaceholder')}
               leftIcon={<span className="text-xs font-bold text-[#5A6660]">+91</span>}
             />
 
             {/* Anganwadi Child Identifier */}
             <Input
-              label="Anganwadi Child ID"
+              label={t('registration.childId')}
               value={form.childIdentifier}
               onChange={update('childIdentifier')}
               placeholder="e.g. AW-0482"
-              helperText="Official registry identification code"
+              helperText={t('registration.childIdHelper')}
             />
           </div>
 
@@ -319,23 +327,23 @@ export default function RegistrationScreen({ onNavigate }) {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-sm font-bold text-[#1A201E]">
-                  Initial Growth Vitals
+                  {t('registration.growthVitals')}
                 </h2>
-                <p className="text-[11px] text-[#5A6660]">Optional height, weight, and MUAC</p>
+                <p className="text-[11px] text-[#5A6660]">{t('registration.vitalsDesc')}</p>
               </div>
               <button
                 type="button"
                 onClick={() => setShowOptionalVitals(!showOptionalVitals)}
                 className="text-xs font-bold text-[#1B4D3E] hover:underline"
               >
-                {showOptionalVitals ? 'Hide' : '+ Add Vitals'}
+                {showOptionalVitals ? t('registration.hideVitals') : t('registration.addVitals')}
               </button>
             </div>
 
             {showOptionalVitals && (
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
                 <Input
-                  label="Weight (kg)"
+                  label={t('registration.weight')}
                   type="number"
                   step="0.05"
                   value={form.weight}
@@ -343,7 +351,7 @@ export default function RegistrationScreen({ onNavigate }) {
                   placeholder="e.g. 9.4"
                 />
                 <Input
-                  label="Height (cm)"
+                  label={t('registration.height')}
                   type="number"
                   step="0.1"
                   value={form.height}
@@ -351,7 +359,7 @@ export default function RegistrationScreen({ onNavigate }) {
                   placeholder="e.g. 78.5"
                 />
                 <Input
-                  label="MUAC (mm)"
+                  label={t('registration.muac')}
                   type="number"
                   step="1"
                   value={form.muac}
@@ -376,7 +384,7 @@ export default function RegistrationScreen({ onNavigate }) {
               className="w-full min-h-[50px] rounded-xl bg-[#1B4D3E] hover:bg-[#143D31] text-white font-bold text-sm shadow-card flex items-center justify-center gap-2 transition-all active:scale-[0.99] disabled:opacity-50"
             >
               <Icon name="userPlus" className="h-4 w-4" />
-              <span>{saving ? 'Registering Child…' : 'Register Child'}</span>
+              <span>{saving ? t('registration.registering') : t('registration.registerButton')}</span>
             </button>
           </div>
         </form>
@@ -385,3 +393,4 @@ export default function RegistrationScreen({ onNavigate }) {
     </AppLayout>
   )
 }
+
