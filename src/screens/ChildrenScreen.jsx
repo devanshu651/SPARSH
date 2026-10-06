@@ -229,7 +229,7 @@ export default function ChildrenScreen({ onNavigate }) {
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {filteredChildren.map((child) => {
-              const ageMonths = child.age_months ?? calculateAge(child.date_of_birth)
+              const ageMonths = child.date_of_birth ? calculateAge(child.date_of_birth) : child.age_months
               const riskTone =
                 child.latest_risk === 'RED'
                   ? 'high'
