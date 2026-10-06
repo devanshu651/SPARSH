@@ -24,6 +24,9 @@ import SettingsScreen from './screens/SettingsScreen'
 import AdminConsoleScreen from './screens/AdminConsoleScreen'
 import ChildProfileScreen from './screens/ChildProfileScreen'
 import AssistantChat from './components/assistant/AssistantChat'
+import PrivacyNoticeScreen from './screens/PrivacyNoticeScreen'
+import { authService } from './services/auth'
+import { hasPrivacyAcknowledgement, savePrivacyAcknowledgement } from './services/acknowledgement'
 
 const getInitialScreen = () => {
   if (typeof window !== 'undefined' && window.history.state && window.history.state.screen) {
@@ -35,7 +38,10 @@ const getInitialScreen = () => {
 function AppContent() {
   const { currentWorker, authReady } = useApp()
   const [screen, setScreen] = useState(getInitialScreen)
+  const [sessionAcknowledgedUid, setSessionAcknowledgedUid] = useState(null)
   const currentScreenRef = useRef(screen)
+  const userUid = authService.getCurrentUser()?.uid
+  const acknowledged = !!userUid && (hasPrivacyAcknowledgement(userUid) || sessionAcknowledgedUid === userUid)
 
   useEffect(() => {
     currentScreenRef.current = screen
@@ -47,10 +53,16 @@ function AppContent() {
     if (authReady && currentWorker?.role === 'admin' && !publicScreens.includes(screen) && screen !== 'admin-console') {
       navigate('admin-console', { replace: true })
     }
+    if (authReady && currentWorker && currentWorker.role !== 'admin' && userUid && !acknowledged && screen !== 'privacy-notice') {
+      navigate('privacy-notice', { replace: true })
+    }
+    if (authReady && currentWorker && currentWorker.role !== 'admin' && acknowledged && screen === 'privacy-notice') {
+      navigate('dashboard', { replace: true })
+    }
     if (authReady && currentWorker && currentWorker.role !== 'admin' && screen === 'admin-console') {
       navigate('dashboard', { replace: true })
     }
-  }, [authReady, currentWorker, screen])
+  }, [authReady, currentWorker, screen, userUid, acknowledged])
 
   useEffect(() => {
     const currentState = window.history.state
@@ -120,6 +132,13 @@ function AppContent() {
     return <AdminConsoleScreen onNavigate={navigate} />
   }
 
+  if (currentWorker && currentWorker.role !== 'admin' && userUid && !acknowledged) {
+    return <ErrorBoundary><PrivacyNoticeScreen onContinue={() => {
+      if (!savePrivacyAcknowledgement(userUid)) setSessionAcknowledgedUid(userUid)
+      navigate('dashboard', { replace: true })
+    }} /></ErrorBoundary>
+  }
+
   return (
     <ErrorBoundary>
 
@@ -132,7 +151,7 @@ function AppContent() {
       {screen === 'login' && (
         <LoginScreen
           onBack={() => navigate('splash', { isBack: true })}
-          onLogin={() => navigate(currentWorker?.role === 'admin' ? 'admin-console' : 'dashboard', { replace: true })}
+          onLogin={() => navigate(currentWorker?.role === 'admin' ? 'admin-console' : 'privacy-notice', { replace: true })}
           onRegister={() => navigate('worker-registration')}
         />
       )}

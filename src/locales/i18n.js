@@ -5,6 +5,7 @@ import en from './en.json'
 import hi from './hi.json'
 import screeningUi from './screeningUi.json'
 import screeningQuestions from './screeningQuestions.json'
+import privacyNotice from './privacyNotice.json'
 
 i18n.use(LanguageDetector).use(initReactI18next).init({
   resources: {
@@ -17,5 +18,9 @@ i18n.use(LanguageDetector).use(initReactI18next).init({
   detection: { caches: ['localStorage'] },
   interpolation: { escapeValue: false }
 })
+
+for (const language of ['en', 'hi', 'mr']) {
+  i18n.addResourceBundle(language, 'translation', { privacyNotice: privacyNotice[language] }, true, true)
+}
 
 export default i18n

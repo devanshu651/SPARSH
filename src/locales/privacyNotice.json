@@ -1,0 +1,44 @@
+{
+  "en": {
+    "title": "SPARSH – Terms & Privacy Notice",
+    "intro": "Please review this notice before using SPARSH.",
+    "sections": [
+      { "title": "1. Purpose of SPARSH", "body": "SPARSH is a developmental screening and follow-up support platform designed to assist Anganwadi Workers in recording child information, conducting age-based developmental screening, viewing screening risk indications, and supporting referral and follow-up." },
+      { "title": "2. Information entered into SPARSH", "body": "SPARSH may collect child profile information, relevant health information provided through the application, developmental screening responses, screening results, referral information, and related records required for the application's workflow." },
+      { "title": "3. User responsibility", "body": "The Anganwadi Worker is responsible for entering information accurately and, where applicable, recording information based on the caregiver's response or the worker's direct observation. SPARSH does not independently verify the accuracy of user-entered observations." },
+      { "title": "4. Screening limitation", "body": "SPARSH provides developmental screening support and risk indications. It does not provide a medical diagnosis and does not replace assessment or diagnosis by qualified healthcare professionals. Where screening indicates concern, appropriate professional evaluation and follow-up should be considered." },
+      { "title": "5. Data access and protection", "body": "Access to SPARSH data is controlled through authentication, user roles, and assigned Anganwadi Centre permissions. Child information should only be accessed and used for the purposes described in this notice and applicable privacy requirements." },
+      { "title": "6. AI / ML data use", "body": "SPARSH currently does not use children's screening data to train an ML model. Any future use of identifiable or identifiable-linked child data for research, model development, or machine-learning training would require appropriate review, safeguards, and any additional consent or authorization required under applicable requirements." }
+    ],
+    "acknowledgement": "I have read and understood the SPARSH Terms & Privacy Notice. I understand that SPARSH provides screening support and that the information I enter should be accurate and based on available caregiver information or observation.",
+    "continue": "Continue to SPARSH"
+  },
+  "hi": {
+    "title": "SPARSH – शर्तें और गोपनीयता सूचना",
+    "intro": "SPARSH का उपयोग करने से पहले कृपया यह सूचना पढ़ें।",
+    "sections": [
+      { "title": "1. SPARSH का उद्देश्य", "body": "SPARSH विकासात्मक स्क्रीनिंग और अनुवर्ती सहायता का एक मंच है। यह आंगनवाड़ी कार्यकर्ताओं को बच्चे की जानकारी दर्ज करने, आयु के अनुसार विकासात्मक स्क्रीनिंग करने, स्क्रीनिंग से जुड़े जोखिम संकेत देखने तथा रेफरल और अनुवर्ती कार्रवाई में सहायता करता है।" },
+      { "title": "2. SPARSH में दर्ज की जाने वाली जानकारी", "body": "SPARSH में बच्चे की प्रोफ़ाइल संबंधी जानकारी, ऐप के माध्यम से दी गई प्रासंगिक स्वास्थ्य जानकारी, विकासात्मक स्क्रीनिंग के उत्तर, स्क्रीनिंग के परिणाम, रेफरल की जानकारी और ऐप की कार्यप्रणाली के लिए आवश्यक संबंधित रिकॉर्ड शामिल हो सकते हैं।" },
+      { "title": "3. उपयोगकर्ता की जिम्मेदारी", "body": "आंगनवाड़ी कार्यकर्ता जानकारी सही ढंग से दर्ज करने और जहाँ लागू हो, देखभालकर्ता के उत्तर या अपने प्रत्यक्ष अवलोकन के आधार पर जानकारी दर्ज करने के लिए जिम्मेदार हैं। SPARSH उपयोगकर्ता द्वारा दर्ज किए गए अवलोकनों की सटीकता की स्वतंत्र रूप से पुष्टि नहीं करता।" },
+      { "title": "4. स्क्रीनिंग की सीमाएँ", "body": "SPARSH विकासात्मक स्क्रीनिंग में सहायता और जोखिम संकेत प्रदान करता है। यह चिकित्सीय निदान नहीं देता और योग्य स्वास्थ्य पेशेवरों के आकलन या निदान का विकल्प नहीं है। यदि स्क्रीनिंग में चिंता का संकेत मिले, तो उपयुक्त पेशेवर मूल्यांकन और अनुवर्ती कार्रवाई पर विचार किया जाना चाहिए।" },
+      { "title": "5. डेटा तक पहुँच और सुरक्षा", "body": "SPARSH डेटा तक पहुँच प्रमाणीकरण, उपयोगकर्ता भूमिकाओं और आवंटित आंगनवाड़ी केंद्र की अनुमतियों के माध्यम से नियंत्रित होती है। बच्चे की जानकारी का उपयोग केवल इस सूचना में बताए गए उद्देश्यों और लागू गोपनीयता आवश्यकताओं के अनुसार किया जाना चाहिए।" },
+      { "title": "6. AI / ML में डेटा का उपयोग", "body": "SPARSH वर्तमान में बच्चों के स्क्रीनिंग डेटा का उपयोग ML मॉडल को प्रशिक्षित करने के लिए नहीं करता। भविष्य में पहचान योग्य या पहचान से जुड़ी बच्चे की जानकारी का शोध, मॉडल विकास या मशीन-लर्निंग प्रशिक्षण के लिए कोई भी उपयोग उचित समीक्षा, सुरक्षा उपायों और लागू आवश्यकताओं के अनुसार आवश्यक अतिरिक्त सहमति या प्राधिकरण के अधीन होगा।" }
+    ],
+    "acknowledgement": "मैंने SPARSH की शर्तें और गोपनीयता सूचना पढ़ और समझ ली है। मैं समझता/समझती हूँ कि SPARSH स्क्रीनिंग सहायता प्रदान करता है और मेरे द्वारा दर्ज की गई जानकारी उपलब्ध देखभालकर्ता की जानकारी या अवलोकन पर आधारित और सही होनी चाहिए।",
+    "continue": "SPARSH पर आगे बढ़ें"
+  },
+  "mr": {
+    "title": "SPARSH – अटी व गोपनीयता सूचना",
+    "intro": "SPARSH वापरण्यापूर्वी कृपया ही सूचना वाचा.",
+    "sections": [
+      { "title": "1. SPARSH चा उद्देश", "body": "SPARSH हे विकासात्मक स्क्रीनिंग आणि पाठपुरावा सहाय्य व्यासपीठ आहे. बालकाची माहिती नोंदवणे, वयानुसार विकासात्मक स्क्रीनिंग करणे, स्क्रीनिंगमधील जोखमीचे संकेत पाहणे तसेच संदर्भसेवा आणि पाठपुराव्यास सहाय्य करणे यासाठी ते अंगणवाडी सेविकांना मदत करते." },
+      { "title": "2. SPARSH मध्ये नोंदवली जाणारी माहिती", "body": "SPARSH मध्ये बालकाच्या प्रोफाइलची माहिती, अनुप्रयोगाद्वारे दिलेली संबंधित आरोग्यविषयक माहिती, विकासात्मक स्क्रीनिंगची उत्तरे, स्क्रीनिंगचे निष्कर्ष, संदर्भसेवेची माहिती आणि अनुप्रयोगाच्या कार्यप्रवाहासाठी आवश्यक संबंधित नोंदी समाविष्ट असू शकतात." },
+      { "title": "3. वापरकर्त्याची जबाबदारी", "body": "माहिती अचूकपणे नोंदवण्याची आणि लागू असल्यास, काळजीवाहकाच्या उत्तरावर किंवा स्वतःच्या प्रत्यक्ष निरीक्षणावर आधारित माहिती नोंदवण्याची जबाबदारी अंगणवाडी सेविकेची आहे. वापरकर्त्याने नोंदवलेल्या निरीक्षणांची अचूकता SPARSH स्वतंत्रपणे पडताळत नाही." },
+      { "title": "4. स्क्रीनिंगच्या मर्यादा", "body": "SPARSH विकासात्मक स्क्रीनिंगसाठी सहाय्य आणि जोखमीचे संकेत देते. ते वैद्यकीय निदान करत नाही आणि पात्र आरोग्य व्यावसायिकांच्या मूल्यांकनाची किंवा निदानाची जागा घेत नाही. स्क्रीनिंगमध्ये चिंतेचा संकेत आढळल्यास योग्य व्यावसायिक मूल्यांकन आणि पाठपुराव्याचा विचार करावा." },
+      { "title": "5. माहितीचा प्रवेश आणि संरक्षण", "body": "SPARSH माहितीचा प्रवेश प्रमाणीकरण, वापरकर्त्याच्या भूमिका आणि नेमून दिलेल्या अंगणवाडी केंद्राच्या परवानग्यांद्वारे नियंत्रित केला जातो. बालकाची माहिती या सूचनेत वर्णन केलेल्या उद्देशांसाठी आणि लागू गोपनीयता आवश्यकतांनुसारच पाहावी व वापरावी." },
+      { "title": "6. AI / ML साठी माहितीचा वापर", "body": "SPARSH सध्या मुलांच्या स्क्रीनिंग माहितीचा वापर ML मॉडेल प्रशिक्षित करण्यासाठी करत नाही. भविष्यात ओळख पटू शकणाऱ्या किंवा ओळखीशी जोडलेल्या बालकाच्या माहितीचा संशोधन, मॉडेल विकास किंवा मशीन-लर्निंग प्रशिक्षणासाठी कोणताही वापर योग्य पुनरावलोकन, सुरक्षा उपाय आणि लागू आवश्यकतांनुसार आवश्यक असलेल्या अतिरिक्त संमती किंवा अधिकृततेच्या अधीन असेल." }
+    ],
+    "acknowledgement": "मी SPARSH ची अटी व गोपनीयता सूचना वाचली आणि समजून घेतली आहे. SPARSH स्क्रीनिंगसाठी सहाय्य देते आणि मी नोंदवलेली माहिती उपलब्ध काळजीवाहकाच्या माहितीनुसार किंवा निरीक्षणावर आधारित व अचूक असावी, हे मला समजले आहे.",
+    "continue": "SPARSH वर पुढे जा"
+  }
+}
