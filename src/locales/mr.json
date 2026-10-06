@@ -206,7 +206,18 @@
       "language": "भाषा व संभाषण (Language)",
       "social_emotional": "सामाजिक व भावनिक विकास",
       "cognitive": "संज्ञानात्मक व समस्या निवारण"
-    }
+    },
+    "status": {
+      "noConcern": "सध्या चिंता आढळली नाही",
+      "observation": "निरीक्षण आवश्यक",
+      "followUp": "लक्ष देणे आवश्यक",
+      "onTrack": "सामान्य टप्पा",
+      "needsObservation": "निरीक्षण आवश्यक",
+      "needsAttention": "लक्ष देणे आवश्यक"
+    },
+    "checkpoint": "टप्पा: {{months}} महिने",
+    "checkpointAge": "वयोगट टप्पा: {{months}} महिने ({{years}})",
+    "ageBand": "वयोगट: {{band}}"
   },
   "sensory": {
     "title": "संवेदी तपासणी",

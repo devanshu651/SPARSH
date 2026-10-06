@@ -206,7 +206,18 @@
       "language": "Language & Communication",
       "social_emotional": "Social & Emotional Development",
       "cognitive": "Cognitive & Problem Solving"
-    }
+    },
+    "status": {
+      "noConcern": "No Current Concern",
+      "observation": "Observation Recommended",
+      "followUp": "Follow-up Required",
+      "onTrack": "On Track",
+      "needsObservation": "Needs Observation",
+      "needsAttention": "Needs Attention"
+    },
+    "checkpoint": "Checkpoint: {{months}}m",
+    "checkpointAge": "Age Checkpoint: {{months}} months ({{years}})",
+    "ageBand": "Age Band: {{band}}"
   },
   "sensory": {
     "title": "Sensory Checks",

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useApp } from '../context/AppContext'
 import AppLayout from '../components/AppLayout'
 import Button from '../components/Button'
@@ -15,13 +16,21 @@ const domainConfig = [
 ]
 
 export default function ReportScreen({ onNavigate }) {
+  const { t } = useTranslation()
   const { screeningResult, currentChild } = useApp()
   const [notes, setNotes] = useState('')
   const [notesSaved, setNotesSaved] = useState(false)
 
   const childName = currentChild?.name || 'Screened Child'
-  const ageDisplay = currentChild?.age_months !== null && currentChild?.age_months !== undefined
-    ? `${Math.floor(currentChild.age_months / 12)} years ${currentChild.age_months % 12} months`
+  const computedAgeMonths = currentChild?.date_of_birth
+    ? (() => {
+        const dob = new Date(currentChild.date_of_birth)
+        const now = new Date()
+        return Math.max(0, (now.getFullYear() - dob.getFullYear()) * 12 + now.getMonth() - dob.getMonth() - (now.getDate() < dob.getDate() ? 1 : 0))
+      })()
+    : currentChild?.age_months
+  const ageDisplay = computedAgeMonths !== null && computedAgeMonths !== undefined
+    ? `${Math.floor(computedAgeMonths / 12)} years ${computedAgeMonths % 12} months`
     : `${screeningResult?.checkpoint_age_months || '—'} months`
   const childSex = currentChild?.sex || 'Child'
   const screenedDate = screeningResult?.screened_at
@@ -34,7 +43,7 @@ export default function ReportScreen({ onNavigate }) {
   const flaggedDomains = useMemo(() => {
     return domainConfig.filter((d) => {
       const s = domainScores[d.key]
-      return s && (s.missed_count > 0 || s.missed_weight > 0 || s.risk === 'YELLOW' || s.risk === 'RED')
+      return s && (s.missed_count > 0 || s.missed_weight > 0 || s.status === 'WATCH' || s.risk === 'YELLOW' || s.risk === 'RED')
     })
   }, [domainScores])
 
@@ -114,17 +123,17 @@ export default function ReportScreen({ onNavigate }) {
                 <BadgePill
                   tone={
                     riskLevel === 'RED'
-                      ? 'risk'
+                      ? 'high'
                       : riskLevel === 'YELLOW'
-                      ? 'followup'
+                      ? 'moderate'
                       : 'normal'
                   }
                 >
                   {riskLevel === 'RED'
-                    ? 'High Risk'
+                    ? t('screening.status.followUp', 'Follow-up Required')
                     : riskLevel === 'YELLOW'
-                    ? 'Review Needed'
-                    : 'On Track'}
+                    ? t('screening.status.observation', 'Observation Recommended')
+                    : t('screening.status.noConcern', 'No Current Concern')}
                 </BadgePill>
               )}
             </div>
@@ -165,9 +174,16 @@ export default function ReportScreen({ onNavigate }) {
           <div className="space-y-2.5">
             {domainConfig.map((dom) => {
               const score = domainScores[dom.key]
-              const isFlagged = score?.missed_count > 0 || score?.missed_weight > 0 || score?.risk === 'YELLOW' || score?.risk === 'RED'
-              const badgeTone = isFlagged ? 'followup' : 'normal'
-              const badgeLabel = isFlagged ? 'Needs Attention' : 'On Track'
+              const isWatch = score?.status === 'WATCH' || (score?.missed_weight || 0) >= 2
+              const isRedFlag = score?.missed_count > 0 && riskLevel === 'RED'
+              const badgeTone = isRedFlag ? 'high' : isWatch ? 'moderate' : 'normal'
+              const badgeLabel = isRedFlag
+                ? t('screening.status.needsAttention', 'Needs Attention')
+                : isWatch
+                ? t('screening.status.needsObservation', 'Needs Observation')
+                : t('screening.status.onTrack', 'On Track')
+              const domainTotal = score?.total_count || score?.answered_count
+              const achieved = score?.achieved_count ?? (domainTotal ? domainTotal - (score?.missed_count || 0) : null)
 
               return (
                 <div
@@ -177,16 +193,22 @@ export default function ReportScreen({ onNavigate }) {
                   <div className="flex items-center gap-3">
                     <span
                       className={`flex h-8 w-8 items-center justify-center rounded-lg ${
-                        isFlagged ? 'bg-[#FDF0EB] text-[#D96B43]' : 'bg-[#EBF2EE] text-[#1B4D3E]'
+                        isRedFlag
+                          ? 'bg-[#FDE8E8] text-[#D32F2F]'
+                          : isWatch
+                          ? 'bg-[#FDF0EB] text-[#D96B43]'
+                          : 'bg-[#EBF2EE] text-[#1B4D3E]'
                       }`}
                     >
                       <Icon name={dom.icon} className="h-4 w-4" />
                     </span>
                     <div>
-                      <span className="text-sm font-medium text-[#1A201E]">{dom.label}</span>
-                      {score?.total_count ? (
+                      <span className="text-sm font-medium text-[#1A201E]">
+                        {t(`screening.domains.${dom.key}`, { defaultValue: dom.label })}
+                      </span>
+                      {domainTotal ? (
                         <p className="text-[11px] text-[#8E9C95]">
-                          {score.achieved_count ?? (score.total_count - (score.missed_count || 0))} of {score.total_count} milestones achieved
+                          {achieved} of {domainTotal} milestones achieved
                         </p>
                       ) : null}
                     </div>

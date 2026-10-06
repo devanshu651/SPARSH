@@ -206,7 +206,18 @@
       "language": "भाषा एवं संचार (Language)",
       "social_emotional": "सामाजिक एवं भावनात्मक विकास",
       "cognitive": "संज्ञानात्मक एवं समस्या समाधान"
-    }
+    },
+    "status": {
+      "noConcern": "कोई चिंता नहीं",
+      "observation": "निगरानी आवश्यक",
+      "followUp": "कार्रवाई आवश्यक",
+      "onTrack": "सामान्य स्तर",
+      "needsObservation": "निगरानी आवश्यक",
+      "needsAttention": "कार्रवाई आवश्यक"
+    },
+    "checkpoint": "पड़ाव: {{months}} माह",
+    "checkpointAge": "आयु वर्ग पड़ाव: {{months}} माह ({{years}})",
+    "ageBand": "आयु वर्ग: {{band}}"
   },
   "sensory": {
     "title": "संवेदी परीक्षण",

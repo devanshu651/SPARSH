@@ -5,7 +5,9 @@ const tones = {
   info: 'bg-[#EBF2EE] text-[#1B4D3E] border border-[#D5E3DB]',
   teal: 'bg-[#E8F5EE] text-[#1B4D3E] border border-[#C6E7D5]',
   terracotta: 'bg-[#FDF0EB] text-[#C85A32] border border-[#F7D4C8]',
-  neutral: 'bg-[#F3F6F4] text-[#5A6660] border border-[#E5EBE7]'
+  neutral: 'bg-[#F3F6F4] text-[#5A6660] border border-[#E5EBE7]',
+  risk: 'bg-[#FDE8E8] text-[#D32F2F] border border-[#F8C4C4]',
+  followup: 'bg-[#FDF0EB] text-[#C85A32] border border-[#F7D4C8]'
 }
 
 const dots = {
@@ -15,7 +17,9 @@ const dots = {
   info: 'bg-[#1B4D3E]',
   teal: 'bg-[#1B4D3E]',
   terracotta: 'bg-[#D96B43]',
-  neutral: 'bg-[#8E9C95]'
+  neutral: 'bg-[#8E9C95]',
+  risk: 'bg-[#D32F2F]',
+  followup: 'bg-[#D96B43]'
 }
 
 export default function BadgePill({

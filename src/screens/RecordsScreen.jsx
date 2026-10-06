@@ -246,7 +246,7 @@ export default function RecordsScreen({ onNavigate, alertsOnly = false }) {
                     <div className="flex items-center gap-2">
                       {child.latest_risk && (
                         <BadgePill tone={child.latest_risk === 'RED' ? 'risk' : child.latest_risk === 'YELLOW' ? 'followup' : 'normal'}>
-                          {child.latest_risk === 'RED' ? 'At Risk' : child.latest_risk === 'YELLOW' ? 'Follow Up' : 'Normal'}
+                          {child.latest_risk === 'RED' ? 'Follow-up Required' : child.latest_risk === 'YELLOW' ? 'Observation Recommended' : 'No Current Concern'}
                         </BadgePill>
                       )}
                       <BadgePill tone={muac.tone}>

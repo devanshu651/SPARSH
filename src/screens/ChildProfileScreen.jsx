@@ -9,7 +9,7 @@ import { useApp } from '../context/AppContext'
 
 const domains = ['gross_motor', 'fine_motor', 'language', 'social_emotional', 'cognitive']
 const label = (value) => value.replaceAll('_', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase())
-const riskLabel = (level) => ({ GREEN: 'Follow-up threshold not reached', YELLOW: 'Review recommended', RED: 'Needs follow-up' }[level] || 'Unknown')
+const riskLabel = (level) => ({ GREEN: 'No Current Concern', YELLOW: 'Observation Recommended', RED: 'Follow-up Required' }[level] || 'Unknown')
 
 export default function ChildProfileScreen({ onNavigate }) {
   const { currentChild } = useApp()
@@ -86,7 +86,7 @@ export default function ChildProfileScreen({ onNavigate }) {
             <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {Object.entries(latest.domain_scores || {}).map(([domain, score]) => {
                 const repeated = history.filter((entry) => entry.domain_scores?.[domain]?.status === 'WATCH').length
-                return <article key={domain} className="rounded-lg bg-neutral-50 p-3"><h3 className="text-sm font-semibold">{label(domain)}</h3><p className="mt-1 text-xs text-neutral-600">{score.missed_count} responses marked “No” · {score.unsure_count} unsure</p><p className="text-xs font-semibold">{score.status === 'WATCH' ? 'Needs follow-up' : 'Follow-up threshold not reached'}</p>{repeated > 1 && <p className="mt-1 text-xs text-amber-800">Repeated follow-up indication in {repeated} recorded screenings</p>}</article>
+                return <article key={domain} className="rounded-lg bg-neutral-50 p-3"><h3 className="text-sm font-semibold">{label(domain)}</h3><p className="mt-1 text-xs text-neutral-600">{score.missed_count} responses marked “No” · {score.unsure_count} unsure</p><p className="text-xs font-semibold">{score.status === 'WATCH' ? 'Needs Observation' : 'No Current Concern'}</p>{repeated > 1 && <p className="mt-1 text-xs text-amber-800">Repeated follow-up indication in {repeated} recorded screenings</p>}</article>
               })}
             </div>
             {latest.red_flag_ids?.length > 0 && <p className="mt-3 rounded bg-amber-50 p-3 text-sm text-amber-900">Configured screening items require follow-up.</p>}

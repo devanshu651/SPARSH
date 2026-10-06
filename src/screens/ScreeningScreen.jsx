@@ -242,8 +242,15 @@ export default function ScreeningScreen({ onNavigate }) {
                 <span>{filteredCohort.length} registered</span>
               </div>
               {filteredCohort.map((child) => {
-                const ageText = child.age_months !== null && child.age_months !== undefined
-                  ? `${Math.floor(child.age_months / 12)} years ${child.age_months % 12} months`
+                const childAge = child.date_of_birth
+                  ? (() => {
+                      const dob = new Date(child.date_of_birth)
+                      const now = new Date()
+                      return Math.max(0, (now.getFullYear() - dob.getFullYear()) * 12 + now.getMonth() - dob.getMonth() - (now.getDate() < dob.getDate() ? 1 : 0))
+                    })()
+                  : child.age_months
+                const ageText = childAge !== null && childAge !== undefined
+                  ? `${Math.floor(childAge / 12)} years ${childAge % 12} months`
                   : 'Age not logged'
                 const sexText = child.sex ? ` · ${child.sex}` : ''
 
@@ -325,10 +332,33 @@ export default function ScreeningScreen({ onNavigate }) {
 
   // ── Main question view ─────────────────────────────────────────────────────
   const meta = domainMeta[currentDomainKey] || { label: currentDomainKey, icon: 'activity' }
-  const ageDisplay = currentChild?.age_months !== null && currentChild?.age_months !== undefined
-    ? `${Math.floor(currentChild.age_months / 12)} years ${currentChild.age_months % 12} months`
+  const computedAgeMonths = useMemo(() => {
+    if (currentChild?.date_of_birth) {
+      const dob = new Date(currentChild.date_of_birth)
+      const now = new Date()
+      return Math.max(0, (now.getFullYear() - dob.getFullYear()) * 12 + now.getMonth() - dob.getMonth() - (now.getDate() < dob.getDate() ? 1 : 0))
+    }
+    if (currentChild?.age_months !== null && currentChild?.age_months !== undefined) {
+      return currentChild.age_months
+    }
+    return data?.current_age_months ?? null
+  }, [currentChild?.date_of_birth, currentChild?.age_months, data?.current_age_months])
+
+  const ageDisplay = computedAgeMonths !== null
+    ? `${Math.floor(computedAgeMonths / 12)} years ${computedAgeMonths % 12} months`
     : `${data?.current_age_months || '—'} months`
   const childSex = currentChild?.sex || 'Child'
+
+  const checkpointMonths = data?.checkpoint_age_months
+  const checkpointAgeBand = useMemo(() => {
+    if (checkpointMonths === undefined || checkpointMonths === null) return null
+    if (checkpointMonths >= 12) {
+      const yrs = Math.floor(checkpointMonths / 12)
+      const rem = checkpointMonths % 12
+      return `${yrs} year${yrs > 1 ? 's' : ''}${rem ? ` ${rem}m` : ''}`
+    }
+    return `${checkpointMonths} months`
+  }, [checkpointMonths])
 
   return (
     <AppLayout
@@ -358,8 +388,18 @@ export default function ScreeningScreen({ onNavigate }) {
               {currentChild.name?.charAt(0) || 'C'}
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-[#1A201E]">{currentChild.name}</h2>
-              <p className="text-xs text-[#5A6660]">{ageDisplay} · {childSex}</p>
+              <div className="flex items-center gap-2">
+                <h2 className="text-sm font-semibold text-[#1A201E]">{currentChild.name}</h2>
+                {checkpointMonths !== undefined && checkpointMonths !== null && (
+                  <BadgePill tone="info" className="text-[11px] font-semibold py-0">
+                    {t('screening.checkpoint', { months: checkpointMonths, defaultValue: `Checkpoint: ${checkpointMonths}m` })}
+                  </BadgePill>
+                )}
+              </div>
+              <p className="text-xs text-[#5A6660]">
+                {ageDisplay} · {childSex}
+                {checkpointAgeBand && ` · ${t('screening.ageBand', { band: checkpointAgeBand, defaultValue: `Age group: ${checkpointAgeBand}` })}`}
+              </p>
             </div>
           </div>
           <button

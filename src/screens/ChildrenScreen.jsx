@@ -167,12 +167,16 @@ export default function ChildrenScreen({ onNavigate }) {
 
               const label =
                 child.latest_risk === 'RED'
-                  ? 'Needs follow-up'
+                  ? 'Follow-up Required'
                   : child.latest_risk === 'YELLOW'
-                  ? 'Review recommended'
+                  ? 'Observation Recommended'
                   : child.latest_risk === 'GREEN'
-                  ? 'Follow-up threshold not reached'
+                  ? 'No Current Concern'
                   : 'Not Screened'
+
+              const displayAgeMonths = child.date_of_birth
+                ? Math.max(0, Math.floor((Date.now() - new Date(child.date_of_birth).getTime()) / (1000 * 60 * 60 * 24 * 30.4375)))
+                : child.age_months
 
               // Avatar background: soft warm terracotta or sage
               const isFemale = child.gender === 'female' || child.sex === 'female'
@@ -200,8 +204,8 @@ export default function ChildrenScreen({ onNavigate }) {
                         {child.name || 'Unnamed Child'}
                       </h3>
                       <p className="text-xs text-[#5A6660] truncate mt-0.5">
-                        {child.age_months !== null && child.age_months !== undefined
-                          ? `${Math.floor(child.age_months / 12)} years ${child.age_months % 12} months`
+                        {displayAgeMonths !== null && displayAgeMonths !== undefined
+                          ? `${Math.floor(displayAgeMonths / 12)} years ${displayAgeMonths % 12} months`
                           : 'Age not logged'}
                         {child.gender ? ` • ${child.gender.charAt(0).toUpperCase() + child.gender.slice(1)}` : child.sex ? ` • ${child.sex}` : ''}
                       </p>

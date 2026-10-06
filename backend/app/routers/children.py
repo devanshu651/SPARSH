@@ -17,7 +17,10 @@ router = APIRouter(prefix="/children", tags=["children"])
 
 def age_months(dob: date | str) -> int:
     if isinstance(dob, str):
-        dob = date.fromisoformat(dob)
+        dob_str = dob[:10] if "T" in dob or len(dob) > 10 else dob
+        dob = date.fromisoformat(dob_str)
+    elif isinstance(dob, datetime):
+        dob = dob.date()
     today = date.today()
     return max(0, (today.year - dob.year) * 12 + today.month - dob.month - (today.day < dob.day))
 
@@ -68,6 +71,8 @@ def list_children(user: CurrentUser = Depends(require_roles(Role.WORKER, Role.SU
     for doc in get_firestore_client().collection("children").stream():
         data = doc.to_dict()
         if user.role is Role.ADMIN or data.get("centre_id") in user.centre_ids:
+            if data.get("date_of_birth"):
+                data["age_months"] = age_months(data["date_of_birth"])
             screenings = list(get_firestore_client().collection("screenings").where("child_id", "==", doc.id).stream())
             if screenings:
                 latest = max((item.to_dict() for item in screenings), key=lambda item: item.get("screened_at"))
@@ -94,6 +99,8 @@ def child_milestones(child_id: str, user: CurrentUser = Depends(require_roles(Ro
 def get_child(child_id: str, user: CurrentUser = Depends(require_roles(Role.WORKER, Role.SUPERVISOR))):
     child = child_from_snapshot(get_firestore_client().collection("children").document(child_id).get())
     ensure_centre_access(user, child["centre_id"])
+    if child.get("date_of_birth"):
+        child["age_months"] = age_months(child["date_of_birth"])
     return ChildResponse(**child)
 
 

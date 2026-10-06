@@ -393,11 +393,11 @@ export default function HomeScreen({ onNavigate }) {
 
                   const label =
                     child.latest_risk === 'RED'
-                      ? t('common.atRisk')
+                      ? t('screening.status.followUp')
                       : child.latest_risk === 'YELLOW'
-                      ? t('common.followUp')
+                      ? t('screening.status.observation')
                       : child.latest_risk === 'GREEN'
-                      ? t('common.normal')
+                      ? t('screening.status.noConcern')
                       : t('common.pending')
 
                   const ageText = child.age_months !== null && child.age_months !== undefined
