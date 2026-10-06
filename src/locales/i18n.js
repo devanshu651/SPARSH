@@ -5,6 +5,7 @@ import en from './en.json'
 import hi from './hi.json'
 import screeningUi from './screeningUi.json'
 import screeningQuestions from './screeningQuestions.json'
+import govSupportUi from './govSupportUi.json'
 
 i18n.use(LanguageDetector).use(initReactI18next).init({
   resources: {
@@ -17,5 +18,9 @@ i18n.use(LanguageDetector).use(initReactI18next).init({
   detection: { caches: ['localStorage'] },
   interpolation: { escapeValue: false }
 })
+
+i18n.addResourceBundle('en', 'translation', { govSupport: govSupportUi.en }, true, true)
+i18n.addResourceBundle('hi', 'translation', { govSupport: govSupportUi.hi }, true, true)
+i18n.addResourceBundle('mr', 'translation', { govSupport: govSupportUi.mr }, true, true)
 
 export default i18n

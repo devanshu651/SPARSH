@@ -11,6 +11,13 @@ const mainItems = [
 
 const secondaryItems = [
   {
+    id: 'government-support',
+    label: 'Government Support',
+    sub: 'Services, UDID, ADIP & scheme guidance',
+    icon: 'landmark',
+    badge: 'Support'
+  },
+  {
     id: 'alerts',
     label: 'Clinical Alerts',
     sub: 'Triage notices & overdue follow-ups',
@@ -56,6 +63,7 @@ export default function BottomNav({ active = 'dashboard', onChange }) {
   ].includes(active)
 
   const isMoreActive = [
+    'government-support',
     'alerts',
     'settings',
     'history',

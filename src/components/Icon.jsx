@@ -111,6 +111,12 @@ export default function Icon({ name, className = 'w-5 h-5', ...props }) {
     leaf: (
       <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21V3m0 0a9.004 9.004 0 018.716 6.747M12 3a9.004 9.004 0 00-8.716 6.747" />
     ),
+    landmark: (
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 2.25L3 7.5h18L12 2.25zm-7.5 7.5v8.25m5.25-8.25v8.25m4.5-8.25v8.25m5.25-8.25v8.25M1.5 20.25h21" />
+    ),
+    externalLink: (
+      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+    ),
   }
 
   return (

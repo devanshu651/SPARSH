@@ -3,6 +3,7 @@ import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'rec
 import AppLayout from '../components/AppLayout'
 import Button from '../components/Button'
 import BadgePill from '../components/BadgePill'
+import Icon from '../components/Icon'
 import { ErrorState, LoadingState } from '../components/AsyncState'
 import { assistantApi, childrenApi, referralsApi } from '../services/api'
 import { useApp } from '../context/AppContext'
@@ -75,7 +76,13 @@ export default function ChildProfileScreen({ onNavigate }) {
         <section className="rounded-xl border border-neutral-200 bg-white p-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div><h2 className="text-xl font-bold">{currentChild.name}</h2><p className="text-sm text-neutral-600">ID: {currentChild.child_identifier} · {currentAgeMonths} months · {currentChild.sex || 'Sex not recorded'}</p><p className="mt-1 text-xs text-neutral-500">Anganwadi Centre: {currentChild.centre_name}</p></div>
-            <Button variant="primary" onClick={() => { onNavigate?.('screening') }}>Start screening</Button>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button variant="secondary" onClick={() => onNavigate?.('government-support')}>
+                <Icon name="landmark" className="h-4 w-4 text-primary-800" />
+                <span>Government Support</span>
+              </Button>
+              <Button variant="primary" onClick={() => { onNavigate?.('screening') }}>Start screening</Button>
+            </div>
           </div>
         </section>
 
@@ -101,6 +108,27 @@ export default function ChildProfileScreen({ onNavigate }) {
             <div className="flex items-center justify-between gap-3"><h2 className="font-bold">Screening trend</h2><span className="text-xs text-neutral-500">Missed responses as a share of answered items</span></div>
             {trend.some((row) => domains.some((domain) => row[domain] !== null)) ? <div className="mt-4 h-64 w-full"><ResponsiveContainer width="100%" height="100%"><LineChart data={trend}><XAxis dataKey="date"/><YAxis domain={[0, 100]} unit="%"/><Tooltip/><Line type="monotone" dataKey="gross_motor" name="Gross motor" stroke="#0f766e" connectNulls={false}/><Line type="monotone" dataKey="fine_motor" name="Fine motor" stroke="#2563eb" connectNulls={false}/><Line type="monotone" dataKey="language" name="Language" stroke="#9333ea" connectNulls={false}/><Line type="monotone" dataKey="social_emotional" name="Social-emotional" stroke="#ea580c" connectNulls={false}/><Line type="monotone" dataKey="cognitive" name="Cognitive" stroke="#db2777" connectNulls={false}/></LineChart></ResponsiveContainer></div> : <p className="mt-3 text-sm text-neutral-600">Trend data is unavailable for older records that do not store answered-item counts.</p>}
             <p className="mt-2 text-xs text-neutral-500">Changes between screenings are descriptive and do not establish a diagnosis.</p>
+          </section>
+
+          <section className="rounded-xl border border-primary-200 bg-primary-50/50 p-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="max-w-xl">
+                <div className="flex items-center gap-2">
+                  <Icon name="landmark" className="h-4 w-4 text-primary-800" />
+                  <h2 className="font-bold text-primary-950">Additional Concern &amp; Government Support</h2>
+                </div>
+                <p className="mt-1 text-xs text-primary-900 leading-relaxed">
+                  Observed a physical difference (e.g. hand, finger, or limb difference) or sensory concern? Connect with verified government pathways including UDID certification, ADIP assistive devices, RBSK early intervention, and Maharashtra state disability welfare.
+                </p>
+              </div>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => onNavigate?.('government-support')}
+              >
+                <span>Explore Government Support →</span>
+              </Button>
+            </div>
           </section>
 
           <section className="rounded-xl border border-neutral-200 bg-white p-5"><h2 className="font-bold">History and referrals</h2><ol className="mt-3 space-y-3">{[...history].reverse().map((item) => <li key={item.screening_id} className="flex flex-wrap items-center justify-between gap-2 border-t border-neutral-100 pt-3 text-sm"><span>{new Date(item.screened_at).toLocaleDateString()} · {riskLabel(item.risk_level)} · {item.checkpoint_age_months ?? '—'} {item.milestone_dataset_version === 'phase5-final-65-v1' ? 'months at screening' : 'month checkpoint'}</span><span className="text-xs text-neutral-600">{referrals[item.screening_id] ? `Referral recorded: ${referrals[item.screening_id].facility_name}` : 'No referral record'}</span></li>)}</ol><p className="mt-3 text-xs text-neutral-500">The system does not currently store a separate follow-up completion status.</p></section>

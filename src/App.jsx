@@ -19,6 +19,7 @@ import RecordsScreen from './screens/RecordsScreen'
 
 import ChildrenScreen from './screens/ChildrenScreen'
 import AnalyticsScreen from './screens/AnalyticsScreen'
+import GovernmentSupportScreen from './screens/GovernmentSupportScreen'
 import AlertsScreen from './screens/AlertsScreen'
 import SettingsScreen from './screens/SettingsScreen'
 import AdminConsoleScreen from './screens/AdminConsoleScreen'
@@ -210,6 +211,12 @@ function AppContent() {
 
       {screen === 'analytics' && (
         <AnalyticsScreen
+          onNavigate={navigate}
+        />
+      )}
+
+      {screen === 'government-support' && (
+        <GovernmentSupportScreen
           onNavigate={navigate}
         />
       )}

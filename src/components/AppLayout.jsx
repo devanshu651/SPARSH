@@ -10,6 +10,7 @@ const workerNavLinks = [
   { id: 'register', label: 'Child Registration', icon: 'userPlus' },
   { id: 'screening', label: 'Screening', icon: 'screening' },
   { id: 'analytics', label: 'Supervisor Analytics', icon: 'analytics' },
+  { id: 'government-support', label: 'Government Support', icon: 'landmark' },
   { id: 'alerts', label: 'Clinical Alerts', icon: 'alerts' },
   { id: 'settings', label: 'Settings', icon: 'settings' }
 ]
