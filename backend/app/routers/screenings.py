@@ -1,4 +1,4 @@
-﻿from datetime import datetime, timezone
+from datetime import datetime, timezone
 import hashlib
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -12,18 +12,15 @@ from app.models.screening import ChildHistoryResponse, RiskScoreResponse, Screen
 from app.ml.features import extract_features
 from app.ml.predictor import UnavailablePredictor
 from app.routers.children import child_from_snapshot, age_months
-from app.services.milestone_service import PROTOTYPE_DISCLAIMER, load_prototype_age_bands, prototype_milestones_by_id, prototype_milestones_for_age, validate_checkpoint_answers
+from app.services.milestone_service import (
+    age_band_for_screening,
+    load_milestone_config,
+    milestones_by_id,
+    milestones_for_age,
+    validate_checkpoint_answers,
+)
 from app.services.scoring_engine import calculate_risk
 router = APIRouter(tags=["screenings"])
-
-
-def milestones_for_age(age_months: int):
-    checkpoint, milestones, _ = prototype_milestones_for_age(age_months)
-    return checkpoint, milestones
-
-
-def milestones_by_id():
-    return prototype_milestones_by_id()
 
 
 def history_item_from_data(screening_id: str, data: dict, current_version: str, current_catalog: dict) -> ScreeningHistoryItem:
@@ -37,16 +34,30 @@ def history_item_from_data(screening_id: str, data: dict, current_version: str, 
 
 @router.get("/milestones")
 def get_milestones(age_months: int, user: CurrentUser = Depends(require_roles(Role.WORKER, Role.SUPERVISOR))):
-    checkpoint, milestones, age_band = prototype_milestones_for_age(age_months)
-    draft_config, _ = load_prototype_age_bands()
-    return {"dataset_version": draft_config["version"], "prototype": True, "clinical_validation": False, "review_status": draft_config["review_status"], "prototype_disclaimer": PROTOTYPE_DISCLAIMER, "age_band": age_band, "requested_age_months": age_months, "checkpoint_age_months": checkpoint, "question_count": len(milestones), "milestones": milestones}
+    checkpoint, milestones = milestones_for_age(age_months)
+    band = age_band_for_screening(age_months) if age_months >= 2 else None
+    all_domains = {"gross_motor", "fine_motor", "language", "cognitive", "social_emotional"}
+    assessed_domains = {item["domain"] for item in milestones}
+    target_count = band["target_count"] if band else 0
+    return {
+        "dataset_version": load_milestone_config()["version"],
+        "requested_age_months": age_months,
+        "checkpoint_age_months": checkpoint,
+        "question_count": len(milestones),
+        "age_band": {"min_months": band["min_m"], "max_months": band["max_m"], "label": band["label"]} if band else None,
+        "coverage": {
+            "target_question_count": target_count,
+            "shortfall": max(0, target_count - len(milestones)),
+            "missing_domains": sorted(all_domains - assessed_domains),
+        },
+        "milestones": milestones,
+    }
 @router.post("/screenings", response_model=RiskScoreResponse, status_code=status.HTTP_201_CREATED)
 def submit_screening(payload: ScreeningSubmit, user: CurrentUser = Depends(require_roles(Role.WORKER))):
     db = get_firestore_client(); child = child_from_snapshot(db.collection("children").document(payload.child_id).get()); ensure_centre_access(user, child["centre_id"])
     current_age = age_months(child["date_of_birth"])
     expected_age, expected = milestones_for_age(current_age)
-    draft_config, _ = load_prototype_age_bands()
-    dataset_version = draft_config["version"]
+    dataset_version = load_milestone_config()["version"]
     if payload.checkpoint_age_months != expected_age or payload.milestone_dataset_version != dataset_version:
         raise HTTPException(status_code=409, detail={"code": "screening_checkpoint_changed", "message": "The child's screening checkpoint has changed. Reload the screening to use the current questions.", "current_age_months": current_age, "checkpoint_age_months": expected_age, "dataset_version": dataset_version})
     milestones = milestones_by_id()
@@ -77,7 +88,7 @@ def submit_screening(payload: ScreeningSubmit, user: CurrentUser = Depends(requi
         for key, value in result.items()
     }
     milestone_snapshot = [{"id": item["id"], "domain": item.get("domain", "unknown"), "text": item.get("question", item.get("description", "")), "age": item.get("age_metadata")} for item in expected]
-    screening = payload.model_dump(mode="json") | {"answers": answer_data, "milestone_snapshot": milestone_snapshot, **serialized, "checkpoint_age_months": expected_age, "milestone_dataset_version": dataset_version, "prototype": True, "clinical_validation": False, "review_status": draft_config["review_status"], "created_by": user.uid, "created_at": now, "ml_assessment": ml_assessment}
+    screening = payload.model_dump(mode="json") | {"answers": answer_data, "milestone_snapshot": milestone_snapshot, **serialized, "checkpoint_age_months": expected_age, "milestone_dataset_version": dataset_version, "created_by": user.uid, "created_at": now, "ml_assessment": ml_assessment}
     ref = db.collection("screenings").document()
     submission_ref = db.collection("screening_submissions").document(
         hashlib.sha256(payload.client_submission_id.encode("utf-8")).hexdigest()
@@ -96,7 +107,7 @@ def submit_screening(payload: ScreeningSubmit, user: CurrentUser = Depends(requi
     except AlreadyExists as exc:
         raise HTTPException(status_code=409, detail={"code": "duplicate_submission", "message": "This screening was already submitted. Open the child's history to view it."}) from exc
     audit_log(user.uid, "screening_submitted", ref.id, child["centre_id"])
-    return RiskScoreResponse(screening_id=ref.id, child_id=payload.child_id, screened_at=payload.screened_at, ml_assessment=screening["ml_assessment"], **result, milestone_dataset_version=screening["milestone_dataset_version"], prototype=True, clinical_validation=False, review_status=draft_config["review_status"])
+    return RiskScoreResponse(screening_id=ref.id, child_id=payload.child_id, screened_at=payload.screened_at, ml_assessment=screening["ml_assessment"], **result, milestone_dataset_version=screening["milestone_dataset_version"])
 @router.get("/screenings/{screening_id}/risk", response_model=RiskScoreResponse)
 def get_risk_score(screening_id: str, user: CurrentUser = Depends(require_roles(Role.WORKER, Role.SUPERVISOR))):
     data = get_firestore_client().collection("screenings").document(screening_id).get().to_dict()
@@ -108,8 +119,8 @@ def child_history(child_id: str, user: CurrentUser = Depends(require_roles(Role.
     db=get_firestore_client(); child=child_from_snapshot(db.collection("children").document(child_id).get()); ensure_centre_access(user, child["centre_id"])
     docs=db.collection("screenings").where("child_id", "==", child_id).stream()
     entries=[]
-    current_config, _ = load_prototype_age_bands()
-    current_catalog = prototype_milestones_by_id()
+    current_config = load_milestone_config()
+    current_catalog = milestones_by_id()
     for doc in docs:
         data=doc.to_dict()
         entries.append(history_item_from_data(doc.id, data, current_config.get("version"), current_catalog))

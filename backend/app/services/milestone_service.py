@@ -1,4 +1,4 @@
-﻿import json
+import json
 from functools import lru_cache
 from pathlib import Path
 from app.services.milestone_content_service import checkpoint_items_for_age, parse_milestone_content
@@ -99,22 +99,147 @@ def load_milestone_config() -> dict:
         item.setdefault("age_metadata", item.get("age"))
     config.setdefault("schema_version", 2)
     return config
-def milestones_for_age(age_months: int) -> tuple[int, list[dict]]:
+def item_developmental_age(item: dict) -> float:
+    age_obj = item.get("age") or {}
+    if isinstance(age_obj, dict):
+        if age_obj.get("months") is not None:
+            return float(age_obj["months"])
+        if age_obj.get("min_months") is not None:
+            return float(age_obj["min_months"])
+    if item.get("source_age_months") is not None:
+        return float(item["source_age_months"])
+    parts = item.get("id", "").split("_")
+    if len(parts) >= 2 and parts[1].isdigit():
+        return float(parts[1])
+    return 0.0
+
+
+def age_band_for_screening(age_months: int) -> dict:
+    if age_months < 0:
+        raise ValueError("age_months must be non-negative")
+    if age_months <= 5:
+        return {
+            "name": "0–5 months",
+            "label": "0–5 months",
+            "min_m": 0,
+            "max_m": 5,
+            "checkpoint": 2 if age_months >= 2 else 0,
+            "min_item_age": 0.0,
+            "max_item_age": float(age_months),
+            "cap_per_dom": 8,
+            "target_count": 14,
+        }
+    elif age_months <= 11:
+        return {
+            "name": "6–11 months",
+            "label": "6–11 months",
+            "min_m": 6,
+            "max_m": 11,
+            "checkpoint": 6,
+            "min_item_age": 0.0,
+            "max_item_age": float(age_months),
+            "cap_per_dom": 8,
+            "target_count": 28,
+        }
+    elif age_months <= 17:
+        return {
+            "name": "12–17 months",
+            "label": "12–17 months",
+            "min_m": 12,
+            "max_m": 17,
+            "checkpoint": 12,
+            "min_item_age": 0.0,
+            "max_item_age": float(age_months),
+            "cap_per_dom": 8,
+            "target_count": 40,
+        }
+    elif age_months <= 23:
+        return {
+            "name": "18–23 months",
+            "label": "18–23 months",
+            "min_m": 18,
+            "max_m": 23,
+            "checkpoint": 18,
+            "min_item_age": 0.0,
+            "max_item_age": float(age_months),
+            "cap_per_dom": 8,
+            "target_count": 40,
+        }
+    elif age_months <= 35:
+        return {
+            "name": "24–35 months",
+            "label": "24–35 months",
+            "min_m": 24,
+            "max_m": 35,
+            "checkpoint": 24,
+            "min_item_age": 6.0,
+            "max_item_age": float(age_months),
+            "cap_per_dom": 8,
+            "target_count": 40,
+        }
+    elif age_months <= 47:
+        return {
+            "name": "36–47 months",
+            "label": "36–47 months",
+            "min_m": 36,
+            "max_m": 47,
+            "checkpoint": 36,
+            "min_item_age": 12.0,
+            "max_item_age": 36.0,
+            "cap_per_dom": 5,
+            "target_count": 25,
+        }
+    elif age_months <= 59:
+        return {
+            "name": "48–59 months",
+            "label": "48–59 months",
+            "min_m": 48,
+            "max_m": 59,
+            "checkpoint": 48,
+            "min_item_age": 18.0,
+            "max_item_age": 48.0,
+            "cap_per_dom": 4,
+            "target_count": 20,
+        }
+    else:
+        return {
+            "name": "60–72 months",
+            "label": "60–72 months",
+            "min_m": 60,
+            "max_m": 72,
+            "checkpoint": 60,
+            "min_item_age": 24.0,
+            "max_item_age": 60.0,
+            "cap_per_dom": 4,
+            "target_count": 16,
+        }
+
+
+def milestones_for_age(age_months: int) -> tuple[int | None, list[dict]]:
+    if age_months < 0:
+        raise ValueError("age_months must be non-negative")
+    if age_months < 2:
+        return None, []
+
     config = load_milestone_config()
     milestones = config["milestones"]
-    if "items" in config:
-        # Only explicit source checkpoints participate in automatic selection.
-        # WHO attainment ranges and review-required items remain in the active
-        # catalog but cannot become age cutoffs or join a set by fallback.
-        dataset = parse_milestone_content(config)
-        checkpoint, selected_content = checkpoint_items_for_age(dataset, age_months)
-        by_id = {item["id"]: item for item in milestones}
-        return checkpoint, [by_id[item.id] for item in selected_content]
-    checkpoints = sorted({item["age_months"] for item in milestones})
-    checkpoint = max((item for item in checkpoints if item <= age_months), default=checkpoints[0])
-    return checkpoint, [item for item in milestones if item["age_months"] == checkpoint]
+    band = age_band_for_screening(age_months)
+    domains = ("gross_motor", "fine_motor", "language", "cognitive", "social_emotional")
+    selected = []
+    for domain in domains:
+        candidates = [
+            item for item in milestones
+            if item.get("domain") == domain
+            and band["min_item_age"] <= item_developmental_age(item) <= band["max_item_age"]
+        ]
+        candidates.sort(key=lambda x: (-item_developmental_age(x), x["id"]))
+        selected.extend(candidates[:band["cap_per_dom"]])
+    return band["checkpoint"], selected
+
+
 def milestones_by_id() -> dict[str, dict]:
     return {item["id"]: item for item in load_milestone_config()["milestones"]}
+
 
 
 def configured_domains() -> list[str]:

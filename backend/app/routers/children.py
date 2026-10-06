@@ -10,15 +10,22 @@ from app.models.auth import CurrentUser, Role
 from app.models.child import ChildCreate, ChildResponse, HealthDataCreate, HealthDataResponse
 from app.models.screening import Domain
 from app.routers.centres import centre_from_snapshot
-from app.services.milestone_service import PROTOTYPE_DISCLAIMER, load_prototype_age_bands, prototype_milestones_for_age
+from app.services.milestone_service import (
+    age_band_for_screening,
+    load_milestone_config,
+    milestones_for_age,
+)
 
 
 router = APIRouter(prefix="/children", tags=["children"])
 
 
-def age_months(dob: date | str) -> int:
+def age_months(dob: date | str | datetime) -> int:
     if isinstance(dob, str):
-        dob = date.fromisoformat(dob)
+        dob_str = dob[:10] if "T" in dob or len(dob) > 10 else dob
+        dob = date.fromisoformat(dob_str)
+    elif isinstance(dob, datetime):
+        dob = dob.date()
     today = date.today()
     return max(0, (today.year - dob.year) * 12 + today.month - dob.month - (today.day < dob.day))
 
@@ -69,6 +76,8 @@ def list_children(user: CurrentUser = Depends(require_roles(Role.WORKER, Role.SU
     for doc in get_firestore_client().collection("children").stream():
         data = doc.to_dict()
         if user.role is Role.ADMIN or data.get("centre_id") in user.centre_ids:
+            if data.get("date_of_birth"):
+                data["age_months"] = age_months(data["date_of_birth"])
             screenings = list(get_firestore_client().collection("screenings").where("child_id", "==", doc.id).stream())
             if screenings:
                 latest = max((item.to_dict() for item in screenings), key=lambda item: item.get("screened_at"))
@@ -82,34 +91,34 @@ def child_milestones(child_id: str, user: CurrentUser = Depends(require_roles(Ro
     child = child_from_snapshot(get_firestore_client().collection("children").document(child_id).get())
     ensure_centre_access(user, child["centre_id"])
     current_age = age_months(child["date_of_birth"])
-    checkpoint, milestones, age_band = prototype_milestones_for_age(current_age)
+    checkpoint, milestones = milestones_for_age(current_age)
+    config = load_milestone_config()
+    band = age_band_for_screening(current_age) if current_age >= 2 else None
+    all_domains = {"gross_motor", "fine_motor", "language", "cognitive", "social_emotional"}
     assessed_domains = {item["domain"] for item in milestones}
-    all_domains = {domain.value for domain in Domain}
-    question_target = 40
-    draft_config, _ = load_prototype_age_bands()
+    target_count = band["target_count"] if band else 0
     return {
-        "dataset_version": draft_config["version"],
-        "prototype": True,
-        "clinical_validation": False,
-        "review_status": draft_config["review_status"],
-        "prototype_disclaimer": PROTOTYPE_DISCLAIMER,
-        "age_band": age_band,
+        "dataset_version": config["version"],
         "current_age_months": current_age,
         "checkpoint_age_months": checkpoint,
         "question_count": len(milestones),
+        "age_band": {"min_months": band["min_m"], "max_months": band["max_m"], "label": band["label"]} if band else None,
         "coverage": {
-            "target_question_count": question_target,
-            "shortfall": max(0, question_target - len(milestones)),
+            "target_question_count": target_count,
+            "shortfall": max(0, target_count - len(milestones)),
             "missing_domains": sorted(all_domains - assessed_domains),
         },
         "milestones": milestones,
     }
 
 
+
 @router.get("/{child_id}", response_model=ChildResponse)
 def get_child(child_id: str, user: CurrentUser = Depends(require_roles(Role.WORKER, Role.SUPERVISOR))):
     child = child_from_snapshot(get_firestore_client().collection("children").document(child_id).get())
     ensure_centre_access(user, child["centre_id"])
+    if child.get("date_of_birth"):
+        child["age_months"] = age_months(child["date_of_birth"])
     return ChildResponse(**child)
 
 

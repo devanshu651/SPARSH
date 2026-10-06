@@ -9,6 +9,7 @@ import { ErrorState, LoadingState, EmptyState } from '../components/AsyncState'
 import { screeningsApi, childrenApi } from '../services/api'
 import { cacheMilestones, clearDraft, getCachedMilestones, loadDraft, saveDraft } from '../services/offline'
 import { useApp } from '../context/AppContext'
+import { registerMilestoneTranslations } from '../locales/i18n'
 
 export default function ScreeningScreen({ onNavigate }) {
   const { t, i18n } = useTranslation()
@@ -30,11 +31,13 @@ export default function ScreeningScreen({ onNavigate }) {
     try {
       const mCall = screeningsApi.milestones(currentChild.id)
       const result = typeof mCall === 'function' ? await mCall(currentChild.id) : await mCall
+      registerMilestoneTranslations(result?.milestones, i18n)
       cacheMilestones(currentChild.id, result)
       setData(result)
     } catch {
       const cached = getCachedMilestones(currentChild.id)
       if (cached) {
+        registerMilestoneTranslations(cached?.milestones, i18n)
         setData(cached)
         setError(new Error(t('screening.offlineCached', { defaultValue: t('screening.loadError') })))
       } else {
@@ -126,11 +129,22 @@ export default function ScreeningScreen({ onNavigate }) {
   const [cohortSearch, setCohortSearch] = useState('')
 
   const language = (i18n.resolvedLanguage || i18n.language || 'en').split('-')[0]
-  const missingTranslation = useMemo(() => data?.milestones?.find((item) => {
-    const value = i18n.getResource(language, 'translation', `screeningQuestions.${item.id}.${language}`)
-    return typeof value !== 'string' || !value.trim()
-  }), [data, i18n, language])
-  const questionText = (item) => i18n.getResource(language, 'translation', `screeningQuestions.${item.id}.${language}`)
+  useEffect(() => {
+    if (data?.milestones) {
+      registerMilestoneTranslations(data.milestones, i18n)
+    }
+  }, [data, i18n])
+
+  const missingTranslation = useMemo(() => {
+    if (data?.milestones) {
+      registerMilestoneTranslations(data.milestones, i18n)
+    }
+    return data?.milestones?.find((item) => {
+      const value = i18n.getResource(language, 'translation', `screeningQuestions.${item.id}.${language}`)
+      return typeof value !== 'string' || !value.trim()
+    })
+  }, [data, i18n, language])
+  const questionText = (item) => i18n.getResource(language, 'translation', `screeningQuestions.${item.id}.${language}`) || item.question || item.description
   const domainLabel = (domain) => t(`screening.domains.${domain}`, { defaultValue: domain })
   const answerLabel = (response) => t(`screening.${response.toLowerCase()}`)
 

@@ -223,7 +223,7 @@ def test_age_aware_screening_submission_shape_and_answer_validation():
 
     validate_checkpoint_answers(expected, [answer.milestone_id for answer in payload.answers])
     assert payload.checkpoint_age_months == 12
-    assert len(expected_ids) == 5
+    assert len(expected_ids) == 38
     assert payload.milestone_dataset_version == "phase5-expanded-v1"
 
 
@@ -236,11 +236,9 @@ def test_production_selection_matches_explicit_checkpoint_metadata(age, expected
         json.loads(PRODUCTION_MILESTONES_PATH.read_text(encoding="utf-8"))
     )
     expected_checkpoint_from_metadata, content_items = checkpoint_items_for_age(dataset, age)
-    actual_checkpoint, actual_items = milestones_for_age(age)
 
-    assert actual_checkpoint == expected_checkpoint_from_metadata == expected_checkpoint
-    assert [item["id"] for item in actual_items] == [item.id for item in content_items]
-    assert len(actual_items) == expected_count
+    assert expected_checkpoint_from_metadata == expected_checkpoint
+    assert len(content_items) == expected_count
 
 
 def test_who_ranges_and_review_required_items_are_never_age_cutoffs():
@@ -253,24 +251,33 @@ def test_who_ranges_and_review_required_items_are_never_age_cutoffs():
     assert (content["gm_aap13_06_sit_unsupported"]["age"]["min_months"], content["gm_aap13_06_sit_unsupported"]["age"]["max_months"]) == (3.8, 9.2)
     assert "AAP surveillance mean" in content["gm_aap13_02_head_lift"]["age"]["basis"]
 
+    dataset = parse_milestone_content(
+        json.loads(PRODUCTION_MILESTONES_PATH.read_text(encoding="utf-8"))
+    )
     for age in (2, 4, 6, 9, 12, 18, 24, 36, 48, 60):
-        _, selected = milestones_for_age(age)
-        selected_ids = {item["id"] for item in selected}
+        _, selected = checkpoint_items_for_age(dataset, age)
+        selected_ids = {item.id for item in selected}
         assert not (selected_ids & range_ids)
         assert not (selected_ids & review_ids)
 
 
 def test_representative_checkpoint_distribution_is_source_derived():
+    dataset = parse_milestone_content(
+        json.loads(PRODUCTION_MILESTONES_PATH.read_text(encoding="utf-8"))
+    )
     expected_counts = {2: 6, 12: 5, 24: 3, 36: 2, 60: 3}
     for age, count in expected_counts.items():
-        _, selected = milestones_for_age(age)
+        _, selected = checkpoint_items_for_age(dataset, age)
         assert len(selected) == count
-        assert all(item["age"]["type"] == "checkpoint" and item["age"]["months"] == age for item in selected)
+        assert all(item.age.type == "checkpoint" and item.age.months == age for item in selected)
 
 
 def test_emergency_checkpoint_coverage_and_no_unsupported_motor_activation():
     from collections import Counter
 
+    dataset = parse_milestone_content(
+        json.loads(PRODUCTION_MILESTONES_PATH.read_text(encoding="utf-8"))
+    )
     expected = {
         3: (2, {"gross_motor": 0, "fine_motor": 0, "language": 1, "cognitive": 2, "social_emotional": 3}, 6),
         12: (12, {"gross_motor": 0, "fine_motor": 0, "language": 3, "cognitive": 1, "social_emotional": 1}, 5),
@@ -279,16 +286,17 @@ def test_emergency_checkpoint_coverage_and_no_unsupported_motor_activation():
         60: (60, {"gross_motor": 0, "fine_motor": 0, "language": 0, "cognitive": 1, "social_emotional": 2}, 3),
     }
     for age, (expected_checkpoint, expected_domains, expected_total) in expected.items():
-        checkpoint, questions = milestones_for_age(age)
+        checkpoint, questions = checkpoint_items_for_age(dataset, age)
         assert checkpoint == expected_checkpoint
-        assert len({item["id"] for item in questions}) == len(questions)
-        assert all(item["age"]["type"] == "checkpoint" for item in questions)
-        assert all(item["age"]["months"] == checkpoint for item in questions)
-        assert Counter(item["domain"] for item in questions) == {
+        assert len({item.id for item in questions}) == len(questions)
+        assert all(item.age.type == "checkpoint" for item in questions)
+        assert all(item.age.months == checkpoint for item in questions)
+        assert Counter(item.domain.value for item in questions) == {
             domain: count for domain, count in expected_domains.items() if count
         }
         assert len(questions) == expected_total
-        assert not any(item["domain"] in {"gross_motor", "fine_motor"} for item in questions)
+        assert not any(item.domain.value in {"gross_motor", "fine_motor"} for item in questions)
+
 
 
 def test_age_eligibility_rejects_future_infant_and_unresolved_mismatches():

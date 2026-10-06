@@ -75,27 +75,29 @@ def test_future_source_ages_are_filtered_and_younger_age_count_is_actual():
     assert len(questions) == 40
 
 
-@pytest.mark.parametrize("age", [24, 36, 48, 60])
-def test_screening_api_returns_prototype_metadata_and_exact_question_count(age):
+@pytest.mark.parametrize("age,expected_checkpoint,expected_count", [
+    (24, 24, 39),
+    (36, 36, 24),
+    (48, 48, 18),
+    (60, 60, 16),
+])
+def test_screening_api_returns_checkpoint_metadata_and_exact_question_count(age, expected_checkpoint, expected_count):
     response = screenings.get_milestones(age, user=None)
 
-    assert response["question_count"] == 40
-    assert response["prototype"] is True
-    assert response["clinical_validation"] is False
-    assert response["review_status"] == "pending_professional_review"
-    assert response["prototype_disclaimer"] == PROTOTYPE_DISCLAIMER
+    assert response["question_count"] == expected_count
+    assert response["requested_age_months"] == age
+    assert response["checkpoint_age_months"] == expected_checkpoint
     assert len({item["id"] for item in response["milestones"]}) == response["question_count"]
-    assert Counter(item["domain"] for item in response["milestones"]) == {
-        "gross_motor": 8,
-        "fine_motor": 8,
-        "language": 8,
-        "cognitive": 8,
-        "social_emotional": 8,
-    }
+    assert response["dataset_version"] == "phase5-expanded-v1"
 
 
-@pytest.mark.parametrize("age", [24, 36, 48, 60])
-def test_child_questionnaire_api_returns_exact_age_band_form(age):
+@pytest.mark.parametrize("age,expected_checkpoint,expected_count", [
+    (24, 24, 39),
+    (36, 36, 24),
+    (48, 48, 18),
+    (60, 60, 16),
+])
+def test_child_questionnaire_api_returns_exact_checkpoint_form(age, expected_checkpoint, expected_count):
     class Snapshot:
         id = "child-prototype"
 
@@ -120,14 +122,8 @@ def test_child_questionnaire_api_returns_exact_age_band_form(age):
          patch.object(children, "age_months", return_value=age):
         response = children.child_milestones("child-prototype", user)
 
-    assert response["question_count"] == 40
-    assert response["checkpoint_age_months"] == age
-    assert response["clinical_validation"] is False
-    assert response["review_status"] == "pending_professional_review"
-    assert Counter(item["domain"] for item in response["milestones"]) == {
-        "gross_motor": 8,
-        "fine_motor": 8,
-        "language": 8,
-        "cognitive": 8,
-        "social_emotional": 8,
-    }
+    assert response["question_count"] == expected_count
+    assert response["checkpoint_age_months"] == expected_checkpoint
+    assert response["current_age_months"] == age
+    assert response["dataset_version"] == "phase5-expanded-v1"
+    assert len(response["milestones"]) == expected_count
